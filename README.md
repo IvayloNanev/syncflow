@@ -1,2 +1,23 @@
-# syncflow
-Multi-agent sync licensing intake and internal review workspace. School prototype by Ivaylo Nanev and Mosiah James.
+# SyncFlow
+
+Multi-agent sync licensing intake and internal review workspace. A school prototype by Ivaylo Nanev and Mosiah James.
+
+## First milestone: shared agent contracts
+
+This branch provides framework-neutral JSON Schemas, three fictional development fixtures, and an executable JavaScript validator. Live agents and the application backend are subsequent issues.
+
+Requires Node.js 24 and pnpm 11.25.0:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm test
+pnpm validate:fixtures
+```
+
+See [agent contract documentation](docs/agent-contracts.md), [schemas and validator](contracts/), and [development fixtures](fixtures/development/).
+
+- Ivaylo: agent contracts, pipeline and evaluation.
+- Mosiah: application, persistence and workflow enforcement.
+- Both: review integration contracts and end-to-end behavior.
+
+Use fictional data only. Agents propose; the coordinator confirms. Internal review completion is not a music licence.

@@ -1,0 +1,253 @@
+{
+  "name": "complete",
+  "context": {
+    "schema_version": "1.0",
+    "run_id": "run-complete",
+    "base_record_version": 0,
+    "request_id": "req-complete",
+    "checklist_version": "intake-v1",
+    "coordinator_timezone": "America/New_York",
+    "messages": [
+      {
+        "message_id": "msg-1",
+        "kind": "initial",
+        "text": "Contact: Jordan Pike. Project: Northlight launch. Artist A / Track X (original recording), online ad on Instagram and YouTube in Canada for three months. Use 30 seconds. Budget CAD 5,000 for both rights. Deadline November 6, 2026.",
+        "supplied_message_date": "2026-11-03"
+      }
+    ],
+    "confirmed_fields": [],
+    "unresolved_issues": []
+  },
+  "intake": {
+    "schema_version": "1.0",
+    "run_id": "run-complete",
+    "base_record_version": 0,
+    "proposed_changes": [
+      {
+        "proposal_id": "proposal-client_contact",
+        "field_key": "client_contact",
+        "previous_value": null,
+        "proposed_value": "Jordan Pike",
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "Jordan Pike"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-project",
+        "field_key": "project",
+        "previous_value": null,
+        "proposed_value": "Northlight launch",
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "Northlight launch"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-artist",
+        "field_key": "artist",
+        "previous_value": null,
+        "proposed_value": "Artist A",
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "Artist A"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-track_title",
+        "field_key": "track_title",
+        "previous_value": null,
+        "proposed_value": "Track X",
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "Track X"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-recording_version",
+        "field_key": "recording_version",
+        "previous_value": null,
+        "proposed_value": "original recording",
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "original recording"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-intended_use",
+        "field_key": "intended_use",
+        "previous_value": null,
+        "proposed_value": "online ad",
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "online ad"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-platforms",
+        "field_key": "platforms",
+        "previous_value": null,
+        "proposed_value": [
+          "Instagram",
+          "YouTube"
+        ],
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "Instagram and YouTube"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-territories",
+        "field_key": "territories",
+        "previous_value": null,
+        "proposed_value": [
+          "Canada"
+        ],
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "Canada"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-campaign_term",
+        "field_key": "campaign_term",
+        "previous_value": null,
+        "proposed_value": {
+          "supplied_text": "three months",
+          "duration_text": "three months",
+          "start_date": null,
+          "end_date": null
+        },
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "three months"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-music_length",
+        "field_key": "music_length",
+        "previous_value": null,
+        "proposed_value": {
+          "supplied_text": "30 seconds",
+          "seconds": 30
+        },
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "30 seconds"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-budget",
+        "field_key": "budget",
+        "previous_value": null,
+        "proposed_value": {
+          "supplied_text": "CAD 5,000 for both rights",
+          "amount": "5000",
+          "currency": "CAD",
+          "scope": "both"
+        },
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "CAD 5,000 for both rights"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-response_deadline",
+        "field_key": "response_deadline",
+        "previous_value": null,
+        "proposed_value": {
+          "supplied_text": "November 6, 2026",
+          "date": "2026-11-06",
+          "time": null,
+          "timezone": null
+        },
+        "evidence": [
+          {
+            "message_id": "msg-1",
+            "exact_quote": "November 6, 2026"
+          }
+        ]
+      }
+    ],
+    "ambiguities": []
+  },
+  "review": {
+    "schema_version": "1.0",
+    "run_id": "run-complete",
+    "base_record_version": 0,
+    "issues": [],
+    "checks": [
+      {
+        "rule_id": "required:client_contact",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:project",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:artist",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:track_title",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:recording_version",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:intended_use",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:platforms",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:territories",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:campaign_term",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:music_length",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:budget",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:response_deadline",
+        "result": "pass"
+      }
+    ]
+  },
+  "follow_up": null
+}
