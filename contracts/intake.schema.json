@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SyncFlow intake v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_record_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "proposed_changes": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:syncflow:shared:1.0#/$defs/change"
+      }
+    },
+    "ambiguities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field_keys": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "client_contact",
+                "project",
+                "artist",
+                "track_title",
+                "recording_version",
+                "intended_use",
+                "platforms",
+                "territories",
+                "campaign_term",
+                "music_length",
+                "budget",
+                "response_deadline"
+              ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "$ref": "urn:syncflow:shared:1.0#/$defs/evidence"
+            }
+          }
+        },
+        "required": [
+          "field_keys",
+          "reason",
+          "evidence"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "base_record_version",
+    "proposed_changes",
+    "ambiguities"
+  ],
+  "additionalProperties": false
+}

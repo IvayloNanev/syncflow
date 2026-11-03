@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SyncFlow context v1",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_record_version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checklist_version": {
+      "const": "intake-v1"
+    },
+    "coordinator_timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "message_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "initial",
+              "reply"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "supplied_message_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message_id",
+          "kind",
+          "text",
+          "supplied_message_date"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "confirmed_fields": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:syncflow:shared:1.0#/$defs/confirmed_field"
+      }
+    },
+    "unresolved_issues": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:syncflow:shared:1.0#/$defs/issue"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "run_id",
+    "base_record_version",
+    "request_id",
+    "checklist_version",
+    "coordinator_timezone",
+    "messages",
+    "confirmed_fields",
+    "unresolved_issues"
+  ],
+  "additionalProperties": false
+}
