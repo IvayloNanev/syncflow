@@ -1,0 +1,333 @@
+{
+  "case_id": "E16",
+  "name": "partial-reply-resolves-project",
+  "context": {
+    "schema_version": "1.0",
+    "run_id": "eval-run-16",
+    "base_record_version": 3,
+    "request_id": "eval-request-16",
+    "checklist_version": "intake-v1",
+    "coordinator_timezone": "America/New_York",
+    "messages": [
+      {
+        "message_id": "message-1",
+        "kind": "initial",
+        "text": "Hello, this is Avery Lane at Cedar Agency. We want a recording by Mira Vale. Song title: Night Window. Please use the 2025 studio master. The use is a brand advertisement. Run it in the United Kingdom. We have GBP 3,500 covering both recording and publishing. Please respond by November 12, 2026.",
+        "supplied_message_date": "2026-11-03"
+      },
+      {
+        "message_id": "message-2",
+        "kind": "reply",
+        "text": "The project is Frost launch.",
+        "supplied_message_date": "2026-11-04"
+      }
+    ],
+    "confirmed_fields": [
+      {
+        "field_key": "client_contact",
+        "state": "confirmed",
+        "value": "Avery Lane at Cedar Agency",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "Avery Lane at Cedar Agency"
+          }
+        ],
+        "confirmed_by": "coordinator-test",
+        "confirmed_at": "2026-11-03T15:00:00Z",
+        "not_applicable_reason": null
+      },
+      {
+        "field_key": "artist",
+        "state": "confirmed",
+        "value": "Mira Vale",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "Mira Vale"
+          }
+        ],
+        "confirmed_by": "coordinator-test",
+        "confirmed_at": "2026-11-03T15:00:00Z",
+        "not_applicable_reason": null
+      },
+      {
+        "field_key": "track_title",
+        "state": "confirmed",
+        "value": "Night Window",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "Night Window"
+          }
+        ],
+        "confirmed_by": "coordinator-test",
+        "confirmed_at": "2026-11-03T15:00:00Z",
+        "not_applicable_reason": null
+      },
+      {
+        "field_key": "recording_version",
+        "state": "confirmed",
+        "value": "2025 studio master",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "2025 studio master"
+          }
+        ],
+        "confirmed_by": "coordinator-test",
+        "confirmed_at": "2026-11-03T15:00:00Z",
+        "not_applicable_reason": null
+      },
+      {
+        "field_key": "intended_use",
+        "state": "confirmed",
+        "value": "brand advertisement",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "brand advertisement"
+          }
+        ],
+        "confirmed_by": "coordinator-test",
+        "confirmed_at": "2026-11-03T15:00:00Z",
+        "not_applicable_reason": null
+      },
+      {
+        "field_key": "territories",
+        "state": "confirmed",
+        "value": [
+          "United Kingdom"
+        ],
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "United Kingdom"
+          }
+        ],
+        "confirmed_by": "coordinator-test",
+        "confirmed_at": "2026-11-03T15:00:00Z",
+        "not_applicable_reason": null
+      },
+      {
+        "field_key": "budget",
+        "state": "confirmed",
+        "value": {
+          "supplied_text": "GBP 3,500 covering both recording and publishing",
+          "amount": "3500",
+          "currency": "GBP",
+          "scope": "both"
+        },
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "GBP 3,500 covering both recording and publishing"
+          }
+        ],
+        "confirmed_by": "coordinator-test",
+        "confirmed_at": "2026-11-03T15:00:00Z",
+        "not_applicable_reason": null
+      },
+      {
+        "field_key": "response_deadline",
+        "state": "confirmed",
+        "value": {
+          "supplied_text": "November 12, 2026",
+          "date": "2026-11-12",
+          "time": null,
+          "timezone": null
+        },
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "November 12, 2026"
+          }
+        ],
+        "confirmed_by": "coordinator-test",
+        "confirmed_at": "2026-11-03T15:00:00Z",
+        "not_applicable_reason": null
+      }
+    ],
+    "unresolved_issues": [
+      {
+        "issue_id": "missing-project",
+        "type": "missing",
+        "severity": "blocking",
+        "field_keys": [
+          "project"
+        ],
+        "question": "Please confirm project.",
+        "evidence": []
+      },
+      {
+        "issue_id": "missing-platforms",
+        "type": "missing",
+        "severity": "blocking",
+        "field_keys": [
+          "platforms"
+        ],
+        "question": "Please confirm platforms.",
+        "evidence": []
+      },
+      {
+        "issue_id": "missing-campaign_term",
+        "type": "missing",
+        "severity": "blocking",
+        "field_keys": [
+          "campaign_term"
+        ],
+        "question": "Please confirm campaign term.",
+        "evidence": []
+      },
+      {
+        "issue_id": "missing-music_length",
+        "type": "missing",
+        "severity": "blocking",
+        "field_keys": [
+          "music_length"
+        ],
+        "question": "Please confirm music length.",
+        "evidence": []
+      }
+    ]
+  },
+  "intake": {
+    "schema_version": "1.0",
+    "run_id": "eval-run-16",
+    "base_record_version": 3,
+    "proposed_changes": [
+      {
+        "proposal_id": "new-project",
+        "field_key": "project",
+        "previous_value": null,
+        "proposed_value": "Frost launch",
+        "evidence": [
+          {
+            "message_id": "message-2",
+            "exact_quote": "Frost launch"
+          }
+        ]
+      }
+    ],
+    "ambiguities": []
+  },
+  "review": {
+    "schema_version": "1.0",
+    "run_id": "eval-run-16",
+    "base_record_version": 3,
+    "issues": [
+      {
+        "issue_id": "missing-platforms",
+        "type": "missing",
+        "severity": "blocking",
+        "field_keys": [
+          "platforms"
+        ],
+        "question": "Please confirm platforms.",
+        "evidence": []
+      },
+      {
+        "issue_id": "missing-campaign_term",
+        "type": "missing",
+        "severity": "blocking",
+        "field_keys": [
+          "campaign_term"
+        ],
+        "question": "Please confirm campaign term.",
+        "evidence": []
+      },
+      {
+        "issue_id": "missing-music_length",
+        "type": "missing",
+        "severity": "blocking",
+        "field_keys": [
+          "music_length"
+        ],
+        "question": "Please confirm music length.",
+        "evidence": []
+      }
+    ],
+    "checks": [
+      {
+        "rule_id": "required:client_contact",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:project",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:artist",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:track_title",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:recording_version",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:intended_use",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:platforms",
+        "result": "fail"
+      },
+      {
+        "rule_id": "required:territories",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:campaign_term",
+        "result": "fail"
+      },
+      {
+        "rule_id": "required:music_length",
+        "result": "fail"
+      },
+      {
+        "rule_id": "required:budget",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:response_deadline",
+        "result": "pass"
+      }
+    ]
+  },
+  "follow_up": {
+    "schema_version": "1.0",
+    "run_id": "eval-run-16",
+    "base_record_version": 3,
+    "subject": "Music-use request clarification",
+    "body": "Could you clarify: Please confirm platforms. Please confirm campaign term. Please confirm music length.",
+    "addressed_issue_ids": [
+      "missing-platforms",
+      "missing-campaign_term",
+      "missing-music_length"
+    ]
+  },
+  "expected_behavior": {
+    "must_preserve_fields": [
+      "client_contact",
+      "artist",
+      "track_title",
+      "recording_version",
+      "intended_use",
+      "territories",
+      "budget",
+      "response_deadline"
+    ],
+    "must_not_do": [
+      "invent missing facts",
+      "write approval",
+      "send messages"
+    ],
+    "review_status": "needs_clarification",
+    "material_change_after_acceptance": false
+  },
+  "acceptable_equivalents": {}
+}

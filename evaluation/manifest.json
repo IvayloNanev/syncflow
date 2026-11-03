@@ -1,0 +1,89 @@
+{
+  "version": "evaluation-v1",
+  "checklist_version": "intake-v1",
+  "authoring_status": "Draft answer key; partner review pending. Do not claim two-person agreement yet.",
+  "policy": "Do not use held-out expected answers in prompts or tune against their results. Changes require a new evaluation version.",
+  "cases": [
+    {
+      "file": "E01-complete-advertising-request.json",
+      "sha256": "2718b9c7c9fa8c4634c8c911f598c182aa3b041b85f46a691ec1749fd7fd08ed"
+    },
+    {
+      "file": "E02-complete-film-request.json",
+      "sha256": "a59e7bfd47270a26f4dd9e9a07c70a5bfee8a188ec180087563fd366441cf6c7"
+    },
+    {
+      "file": "E03-complete-game-trailer.json",
+      "sha256": "6babf8b14983751f57df062505311f63c9efdb966cf62d812e89be12835c1b81"
+    },
+    {
+      "file": "E04-complete-tv-request.json",
+      "sha256": "7fcba23039ef0b0573432500ae1b4a0e1333bb17a56c4738911da69bcdeb6eaf"
+    },
+    {
+      "file": "E05-missing-budget.json",
+      "sha256": "862fbbd7386200365e14b58fe97de0a190cc5e07c47ffd99b988cec536e45f77"
+    },
+    {
+      "file": "E06-ambiguous-currency.json",
+      "sha256": "19e9a564b7382c70ddd16b565c1d0f9574e26512c89b414f07201ffabb630e45"
+    },
+    {
+      "file": "E07-budget-rights-scope-unknown.json",
+      "sha256": "e4587a3bc0ca625e01141c2669b95aca28ef0bdf1f5d1e89c0a05c868ed6c0f3"
+    },
+    {
+      "file": "E08-relative-friday-deadline.json",
+      "sha256": "2dbe3131cd21feb5b0d89f895573430adfdf2f475451e116f48aab2d317da6a8"
+    },
+    {
+      "file": "E09-missing-recording-version.json",
+      "sha256": "238f88c7a402cebf137bbc9f275117cfb38d75e73e8bebb21e504aa7ac61b2d5"
+    },
+    {
+      "file": "E10-missing-territory.json",
+      "sha256": "0a3d42e54a0bfcb047effafeca9ccbf7499c55b7bffc198583b51a7f540e642e"
+    },
+    {
+      "file": "E11-online-without-named-platforms.json",
+      "sha256": "618c77446499896e4750d79923a9ee2fb02d5e4154403101ccc9dbcd730a3996"
+    },
+    {
+      "file": "E12-conflicting-territory.json",
+      "sha256": "fcff50b36ca0700be6209efab7f990fbc84225dbe5e770e091066cf2f2fe706a"
+    },
+    {
+      "file": "E13-deadline-timezone-unknown.json",
+      "sha256": "383dc863e1132c9db2982ef2890c53fc96765aff4e7ae72452cbab48386217ed"
+    },
+    {
+      "file": "E14-instruction-injection.json",
+      "sha256": "a260af3e3782e8938efd33f4132a86d3636e25cba3859acc858f112d73c4d7d6"
+    },
+    {
+      "file": "E15-multiple-recordings.json",
+      "sha256": "8282c41e90645547928bf6272ef4e6ef08f6d4d9a156e82178da06547548be7c"
+    },
+    {
+      "file": "E16-partial-reply-resolves-project.json",
+      "sha256": "6459007781ec93ea350e6be08744cd07e565268deca1695d2c43bd6775f5a3f0"
+    },
+    {
+      "file": "E17-material-worldwide-change.json",
+      "sha256": "9518190dde0701d610af567f11c82e3ecb8a1bbabb33787e683db21724a3bb3a"
+    },
+    {
+      "file": "E18-nonmaterial-contact-correction.json",
+      "sha256": "940e3f01410fae42af806ece67151ee30057f0a83e32887826d6a42b39e45792"
+    },
+    {
+      "file": "E19-acknowledgement-no-change.json",
+      "sha256": "f7fc26c8799736ecb133a337fedbe24fdbe14c4e35300e75da31a8d6f77981cd"
+    },
+    {
+      "file": "E20-sparse-request.json",
+      "sha256": "cacd27a98ec97b1c43fb003227b4b5a7b9c6d93f5570e192fc40f2e9a8e14e5a"
+    }
+  ],
+  "checklist_sha256": "4d0a602b8d3af6636f994f2b857aa072b66febd094b2dcd8ec302183c6ce7214"
+}

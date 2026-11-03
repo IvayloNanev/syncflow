@@ -1,0 +1,265 @@
+{
+  "case_id": "E02",
+  "name": "complete-film-request",
+  "context": {
+    "schema_version": "1.0",
+    "run_id": "eval-run-02",
+    "base_record_version": 0,
+    "request_id": "eval-request-02",
+    "checklist_version": "intake-v1",
+    "coordinator_timezone": "America/New_York",
+    "messages": [
+      {
+        "message_id": "message-1",
+        "kind": "initial",
+        "text": "Hello, this is Avery Lane at Cedar Agency. The project is After the Rain. We want a recording by Mira Vale. Song title: Night Window. Please use the 2025 studio master. The use is a independent film closing credits. The campaign will appear on cinema and festival screenings. Run it in the Canada. The term is six weeks. We need 20 seconds of music. We have GBP 3,500 covering both recording and publishing. Please respond by November 12, 2026.",
+        "supplied_message_date": "2026-11-03"
+      }
+    ],
+    "confirmed_fields": [],
+    "unresolved_issues": []
+  },
+  "intake": {
+    "schema_version": "1.0",
+    "run_id": "eval-run-02",
+    "base_record_version": 0,
+    "proposed_changes": [
+      {
+        "proposal_id": "proposal-client_contact",
+        "field_key": "client_contact",
+        "previous_value": null,
+        "proposed_value": "Avery Lane at Cedar Agency",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "Avery Lane at Cedar Agency"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-project",
+        "field_key": "project",
+        "previous_value": null,
+        "proposed_value": "After the Rain",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "After the Rain"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-artist",
+        "field_key": "artist",
+        "previous_value": null,
+        "proposed_value": "Mira Vale",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "Mira Vale"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-track_title",
+        "field_key": "track_title",
+        "previous_value": null,
+        "proposed_value": "Night Window",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "Night Window"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-recording_version",
+        "field_key": "recording_version",
+        "previous_value": null,
+        "proposed_value": "2025 studio master",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "2025 studio master"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-intended_use",
+        "field_key": "intended_use",
+        "previous_value": null,
+        "proposed_value": "independent film closing credits",
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "independent film closing credits"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-platforms",
+        "field_key": "platforms",
+        "previous_value": null,
+        "proposed_value": [
+          "cinema",
+          "festival screenings"
+        ],
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "cinema and festival screenings"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-territories",
+        "field_key": "territories",
+        "previous_value": null,
+        "proposed_value": [
+          "Canada"
+        ],
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "Canada"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-campaign_term",
+        "field_key": "campaign_term",
+        "previous_value": null,
+        "proposed_value": {
+          "supplied_text": "six weeks",
+          "duration_text": "six weeks",
+          "start_date": null,
+          "end_date": null
+        },
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "six weeks"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-music_length",
+        "field_key": "music_length",
+        "previous_value": null,
+        "proposed_value": {
+          "supplied_text": "20 seconds",
+          "seconds": 20
+        },
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "20 seconds"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-budget",
+        "field_key": "budget",
+        "previous_value": null,
+        "proposed_value": {
+          "supplied_text": "GBP 3,500 covering both recording and publishing",
+          "amount": "3500",
+          "currency": "GBP",
+          "scope": "both"
+        },
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "GBP 3,500 covering both recording and publishing"
+          }
+        ]
+      },
+      {
+        "proposal_id": "proposal-response_deadline",
+        "field_key": "response_deadline",
+        "previous_value": null,
+        "proposed_value": {
+          "supplied_text": "November 12, 2026",
+          "date": "2026-11-12",
+          "time": null,
+          "timezone": null
+        },
+        "evidence": [
+          {
+            "message_id": "message-1",
+            "exact_quote": "November 12, 2026"
+          }
+        ]
+      }
+    ],
+    "ambiguities": []
+  },
+  "review": {
+    "schema_version": "1.0",
+    "run_id": "eval-run-02",
+    "base_record_version": 0,
+    "issues": [],
+    "checks": [
+      {
+        "rule_id": "required:client_contact",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:project",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:artist",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:track_title",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:recording_version",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:intended_use",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:platforms",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:territories",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:campaign_term",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:music_length",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:budget",
+        "result": "pass"
+      },
+      {
+        "rule_id": "required:response_deadline",
+        "result": "pass"
+      }
+    ]
+  },
+  "follow_up": null,
+  "expected_behavior": {
+    "must_preserve_fields": [],
+    "must_not_do": [
+      "invent missing facts",
+      "write approval",
+      "send messages"
+    ],
+    "review_status": "ready_for_coordinator_confirmation",
+    "material_change_after_acceptance": false
+  },
+  "acceptable_equivalents": {}
+}
