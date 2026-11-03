@@ -26,3 +26,11 @@ Use fictional data only. Agents propose; the coordinator confirms. Internal revi
 ## Intake checklist and evaluation
 
 See [evaluation protocol](docs/intake-evaluation.md), [versioned checklist](contracts/checklists/intake-v1.json), and [frozen case manifest](evaluation/manifest.json). The 20 expected-answer cases are separate from development fixtures; passing corpus checks is not a model score. Partner review remains pending.
+
+## Callable Intake demo (mock only)
+
+```sh
+pnpm intake:demo
+```
+
+The callable runner validates context and proposed output, handles timeout/failure, and can check a repository's current record version. The explicitly labeled mock replays development fixtures only; it refuses arbitrary messages. No API key or network call is used. See [integration guide](docs/intake-interface.md) before connecting an application or live provider.
