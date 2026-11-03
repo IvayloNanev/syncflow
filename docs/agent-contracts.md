@@ -12,7 +12,7 @@ const proposal = validateContract('intake', modelOutput, context);
 // Return proposal to the coordinator UI; do not write confirmed fields here.
 ```
 
-The JSON Schemas use draft-07 and can be consumed by any JSON Schema implementation. The executable JavaScript adapter uses Ajv plus context/reference checks. No runtime framework or model provider is selected by this package.
+The JSON Schemas use draft-07. Register `shared.schema.json` (ID `urn:syncflow:shared:1.0`) in your JSON Schema implementation before compiling the four entrypoint schemas. The executable JavaScript adapter uses Ajv plus context/reference checks. No runtime framework or model provider is selected by this package.
 
 | Stage | Input | Output schema |
 | --- | --- | --- |

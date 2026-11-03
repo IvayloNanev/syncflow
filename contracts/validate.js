@@ -2,6 +2,7 @@ import Ajv from 'ajv';
 import { readFileSync } from 'node:fs';
 
 const ajv = new Ajv({ allErrors: true, strict: true });
+ajv.addSchema(JSON.parse(readFileSync(new URL('./shared.schema.json', import.meta.url), 'utf8')));
 const kinds = ['context', 'intake', 'review', 'follow_up'];
 const validators = Object.fromEntries(kinds.map(kind => [kind, ajv.compile(JSON.parse(
   readFileSync(new URL(`./${kind}.schema.json`, import.meta.url), 'utf8'),
