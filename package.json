@@ -3,7 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22" },
-  "scripts": { "test": "node --test", "validate:fixtures": "node contracts/check-fixtures.js" },
-  "dependencies": { "ajv": "8.17.1" }
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test",
+    "validate:fixtures": "node contracts/check-fixtures.js",
+    "validate:evaluation": "node evaluation/check-corpus.js"
+  },
+  "dependencies": {
+    "ajv": "8.17.1"
+  }
 }
