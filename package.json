@@ -18,7 +18,8 @@
     "workflow:demo": "node agents/workflow/cli.js --provider mock --scenario incomplete",
     "workflow:claude": "node agents/workflow/cli.js --provider claude --scenario incomplete",
     "api:dev": "node server/start.js",
-    "requests:demo": "node requests/demo.js"
+    "requests:demo": "node requests/demo.js",
+    "requests:analysis:demo": "node requests/analysis-demo.js"
   },
   "dependencies": {
     "ajv": "8.17.1"
