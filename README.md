@@ -34,3 +34,7 @@ pnpm intake:demo
 ```
 
 The callable runner validates context and proposed output, handles timeout/failure, and can check a repository's current record version. The explicitly labeled mock replays development fixtures only; it refuses arbitrary messages. No API key or network call is used. See [integration guide](docs/intake-interface.md) before connecting an application or live provider.
+
+## Claude provider (requires your API credentials)
+
+See [Claude setup](docs/claude-setup.md). Set `ANTHROPIC_API_KEY` and an enabled `ANTHROPIC_MODEL` in your ignored local `.env`, then run `pnpm intake:claude` for one fictional live example. This sends context to Anthropic and may incur API charges. Tests use fake transport only; the provider has not yet been verified against a real account. Never commit `.env` or a key.
