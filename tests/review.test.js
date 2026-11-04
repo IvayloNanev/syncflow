@@ -34,12 +34,25 @@ test('intake ambiguities are passed through as blocking questions', () => {
   const f = fixture('incomplete'); f.intake.ambiguities.push({field_keys:['territories'],reason:'Scope needs human review',evidence:[]});
   assert.ok(runReview(f.context, f.intake).output.issues.some(i => i.question.includes('Scope needs human review')));
 });
-test('complete sample passes required presence and deadline checks', () => {
+test('complete presence fixture still needs deadline time and timezone', () => {
   const f = fixture('complete'); const r = runReview(f.context, f.intake);
   assert.equal(r.ok, true);
   assert.ok(r.output.checks.filter(c => c.rule_id.startsWith('required:')).every(c => c.result === 'pass'));
-  assert.equal(r.output.checks.find(c => c.rule_id === 'deadline_unambiguous').result, 'pass');
+  assert.equal(r.output.checks.find(c => c.rule_id === 'deadline_unambiguous').result, 'fail');
 });
 test('invalid context returns safe failure', () => {
   assert.equal(runReview({}, {}).error.code, 'INVALID_CONTEXT');
+});
+
+test('explicit deadline date, time and timezone passes deadline check', () => {
+  const f = fixture('complete');
+  const quote = 'November 6, 2026 at 17:00 America/New_York';
+  f.context.messages[0].text += ` Deadline clarified: ${quote}.`;
+  const change = f.intake.proposed_changes.find(c => c.field_key === 'response_deadline');
+  change.proposed_value = { supplied_text: quote, date: '2026-11-06', time: '17:00', timezone: 'America/New_York' };
+  change.evidence = [{ message_id: f.context.messages[0].message_id, exact_quote: quote }];
+  const r = runReview(f.context, f.intake);
+  assert.equal(r.ok, true);
+  assert.equal(r.output.checks.find(c => c.rule_id === 'deadline_unambiguous').result, 'pass');
+  assert.ok(!r.output.issues.some(i => i.issue_id === 'ambiguous-response_deadline'));
 });
