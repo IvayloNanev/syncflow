@@ -10,7 +10,7 @@ try{
    for(const p of output.proposed_changes)for(const e of p.evidence)e.message_id=context.messages[0].message_id;
    return output;
  }};
- const result=await analyzeSavedRequest(store,{actor_id:'demo',request_id:r.id,expected_revision:0,idempotency_key:'analyze'},{intakeProvider,followUpProvider:createFollowUpMockProvider()});
+ await analyzeSavedRequest(store,{actor_id:'demo',request_id:r.id,expected_revision:0,idempotency_key:'analyze'},{intakeProvider,followUpProvider:createFollowUpMockProvider()});
  store.close();store=openRequestStore(path);const active=store.activeAnalysis('demo',r.id);
  console.log(JSON.stringify({mode:'mock-only',reopened:true,analysis_status:active.status,facts:active.result.stages.intake.output.proposed_changes.length,
    issues:active.result.stages.review.output.issues.length,confirmed_fields:store.get('demo',r.id).confirmed_fields.length,model_calls:0,sent:false},null,2));

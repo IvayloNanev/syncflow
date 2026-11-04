@@ -1,12 +1,20 @@
 {
-  "name": "syncflow-contracts",
+  "name": "syncflow",
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.25.0",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
     "test": "node --test",
     "validate:fixtures": "node contracts/check-fixtures.js",
     "validate:evaluation": "node evaluation/check-corpus.js",
@@ -22,6 +30,21 @@
     "requests:analysis:demo": "node requests/analysis-demo.js"
   },
   "dependencies": {
-    "ajv": "8.17.1"
+    "@prisma/adapter-libsql": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "ajv": "8.17.1",
+    "dotenv": "^18.0.9",
+    "next": "16.4.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.4",
+    "prisma": "7.10.1",
+    "typescript": "^6.0.3"
   }
 }
