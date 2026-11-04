@@ -1,6 +1,10 @@
 import { validateContract } from '../../contracts/validate.js';
 
 const messages = {
+  PROVIDER_NOT_CONFIGURED: 'Set ANTHROPIC_API_KEY and ANTHROPIC_MODEL locally before a live call.',
+  PROVIDER_AUTH_FAILED: 'Claude authentication failed. Check your local API key and account access.',
+  PROVIDER_RATE_LIMITED: 'Claude rate limit reached. Wait before explicitly retrying.',
+  PROVIDER_REQUEST_REJECTED: 'Claude rejected the request. Check model access and provider configuration.',
   INVALID_CONTEXT: 'Request context is invalid. Correct it before analysis.',
   INVALID_PROVIDER: 'Select an explicitly configured Intake provider.',
   INVALID_OPTIONS: 'Timeout must be an integer between 1 and 30000 milliseconds.',
@@ -31,7 +35,7 @@ export async function runIntake(context, { provider, timeoutMs = 30000, getCurre
   const meta = { stage: 'intake', provider: null, mode: 'unconfigured', run_id: null,
     base_record_version: null, freshness: 'not_checked' };
   const fail = code => ({ ok: false, ...meta, error: {
-    code, message: messages[code], retryable: ['PROVIDER_FAILED', 'TIMEOUT', 'VERSION_CHECK_FAILED'].includes(code),
+    code, message: messages[code], retryable: ['PROVIDER_FAILED', 'PROVIDER_RATE_LIMITED', 'TIMEOUT', 'VERSION_CHECK_FAILED'].includes(code),
     manual_review_required: true,
   } });
   let snapshot;
@@ -56,7 +60,8 @@ export async function runIntake(context, { provider, timeoutMs = 30000, getCurre
     let output;
     try { output = await provider.generate({ context: snapshot, signal: controller.signal }); }
     catch (error) {
-      throw new RunFailure(error?.code === 'UNSUPPORTED_MOCK_INPUT' ? 'UNSUPPORTED_MOCK_INPUT' : 'PROVIDER_FAILED');
+      const allowed = ['UNSUPPORTED_MOCK_INPUT', 'PROVIDER_NOT_CONFIGURED', 'PROVIDER_AUTH_FAILED', 'PROVIDER_RATE_LIMITED', 'PROVIDER_REQUEST_REJECTED', 'INVALID_OUTPUT'];
+      throw new RunFailure(allowed.includes(error?.code) ? error.code : 'PROVIDER_FAILED');
     }
     // No provider-owned objects survive into a caller's result.
     try {
