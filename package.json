@@ -14,7 +14,9 @@
     "intake:claude": "node agents/intake/cli.js --provider claude --scenario incomplete",
     "review:demo": "node agents/review/cli.js",
     "followup:demo": "node agents/follow-up/cli.js --provider mock",
-    "followup:claude": "node agents/follow-up/cli.js --provider claude"
+    "followup:claude": "node agents/follow-up/cli.js --provider claude",
+    "workflow:demo": "node agents/workflow/cli.js --provider mock --scenario incomplete",
+    "workflow:claude": "node agents/workflow/cli.js --provider claude --scenario incomplete"
   },
   "dependencies": {
     "ajv": "8.17.1"
