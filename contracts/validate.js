@@ -86,7 +86,11 @@ export function validateContract(kind, payload, context = null, review = null) {
         const previous = old?.state === 'confirmed' ? old.value : null;
         if (!equal(change.previous_value, previous)) errors.push(`${change.field_key}: previous value differs from confirmed state`);
       }
-      for (const ambiguity of payload.ambiguities) evidence(ambiguity.evidence, context, errors);
+      for (const ambiguity of payload.ambiguities) {
+        evidence(ambiguity.evidence, context, errors);
+        if (['conflict', 'split_request'].includes(ambiguity.issue_type) && !ambiguity.evidence.length)
+          errors.push('Conflict/split classification requires source evidence');
+      }
     }
     if (kind === 'review') {
       unique(payload.issues, 'issue_id', errors, 'issues');

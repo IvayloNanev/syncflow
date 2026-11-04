@@ -23,16 +23,18 @@ export function runReview(context, intake) {
     const field = fields.get(key);
     const present = field?.state === 'not_applicable' || field?.value != null;
     if (!present && !issues.some(i => i.type === 'missing' && i.field_keys.includes(key)))
-      add(`missing-${key}`, 'missing', [key], `Please confirm ${key.replaceAll('_', ' ')}.`);
+      add(`missing-${key}`, 'missing', [key], key === 'budget' ? 'Please confirm the budget amount, currency and rights scope (master, publishing or both).' : `Please confirm ${key.replaceAll('_', ' ')}.`);
     return { rule_id: `required:${key}`, result: present ? 'pass' : 'fail' };
   });
   for (const [index, ambiguity] of intake.ambiguities.entries())
-    add(`intake-ambiguity-${index}`, 'ambiguous', ambiguity.field_keys, `Please clarify: ${ambiguity.reason}`, ambiguity.evidence);
+    add(`intake-ambiguity-${index}`, ambiguity.issue_type || 'ambiguous', ambiguity.field_keys, `Please clarify: ${ambiguity.reason}`, ambiguity.evidence);
   const inspect = (key, unclear, question) => {
     const field = fields.get(key);
     if (field?.value && unclear(field.value))
       add(`ambiguous-${key}`, 'ambiguous', [key], question, field.evidence);
   };
+  inspect('platforms', value => value.every(v => /^(online|internet|digital|web)$/i.test(v.trim())),
+    'Which specific platforms or channels will the music appear on?');
   const budget = fields.get('budget')?.value;
   if (budget) {
     const needed = [budget.amount === null && 'amount', budget.currency === null && 'currency',
@@ -57,5 +59,13 @@ export function runReview(context, intake) {
   const output = { schema_version: context.schema_version, run_id: context.run_id,
     base_record_version: context.base_record_version, issues, checks };
   validateContract('review', output, context);
-  return { ok: true, stage: 'review', mode: 'rules', freshness: 'not_checked', output };
+  // Keep stored issues open, but route already supplied answers to coordinator confirmation.
+  const coordinator_issue_ids = context.unresolved_issues.filter(issue => issue.type === 'missing'
+    && issue.field_keys.every(key => {
+      const field = fields.get(key);
+      return (field?.state === 'not_applicable' || field?.value != null)
+        && !issues.some(other => other.issue_id !== issue.issue_id
+          && other.type !== 'missing' && other.field_keys.includes(key));
+    })).map(issue => issue.issue_id);
+  return { ok: true, stage: 'review', mode: 'rules', freshness: 'not_checked', coordinator_issue_ids, output };
 }
