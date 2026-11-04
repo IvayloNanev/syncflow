@@ -30,3 +30,22 @@ test('HTTP adapter handles JSON, methods, origins and no-store headers',async t=
   const response=await fetch(base+'/api/analyze',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'Fictional request',timezone:'UTC'})});
   assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');assert.equal((await response.json()).sent,false);
 });
+test('HTTP overload rejects a second analysis and recovers after first completes',async t=>{
+  const p=providers();let release;let started;
+  const entered=new Promise(resolve=>{started=resolve;});const gate=new Promise(resolve=>{release=resolve;});
+  const generate=p.intakeProvider.generate;p.intakeProvider.generate=async args=>{started();await gate;return generate(args);};
+  const server=createAnalysisServer(p);server.listen(0,'127.0.0.1');await once(server,'listening');
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const url=`http://127.0.0.1:${server.address().port}/api/analyze`;
+  const options={method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'Fictional request',timezone:'UTC'})};
+  const first=fetch(url,options);await entered;
+  assert.equal((await fetch(url,options)).status,429);release();assert.equal((await first).status,200);
+  assert.equal((await fetch(url,options)).status,200);
+});
+test('HTTP rejects oversized bodies and still handles subsequent requests',async t=>{
+  const server=createAnalysisServer(providers());server.listen(0,'127.0.0.1');await once(server,'listening');
+  t.after(()=>new Promise(resolve=>server.close(resolve)));
+  const base=`http://127.0.0.1:${server.address().port}`;
+  const r=await fetch(base+'/api/analyze',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:'x'.repeat(110000),timezone:'UTC'})});
+  assert.equal(r.status,413);assert.equal((await fetch(base+'/health')).status,200);
+});
