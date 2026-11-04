@@ -8,6 +8,9 @@ const shared = readSchema('shared');
 function inline(value) {
   if (Array.isArray(value)) return value.map(inline);
   if (!value || typeof value !== 'object') return value;
+  if (Object.hasOwn(value, 'const')) {
+    return { type: typeof value.const, enum: [value.const] };
+  }
   if (value.$ref) {
     const name = value.$ref.split('#/$defs/')[1];
     if (!shared.$defs[name]) throw new Error('Unsupported schema reference');
