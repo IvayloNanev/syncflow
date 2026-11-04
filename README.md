@@ -48,3 +48,7 @@ The callable runner validates context and proposed output, handles timeout/failu
 ## Claude provider (requires your API credentials)
 
 See [Claude setup](docs/claude-setup.md). Set `ANTHROPIC_API_KEY` and an enabled `ANTHROPIC_MODEL` in your ignored local `.env`, then run `pnpm intake:claude` for one fictional live example. This sends context to Anthropic and may incur API charges. Automated tests use fake transport. One fictional live call passed validation on November 4, 2026 after a schema-type fix; full model evaluation remains outstanding. Never commit `.env` or a key.
+
+## Review checklist
+
+Run `pnpm review:demo` to inspect missing fields and ambiguous budget/deadline details after fixture Intake. This is a deterministic rule step, with no model call or saved changes. See [Review interface](docs/review-interface.md) for limitations and the callable function.
