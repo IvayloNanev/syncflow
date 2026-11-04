@@ -1,6 +1,30 @@
 # SyncFlow
 
-Multi-agent sync licensing intake and internal review workspace. A school prototype by Ivaylo Nanev and Mosiah James.
+**One-line purpose:** An AI-assisted workspace for Sync & Licensing Coordinators to automate request intake, gap extraction, and workflow tracking.
+
+## Core user stories
+
+1. **Intake & Record Persistence:** As a Sync Coordinator, I need to save incoming client requests and message history into a database, so that I have a single source of truth that never gets lost.
+2. **Review & Diff Workspace:** As a Sync Coordinator, I need to review proposed changes alongside confirmed details and explicitly accept or reject each edit, so that automated proposals never overwrite confirmed data without human approval.
+3. **Clearance Status & Handoff Tracking:** As a Sync Coordinator, I need to see real-time status and active blockers for internal legal and catalog clearances, so that I can prevent requests from stalling and give accurate client updates.
+
+Detailed acceptance criteria are in [the coordinator user stories](docs/user-stories.md).
+
+A school prototype by Ivaylo Nanev and Mosiah James.
+
+## Application development
+
+The coordinator app uses Next.js App Router, TypeScript, Prisma 7, and a local SQLite database for the prototype. Node.js 24 and pnpm 11.25.0 are used by this branch.
+
+```sh
+pnpm install --frozen-lockfile
+cp .env.example .env
+pnpm db:generate
+pnpm db:migrate
+pnpm dev
+```
+
+Open `http://localhost:3000`. The sample requests in the initial workspace are fictional. No email is sent by the app.
 
 ## First milestone: shared agent contracts
 

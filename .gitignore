@@ -1,6 +1,12 @@
 node_modules/
+.pnpm-store/
+.next/
+generated/
 .env
 .env.*
 !.env.example
 .DS_Store
 coverage/
+*.tsbuildinfo
+*.db
+*.db-journal
