@@ -56,3 +56,18 @@ test('explicit deadline date, time and timezone passes deadline check', () => {
   assert.equal(r.output.checks.find(c => c.rule_id === 'deadline_unambiguous').result, 'pass');
   assert.ok(!r.output.issues.some(i => i.issue_id === 'ambiguous-response_deadline'));
 });
+test('deadline question asks only for absent time and timezone', () => {
+  const f=fixture('incomplete'); const r=runReview(f.context,f.intake);
+  assert.equal(r.output.issues.find(i=>i.issue_id==='ambiguous-response_deadline').question,
+    'Please confirm the response deadline time and timezone.');
+});
+test('budget with known amount/currency asks only for scope', () => {
+  const f=fixture('incomplete');f.intake.proposed_changes.find(c=>c.field_key==='budget').proposed_value.scope='unspecified';
+  const question=runReview(f.context,f.intake).output.issues.find(i=>i.issue_id==='ambiguous-budget').question;
+  assert.equal(question,'Please confirm the budget rights scope (master, publishing or both).');
+});
+test('confirmed duration alone produces no new campaign-start question on partial reply', () => {
+  const f=fixture('partial-reply'); const r=runReview(f.context,f.intake);
+  assert.equal(r.ok,true);
+  assert.ok(!r.output.issues.some(i=>i.issue_id==='ambiguous-campaign_term'));
+});

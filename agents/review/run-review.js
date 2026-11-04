@@ -33,13 +33,20 @@ export function runReview(context, intake) {
     if (field?.value && unclear(field.value))
       add(`ambiguous-${key}`, 'ambiguous', [key], question, field.evidence);
   };
-  inspect('budget', v => v.amount === null || v.currency === null || v.scope === 'unspecified',
-    'Please confirm the budget amount, explicit currency and whether it covers master, publishing or both rights.');
+  const budget = fields.get('budget')?.value;
+  if (budget) {
+    const needed = [budget.amount === null && 'amount', budget.currency === null && 'currency',
+      budget.scope === 'unspecified' && 'rights scope (master, publishing or both)'].filter(Boolean);
+    if (needed.length) inspect('budget', () => true, `Please confirm the budget ${needed.join(' and ')}.`);
+  }
   inspect('campaign_term', v => !v.duration_text && !(v.start_date && v.end_date),
     'Please confirm campaign duration or both start and end dates.');
   inspect('music_length', v => v.seconds === null, 'Please confirm the length of music in seconds.');
-  inspect('response_deadline', v => !v.date || !v.time || !v.timezone,
-    'Please confirm the response deadline date, time and timezone.');
+  const deadlineValue = fields.get('response_deadline')?.value;
+  if (deadlineValue) {
+    const needed = ['date', 'time', 'timezone'].filter(key => !deadlineValue[key]);
+    if (needed.length) inspect('response_deadline', () => true, `Please confirm the response deadline ${needed.join(' and ')}.`);
+  }
   const deadline = fields.get('response_deadline');
   checks.push({ rule_id: 'deadline_unambiguous', result: deadline?.state === 'not_applicable' ? 'pass'
     : !deadline?.value ? 'unknown' : deadline.value.date && deadline.value.time && deadline.value.timezone ? 'pass' : 'fail' });
