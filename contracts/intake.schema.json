@@ -55,6 +55,13 @@
             "items": {
               "$ref": "urn:syncflow:shared:1.0#/$defs/evidence"
             }
+          },
+          "issue_type": {
+            "enum": [
+              "ambiguous",
+              "conflict",
+              "split_request"
+            ]
           }
         },
         "required": [

@@ -14,10 +14,14 @@ export async function runWorkflow(context, { intakeProvider, followUpProvider, t
   if (!stages.intake.ok) return failed('intake', stages.intake);
   stages.review = runReview(snapshot, stages.intake.output);
   if (!stages.review.ok) return failed('review', stages.review);
-  stages.follow_up = await runFollowUp(snapshot, stages.review.output, { provider: followUpProvider, timeoutMs, getCurrentVersion });
+  const coordinatorIds = new Set(stages.review.coordinator_issue_ids);
+  const draftContext = { ...snapshot, unresolved_issues: snapshot.unresolved_issues.filter(i => !coordinatorIds.has(i.issue_id)) };
+  const draftReview = { ...stages.review.output, issues: stages.review.output.issues.filter(i => !coordinatorIds.has(i.issue_id)) };
+  stages.follow_up = await runFollowUp(draftContext, draftReview, { provider: followUpProvider, timeoutMs, getCurrentVersion });
   if (!stages.follow_up.ok) return failed('follow_up', stages.follow_up);
   return { ok: true, run_id: snapshot.run_id, base_record_version: snapshot.base_record_version,
     freshness: stages.follow_up.skipped ? stages.intake.freshness : stages.follow_up.freshness,
     status: stages.follow_up.skipped ? 'review_required' : 'draft_ready_for_review',
+    coordinator_review_issue_ids: [...coordinatorIds],
     manual_review_required: true, saved: false, sent: false, stages };
 }

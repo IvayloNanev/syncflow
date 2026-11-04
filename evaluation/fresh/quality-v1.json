@@ -1,0 +1,171 @@
+[
+  {
+    "case_id": "Q01",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q01",
+      "request_id": "Q01",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Pacific/Auckland",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Hello, I am Rina Sol from Juniper Films. Project: Glass Orchard trailer. Artist: Elio Moss. Track title: Lantern Circuit. Recording: 2024 acoustic master. Intended use: documentary trailer. Platforms: Vimeo and cinema screenings. Territories: New Zealand and Australia. Campaign duration: eight months. Music length: 24 seconds. Budget: NZD 6200 for both master and publishing rights. Respond by December 9, 2026 at 14:30 Pacific/Auckland.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expectations": {
+      "contact_contains": "Rina Sol",
+      "no_issues": true
+    }
+  },
+  {
+    "case_id": "Q02",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q02",
+      "request_id": "Q02",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Pacific/Auckland",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Hello, I am Rina Sol from Juniper Films. Project: Glass Orchard trailer. Artist: Elio Moss. Track title: Lantern Circuit. Recording: 2024 acoustic master. Intended use: documentary trailer. Platforms: online. Territories: New Zealand and Australia. Campaign duration: eight months. Music length: 24 seconds. Budget: NZD 6200 for both master and publishing rights. Respond by December 9, 2026 at 14:30 Pacific/Auckland.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expectations": {
+      "contact_contains": "Rina Sol",
+      "issue_field": "platforms"
+    }
+  },
+  {
+    "case_id": "Q03",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q03",
+      "request_id": "Q03",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Pacific/Auckland",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Hello, I am Rina Sol from Juniper Films. Project: Glass Orchard trailer. Artist: Elio Moss. Track title: Lantern Circuit. Recording: 2024 acoustic master. Intended use: documentary trailer. Platforms: Vimeo and cinema screenings. The territory must be New Zealand only. Another stakeholder says Australia only for the same use. These requirements conflict and neither is a correction; please do not combine them. Campaign duration: eight months. Music length: 24 seconds. Budget: NZD 6200 for both master and publishing rights. Respond by December 9, 2026 at 14:30 Pacific/Auckland.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expectations": {
+      "contact_contains": "Rina Sol",
+      "issue_type": "conflict"
+    }
+  },
+  {
+    "case_id": "Q04",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q04",
+      "request_id": "Q04",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Pacific/Auckland",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Hello, I am Rina Sol from Juniper Films. Project: Glass Orchard trailer. Artist: Elio Moss. Track title: Lantern Circuit. Recording: 2024 acoustic master. Intended use: documentary trailer. Platforms: Vimeo and cinema screenings. Territories: New Zealand and Australia. Campaign duration: eight months. Music length: 24 seconds. Budget: NZD 6200 for both master and publishing rights. Respond by December 9, 2026 at 14:30 Pacific/Auckland. We also need a second recording, Drift Atlas by Niko Cedar. Please include both tracks.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expectations": {
+      "contact_contains": "Rina Sol",
+      "issue_type": "split_request"
+    }
+  },
+  {
+    "case_id": "Q05",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q05",
+      "request_id": "Q05",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Pacific/Auckland",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Hello, I am Rina Sol from Juniper Films. Project name will follow. Artist: Elio Moss. Track title: Lantern Circuit. Recording: 2024 acoustic master. Intended use: documentary trailer. Platforms: Vimeo and cinema screenings. Territories: New Zealand and Australia. Campaign duration: eight months. Music length: 24 seconds. Budget: NZD 6200 for both master and publishing rights. Respond by December 9, 2026 at 14:30 Pacific/Auckland.",
+          "supplied_message_date": null
+        },
+        {
+          "message_id": "reply",
+          "kind": "reply",
+          "text": "The project name is Glass Orchard trailer. All other details stay the same.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": [
+        {
+          "issue_id": "project-pending",
+          "type": "missing",
+          "severity": "blocking",
+          "field_keys": [
+            "project"
+          ],
+          "question": "What is the project name?",
+          "evidence": []
+        }
+      ]
+    },
+    "expectations": {
+      "contact_contains": "Rina Sol",
+      "coordinator_issue": "project-pending",
+      "no_client_project_question": true
+    }
+  },
+  {
+    "case_id": "Q06",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q06",
+      "request_id": "Q06",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Pacific/Auckland",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Hello, I am Rina Sol from Juniper Films. Project: Glass Orchard trailer. Artist: Elio Moss. Track title: Lantern Circuit. Recording: 2024 acoustic master. Intended use: documentary trailer. Platforms: Vimeo and cinema screenings. Territories: New Zealand and Australia. Campaign duration: eight months. Music length: 24 seconds.  Respond by December 9, 2026 at 14:30 Pacific/Auckland.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expectations": {
+      "contact_contains": "Rina Sol",
+      "issue_field": "budget",
+      "budget_components_in_draft": true
+    }
+  }
+]
