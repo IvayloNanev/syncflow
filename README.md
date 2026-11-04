@@ -80,3 +80,5 @@ Saved requests/reply history, a third AI agent for internal summaries of confirm
 ## Local saved-request foundation
 
 Run `pnpm requests:demo` to see a fictional email/reply persist across a database close/reopen. The [SQLite request store](docs/request-store.md) supports revisions, idempotent commands and audit history. It is not connected to the HTTP API or UI and does not implement login/shared storage. Node 24+ is required.
+
+Run `pnpm requests:analysis:demo` to persist/reopen a mock analysis against a saved revision and see a reply invalidate it. See [saved analysis](docs/saved-analysis.md): results stay proposals, and HTTP/login/confirmation integration remains unfinished.
