@@ -91,3 +91,7 @@ Owners are proposed work allocation, not GitHub assignments or evidence of eithe
 - Denied/changes-requested decisions never appear as approval; agent prose cannot modify decision state.
 - Failed summary generation leaves saved facts and history unchanged.
 - Unauthorized user cannot fetch messages, summaries or decisions belonging to another workspace.
+
+## Implementation update
+
+The local SQLite storage foundation now implements create/read/list, append-only replies, revision checks, command idempotency, audit events and agent-context projection (see docs/request-store.md). This is a local-development adapter, not the shared authentication/persistence deliverable. Confirmation commands, saved analysis activation, summary agent and approval workflows are still planned. The storage/auth choice for shared deployment remains open.

@@ -4,3 +4,8 @@ node_modules/
 !.env.example
 .DS_Store
 coverage/
+.syncflow-data/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal

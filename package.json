@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "test": "node --test",
@@ -17,7 +17,8 @@
     "followup:claude": "node agents/follow-up/cli.js --provider claude",
     "workflow:demo": "node agents/workflow/cli.js --provider mock --scenario incomplete",
     "workflow:claude": "node agents/workflow/cli.js --provider claude --scenario incomplete",
-    "api:dev": "node server/start.js"
+    "api:dev": "node server/start.js",
+    "requests:demo": "node requests/demo.js"
   },
   "dependencies": {
     "ajv": "8.17.1"
