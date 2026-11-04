@@ -1,12 +1,14 @@
 import Ajv from 'ajv';
-import { readFileSync } from 'node:fs';
+import shared from './shared.schema.json' with { type: 'json' };
+import contextSchema from './context.schema.json' with { type: 'json' };
+import intakeSchema from './intake.schema.json' with { type: 'json' };
+import reviewSchema from './review.schema.json' with { type: 'json' };
+import followUpSchema from './follow_up.schema.json' with { type: 'json' };
 
 const ajv = new Ajv({ allErrors: true, strict: true });
-ajv.addSchema(JSON.parse(readFileSync(new URL('./shared.schema.json', import.meta.url), 'utf8')));
-const kinds = ['context', 'intake', 'review', 'follow_up'];
-const validators = Object.fromEntries(kinds.map(kind => [kind, ajv.compile(JSON.parse(
-  readFileSync(new URL(`./${kind}.schema.json`, import.meta.url), 'utf8'),
-))]));
+ajv.addSchema(shared);
+const validators = Object.fromEntries(Object.entries({ context: contextSchema, intake: intakeSchema, review: reviewSchema, follow_up: followUpSchema })
+  .map(([kind, schema]) => [kind, ajv.compile(schema)]));
 const noWaiver = new Set(['client_contact', 'project', 'artist', 'track_title',
   'recording_version', 'intended_use', 'platforms', 'territories']);
 

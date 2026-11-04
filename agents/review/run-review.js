@@ -1,6 +1,5 @@
-import { readFileSync } from 'node:fs';
+import checklist from '../../contracts/checklists/intake-v1.json' with { type: 'json' };
 import { validateContract } from '../../contracts/validate.js';
-const checklist = JSON.parse(readFileSync(new URL('../../contracts/checklists/intake-v1.json', import.meta.url), 'utf8'));
 
 /** Deterministic review of candidate facts. Does not save, confirm, clear issues or approve rights. */
 export function runReview(context, intake) {

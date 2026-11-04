@@ -110,3 +110,7 @@ Run `pnpm requests:analysis:demo` to persist/reopen a mock analysis against a sa
 ## Branch reconciliation
 
 The Next.js/Prisma application foundation from `developer` is combined with the latest agent and local request-store work. The home screen still uses fictional sample data. Prisma's application schema and `requests/store.js` are separate local SQLite mappings; do not point them at the same database or assume data is synchronized. See [integration reconciliation](docs/app-reconciliation.md) before wiring storage or agent routes.
+
+## Connected browser demo
+
+`pnpm dev` opens the local coordinator screen at http://127.0.0.1:3000. Paste a fictional email to see live proposed facts/source quotes, issues and an editable draft. It uses the existing server-only Claude credentials. Requests are unsaved; confirmation, login and saved-request integration remain unfinished. See [browser flow and verification](docs/browser-analysis.md).
