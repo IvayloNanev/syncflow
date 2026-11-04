@@ -2,6 +2,16 @@
 
 Multi-agent sync licensing intake and internal review workspace. A school prototype by Ivaylo Nanev and Mosiah James.
 
+## User stories
+
+These stories are hypotheses derived from the job description and our proposed workflow, not validated user-research findings.
+
+1. As a licensing coordinator, I want client emails converted into structured details so that I spend less time copying information into records.
+2. As a licensing coordinator, I want missing or conflicting details flagged so that I can resolve them before an incomplete handoff.
+3. As a licensing coordinator, I want editable clarification drafts so that clients receive specific questions without repeated writing.
+4. As a licensing coordinator, I want to review proposed changes from replies so that confirmed information stays accurate as client plans change.
+5. As a licensing coordinator, I want review decisions and blockers visible so that I know who needs to act before a request can advance.
+
 ## First milestone: shared agent contracts
 
 This branch provides framework-neutral JSON Schemas, three fictional development fixtures, and an executable JavaScript validator. Live agents and the application backend are subsequent issues.
