@@ -6,7 +6,7 @@ const normalize = value => {
   return value;
 };
 export const equivalent = (a,b) => JSON.stringify(normalize(a))===JSON.stringify(normalize(b));
-const signature = issue => `${issue.type}:${[...issue.field_keys].sort().join(',')}`;
+const signature = issue => `${issue.severity}:${issue.type}:${[...issue.field_keys].sort().join(',')}`;
 export function scoreCase(fixture, result) {
   const expected = new Map(fixture.intake.proposed_changes.map(p=>[p.field_key,p.proposed_value]));
   const actual = new Map((result.stages?.intake?.output?.proposed_changes||[]).map(p=>[p.field_key,p.proposed_value]));

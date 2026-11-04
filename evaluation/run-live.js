@@ -14,7 +14,7 @@ const providers={intakeProvider:createClaudeProvider(),followUpProvider:createFo
 const hash=path=>createHash('sha256').update(readFileSync(new URL(path,import.meta.url))).digest('hex');
 const report={evaluation_version:manifest.version,answer_key_status:manifest.authoring_status,commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),model:process.env.ANTHROPIC_MODEL,started_at:new Date().toISOString(),max_model_calls:40,
   prompt_sha256:{intake:hash('../agents/intake/prompts/intake-v1.txt'),follow_up:hash('../agents/follow-up/prompts/follow-up-v1.txt')},
-  scoring:'Case/whitespace normalized strings, order-insensitive arrays, object supplied_text ignored; no synonym adjudication. Strict type+field-set issue signatures. Manual prose review required.',cases:[]};
+  scoring:'Case/whitespace normalized strings, order-insensitive arrays, object supplied_text ignored; no synonym adjudication. Strict severity+type+field-set issue signatures. Manual prose review required.',cases:[]};
 for(const entry of manifest.cases) {
   const f=JSON.parse(readFileSync(new URL(entry.file,directory),'utf8'));
   // Only request context is sent to agents. Expected answers stay in the scorer.
