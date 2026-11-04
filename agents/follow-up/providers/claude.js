@@ -40,7 +40,7 @@ export function createFollowUpClaudeProvider({ apiKey = process.env.ANTHROPIC_AP
           headers: { 'content-type':'application/json', 'anthropic-version':'2026-10-21',
             authorization:`Bearer ${apiKey}` },
           body: JSON.stringify({ model, max_tokens:4096, stream:false, system:prompt,
-            messages:[{role:'user', content:JSON.stringify({context,review})}],
+            messages:[{role:'user', content:JSON.stringify({context,review:{schema_version:review.schema_version,run_id:review.run_id,base_record_version:review.base_record_version,issues:review.issues}})}],
             tools:[{name:'submit_follow_up', description:'Return a clarification email draft for human review. Does not execute any external action.',input_schema:schema}],
             tool_choice:{type:'tool',name:'submit_follow_up',disable_parallel_tool_use:true} }),
         });

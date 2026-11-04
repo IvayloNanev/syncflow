@@ -44,6 +44,13 @@ test('Claude transport sends review with forced draft-only tool and validates ou
     return {ok:true,json:async()=>({stop_reason:'tool_use',content:[{type:'tool_use',name:'submit_follow_up',input:s.draft}]})};
   }});
   assert.equal((await runFollowUp(s.context,s.review,{provider})).ok,true);
-  assert.deepEqual(JSON.parse(request.messages[0].content).review,s.review);
+  assert.deepEqual(JSON.parse(request.messages[0].content).review.issues,s.review.issues);
+  assert.equal(JSON.parse(request.messages[0].content).review.checks,undefined);
   assert.equal(request.tool_choice.name,'submit_follow_up');assert.match(request.system,/untrusted data/);
+});
+test('prompt requires deduplicated questions while preserving issue IDs',()=>{
+  const prompt=readFileSync(new URL('../agents/follow-up/prompts/follow-up-v1.txt',import.meta.url),'utf8');
+  assert.match(prompt,/ask each distinct information need once/);
+  assert.match(prompt,/retaining all corresponding issue IDs/);
+  assert.match(prompt,/flag it to the coordinator/);
 });
