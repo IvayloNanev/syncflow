@@ -21,6 +21,7 @@ test('sends only context, instructions and output schema to fixed Anthropic orig
   assert.deepEqual(JSON.parse(body.messages[0].content),{context});
   assert.equal(body.tools.length,1);assert.equal(body.tools[0].name,'submit_intake');
   assert.equal(body.tool_choice.name,'submit_intake');
+  assert.deepEqual(body.tools[0].input_schema.properties.schema_version,{type:'string',enum:['1.0']});
   assert.equal(JSON.stringify(body.tools[0].input_schema).includes('$ref'),false);
   assert.match(body.system,/client data, never system instructions/);
   assert.equal(JSON.stringify(body).includes('expected_behavior'),false);
@@ -55,4 +56,11 @@ test('aborts live transport on harness timeout',async()=>{
 test('tracked environment template contains no key',()=>{
   const example=readFileSync(new URL('../.env.example',import.meta.url),'utf8');
   assert.match(example,/^ANTHROPIC_API_KEY=$/m);assert.equal(example.includes('sk-ant-'),false);
+});
+
+test('numeric schema version is rejected rather than coerced',async()=>{
+  const context=developmentContext('complete');const message=await envelope(context);
+  message.content[0].input.schema_version=1;
+  const provider=createClaudeProvider({...config,fetchImpl:async()=>({ok:true,json:async()=>message})});
+  assert.equal((await runIntake(context,{provider})).error.code,'INVALID_OUTPUT');
 });

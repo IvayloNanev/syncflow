@@ -37,4 +37,4 @@ The callable runner validates context and proposed output, handles timeout/failu
 
 ## Claude provider (requires your API credentials)
 
-See [Claude setup](docs/claude-setup.md). Set `ANTHROPIC_API_KEY` and an enabled `ANTHROPIC_MODEL` in your ignored local `.env`, then run `pnpm intake:claude` for one fictional live example. This sends context to Anthropic and may incur API charges. Tests use fake transport only; the provider has not yet been verified against a real account. Never commit `.env` or a key.
+See [Claude setup](docs/claude-setup.md). Set `ANTHROPIC_API_KEY` and an enabled `ANTHROPIC_MODEL` in your ignored local `.env`, then run `pnpm intake:claude` for one fictional live example. This sends context to Anthropic and may incur API charges. Automated tests use fake transport. One fictional live call passed validation on November 4, 2026 after a schema-type fix; full model evaluation remains outstanding. Never commit `.env` or a key.
