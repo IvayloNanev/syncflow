@@ -72,3 +72,7 @@ See [agent handoff, prompt-injection and stress results](docs/agent-verification
 The [20-case live evaluation report](docs/live-evaluation-report.md) records conservative extraction/issue scores, raw outputs and answer-key limitations. It is an exploratory baseline, not a release pass.
 
 [Agent-quality fixes and fresh regression results](docs/agent-quality-fixes.md) document typed conflicts/split requests, clearer platform/budget questions, and routing answered issues to coordinator confirmation instead of repeating client questions.
+
+## Agreed expansion (planned)
+
+Saved requests/reply history, a third AI agent for internal summaries of confirmed facts, and manual revision-bound approval tracking are planned in the [expanded-scope design](docs/expanded-scope.md). These features are not implemented yet; invoice/payment tracking stays a stretch goal.
