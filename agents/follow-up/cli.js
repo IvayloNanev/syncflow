@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { createFollowUpMockProvider } from './providers/mock.js';
 import { runReview } from '../review/run-review.js';
 import { runFollowUp } from './run-follow-up.js';
 import { createFollowUpClaudeProvider } from './providers/claude.js';
@@ -16,12 +17,7 @@ if (args.length !== 2 || args[0] !== '--provider' || !['mock','claude'].includes
       console.error('LIVE Claude draft call: sends fictional context and review to Anthropic. No email is sent.');
     } else {
       console.error('MOCK template demo only. No model call or email sent.');
-      provider = { id: 'mock:review-questions', mode: 'mock', async generate({context,review}) {
-        return { schema_version: context.schema_version, run_id: context.run_id, base_record_version: context.base_record_version,
-          subject: 'Details needed for your music request',
-          body: `Hello,\n\nCould you clarify the following?\n${review.issues.map(i => `- ${i.question}`).join('\n')}\n\nThank you.`,
-          addressed_issue_ids: review.issues.map(i => i.issue_id) };
-      } };
+      provider = createFollowUpMockProvider();
     }
     const result = await runFollowUp(fixture.context, review, { provider });
     console.log(JSON.stringify(result, null, 2));
