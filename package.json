@@ -12,7 +12,9 @@
     "validate:evaluation": "node evaluation/check-corpus.js",
     "intake:demo": "node agents/intake/cli.js --provider mock --scenario incomplete",
     "intake:claude": "node agents/intake/cli.js --provider claude --scenario incomplete",
-    "review:demo": "node agents/review/cli.js"
+    "review:demo": "node agents/review/cli.js",
+    "followup:demo": "node agents/follow-up/cli.js --provider mock",
+    "followup:claude": "node agents/follow-up/cli.js --provider claude"
   },
   "dependencies": {
     "ajv": "8.17.1"

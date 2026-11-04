@@ -52,3 +52,7 @@ See [Claude setup](docs/claude-setup.md). Set `ANTHROPIC_API_KEY` and an enabled
 ## Review checklist
 
 Run `pnpm review:demo` to inspect missing fields and ambiguous budget/deadline details after fixture Intake. This is a deterministic rule step, with no model call or saved changes. See [Review interface](docs/review-interface.md) for limitations and the callable function.
+
+## Follow-up drafts
+
+Run `pnpm followup:demo` for a template mock that turns Review questions into an unsent email. `pnpm followup:claude` uses your local Claude credentials for a real draft call. No email is sent. See [Follow-up interface](docs/follow-up-interface.md) for validation boundaries and live-test status.
