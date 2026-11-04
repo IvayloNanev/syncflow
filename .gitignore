@@ -1,4 +1,7 @@
 node_modules/
+.pnpm-store/
+.next/
+generated/
 .env
 .env.*
 !.env.example
@@ -9,3 +12,8 @@ coverage/
 *.sqlite-wal
 *.sqlite-shm
 *.sqlite-journal
+*.tsbuildinfo
+*.db
+*.db-journal
+*.db-wal
+*.db-shm

@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Request {
+  id               String             @id @default(uuid())
+  status           String             @default("New")
+  recordVersion    Int                @default(0)
+  reviewRevision   Int                @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  messages         Message[]
+  fields           RequestField[]
+  agentRuns        AgentRun[]
+  issues           WorkflowIssue[]
+  reviewerDecisions ReviewerDecision[]
+  events           RequestEvent[]
+
+  @@index([status, updatedAt])
+}
+
+// Messages are appended to a request thread. Application services should not
+// update or delete a message after it has been recorded.
+model Message {
+  id          String   @id @default(uuid())
+  requestId   String
+  direction   String   @default("inbound")
+  senderLabel String?
+  occurredAt  DateTime?
+  body        String
+  recordedAt  DateTime @default(now())
+  request     Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  fieldEvidence FieldEvidence[]
+  proposalEvidence ProposalEvidence[]
+
+  @@index([requestId, recordedAt])
+}
+
+model RequestField {
+  id                   String          @id @default(uuid())
+  requestId            String
+  fieldKey             String
+  state                String          @default("unknown")
+  value                Json?
+  confirmedBy          String?
+  confirmedAt          DateTime?
+  notApplicableReason String?
+  request              Request         @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  evidence             FieldEvidence[]
+
+  @@unique([requestId, fieldKey])
+  @@index([requestId, state])
+}
+
+model FieldEvidence {
+  id            String       @id @default(uuid())
+  requestFieldId String
+  messageId     String
+  exactQuote    String
+  requestField  RequestField @relation(fields: [requestFieldId], references: [id], onDelete: Cascade)
+  message       Message      @relation(fields: [messageId], references: [id], onDelete: Restrict)
+
+  @@index([requestFieldId])
+}
+
+model AgentRun {
+  id               String          @id @default(uuid())
+  requestId        String
+  stage            String
+  status           String
+  baseRecordVersion Int
+  safeErrorCode    String?
+  output           Json?
+  startedAt        DateTime        @default(now())
+  finishedAt       DateTime?
+  request          Request         @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  proposals        ProposedChange[]
+  issues           WorkflowIssue[]
+
+  @@index([requestId, startedAt])
+}
+
+model ProposedChange {
+  id                String            @id @default(uuid())
+  agentRunId        String
+  fieldKey          String
+  previousValue     Json?
+  proposedValue     Json
+  baseRecordVersion Int
+  status            String            @default("pending")
+  decidedBy         String?
+  decidedAt         DateTime?
+  decisionNote      String?
+  agentRun          AgentRun          @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+  evidence          ProposalEvidence[]
+
+  @@index([agentRunId, status])
+}
+
+model ProposalEvidence {
+  id               String         @id @default(uuid())
+  proposedChangeId String
+  messageId        String
+  exactQuote       String
+  proposedChange   ProposedChange @relation(fields: [proposedChangeId], references: [id], onDelete: Cascade)
+  message          Message        @relation(fields: [messageId], references: [id], onDelete: Restrict)
+
+  @@index([proposedChangeId])
+}
+
+model WorkflowIssue {
+  id          String    @id @default(uuid())
+  requestId   String
+  agentRunId  String?
+  type        String
+  severity    String
+  fieldKeys   Json
+  question    String
+  status      String    @default("open")
+  resolvedBy  String?
+  resolvedAt  DateTime?
+  request     Request   @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  agentRun    AgentRun? @relation(fields: [agentRunId], references: [id], onDelete: SetNull)
+
+  @@index([requestId, status, severity])
+}
+
+model ReviewerDecision {
+  id               String   @id @default(uuid())
+  requestId        String
+  reviewerName     String
+  reviewerRole     String?
+  status           String   @default("Pending")
+  notes            String?
+  required         Boolean  @default(true)
+  basedOnRevision  Int      @default(0)
+  recordedBy       String?
+  decidedAt        DateTime?
+  request          Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId, required, status])
+}
+
+model RequestEvent {
+  id             String   @id @default(uuid())
+  requestId      String
+  eventType      String
+  actorName      String?
+  idempotencyKey String?  @unique
+  payload        Json?
+  createdAt      DateTime @default(now())
+  request        Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId, createdAt])
+}

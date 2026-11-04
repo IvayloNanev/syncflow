@@ -1,6 +1,30 @@
 # SyncFlow
 
-Multi-agent sync licensing intake and internal review workspace. A school prototype by Ivaylo Nanev and Mosiah James.
+**One-line purpose:** An AI-assisted workspace for Sync & Licensing Coordinators to automate request intake, gap extraction, and workflow tracking.
+
+## Core user stories
+
+1. **Intake & Record Persistence:** As a Sync Coordinator, I need to save incoming client requests and message history into a database, so that I have a single source of truth that never gets lost.
+2. **Review & Diff Workspace:** As a Sync Coordinator, I need to review proposed changes alongside confirmed details and explicitly accept or reject each edit, so that automated proposals never overwrite confirmed data without human approval.
+3. **Clearance Status & Handoff Tracking:** As a Sync Coordinator, I need to see real-time status and active blockers for internal legal and catalog clearances, so that I can prevent requests from stalling and give accurate client updates.
+
+Detailed acceptance criteria are in [the coordinator user stories](docs/user-stories.md).
+
+A school prototype by Ivaylo Nanev and Mosiah James.
+
+## Application development
+
+The coordinator app uses Next.js App Router, TypeScript, Prisma 7, and a local SQLite database for the prototype. Node.js 24 and pnpm 11.25.0 are used by this branch.
+
+```sh
+pnpm install --frozen-lockfile
+# Only if .env does not exist: copy .env.example to .env; preserve existing credentials.
+pnpm db:generate
+pnpm db:migrate
+pnpm dev
+```
+
+Open `http://localhost:3000`. The sample requests in the initial workspace are fictional. No email is sent by the app.
 
 ## User stories
 
@@ -12,9 +36,9 @@ These stories are hypotheses derived from the job description and our proposed w
 4. As a licensing coordinator, I want to review proposed changes from replies so that confirmed information stays accurate as client plans change.
 5. As a licensing coordinator, I want review decisions and blockers visible so that I know who needs to act before a request can advance.
 
-## First milestone: shared agent contracts
+## Agent pipeline and shared contracts
 
-This branch provides framework-neutral JSON Schemas, three fictional development fixtures, and an executable JavaScript validator. Live agents and the application backend are subsequent issues.
+The repository provides framework-neutral JSON Schemas, fictional development and evaluation fixtures, and a callable Intake → Review → Follow-up workflow with mock and optional Claude providers. Agents return proposals and drafts; the application owns persistence and coordinator confirmation.
 
 Requires Node.js 24 and pnpm 11.25.0:
 
@@ -47,7 +71,7 @@ The callable runner validates context and proposed output, handles timeout/failu
 
 ## Claude provider (requires your API credentials)
 
-See [Claude setup](docs/claude-setup.md). Set `ANTHROPIC_API_KEY` and an enabled `ANTHROPIC_MODEL` in your ignored local `.env`, then run `pnpm intake:claude` for one fictional live example. This sends context to Anthropic and may incur API charges. Automated tests use fake transport. One fictional live call passed validation on November 4, 2026 after a schema-type fix; full model evaluation remains outstanding. Never commit `.env` or a key.
+See [Claude setup](docs/claude-setup.md). Set `ANTHROPIC_API_KEY` and an enabled `ANTHROPIC_MODEL` in your ignored local `.env`, then run `pnpm intake:claude` for one fictional live example. This sends context to Anthropic and may incur API charges. Automated tests use fake transport. One fictional live call passed validation on November 4, 2026 after a schema-type fix; the 20-case live evaluation and follow-up regression results are recorded below. Never commit `.env` or a key.
 
 ## Review checklist
 
@@ -82,3 +106,7 @@ Saved requests/reply history, a third AI agent for internal summaries of confirm
 Run `pnpm requests:demo` to see a fictional email/reply persist across a database close/reopen. The [SQLite request store](docs/request-store.md) supports revisions, idempotent commands and audit history. It is not connected to the HTTP API or UI and does not implement login/shared storage. Node 24+ is required.
 
 Run `pnpm requests:analysis:demo` to persist/reopen a mock analysis against a saved revision and see a reply invalidate it. See [saved analysis](docs/saved-analysis.md): results stay proposals, and HTTP/login/confirmation integration remains unfinished.
+
+## Branch reconciliation
+
+The Next.js/Prisma application foundation from `developer` is combined with the latest agent and local request-store work. The home screen still uses fictional sample data. Prisma's application schema and `requests/store.js` are separate local SQLite mappings; do not point them at the same database or assume data is synchronized. See [integration reconciliation](docs/app-reconciliation.md) before wiring storage or agent routes.
