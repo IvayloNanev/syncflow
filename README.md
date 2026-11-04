@@ -76,3 +76,7 @@ The [20-case live evaluation report](docs/live-evaluation-report.md) records con
 ## Agreed expansion (planned)
 
 Saved requests/reply history, a third AI agent for internal summaries of confirmed facts, and manual revision-bound approval tracking are planned in the [expanded-scope design](docs/expanded-scope.md). These features are not implemented yet; invoice/payment tracking stays a stretch goal.
+
+## Local saved-request foundation
+
+Run `pnpm requests:demo` to see a fictional email/reply persist across a database close/reopen. The [SQLite request store](docs/request-store.md) supports revisions, idempotent commands and audit history. It is not connected to the HTTP API or UI and does not implement login/shared storage. Node 24+ is required.
