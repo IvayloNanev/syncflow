@@ -14,6 +14,10 @@ Built by Ivaylo Nanev and Mosiah James.
 
 **Current backend:** Supabase sign-in and workspace-scoped PostgreSQL storage are wired for the web app. See [authenticated shared workspace](#authenticated-shared-workspace-current-web-backend) for setup, access rules and remaining release work. Earlier local-development notes below describe the fallback/CLI adapters.
 
+## Setup guide
+
+New checkout? Follow the [setup and collaborator guide](docs/setup-guide.md): environment variables, `pnpm smoke` (no API key), `pnpm data:reset`, what is live versus rule-based, and known gaps.
+
 ## Application development
 
 The coordinator app uses Next.js App Router and TypeScript, with Supabase Auth/PostgreSQL in shared mode and the existing SQLite adapter in local mode. Prisma 7 is an unused application scaffold. Node.js 24 and pnpm 11.25.0 are used by this branch.

@@ -27,7 +27,9 @@
     "workflow:claude": "node agents/workflow/cli.js --provider claude --scenario incomplete",
     "api:dev": "node server/start.js",
     "requests:demo": "node requests/demo.js",
-    "requests:analysis:demo": "node requests/analysis-demo.js"
+    "requests:analysis:demo": "node requests/analysis-demo.js",
+    "smoke": "node scripts/smoke.js",
+    "data:reset": "node scripts/reset-dev-data.js"
   },
   "dependencies": {
     "@prisma/adapter-libsql": "7.10.1",
