@@ -224,12 +224,12 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
           });}} /> : null}
         </section>
         <aside className="result-panel request-summary" aria-labelledby="summary-heading">
-          <p className="eyebrow">REQUEST SUMMARY</p><h2 id="summary-heading">What needs attention?</h2>
+          <h2 id="summary-heading">Request summary</h2>
           <div className="preview-recording"><small>{saved ? 'SAVED RECORDING' : recordingOverride ? 'YOUR SELECTION' : 'PROVISIONAL CATALOG MATCH'}</small><h3>{effectiveRecording?.title || (!email.trim() && !saved ? 'Waiting for client email' : 'Recording unresolved')}</h3><p>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : preview.candidates.length ? 'Several recordings may match. Confirm the artist and exact version.' : 'Paste a title, artist and version, or inspect the catalog.'}</p><button type="button" className="text-button" disabled={busy} onClick={() => setCatalogOpen(!catalogOpen)} aria-expanded={catalogOpen}>{catalogOpen ? 'Close catalog' : 'Inspect / change recording'}</button></div>
           <RequestCoverage email={saved ? saved.messages.map(m => m.text).join("\n") : email} analyzed={!!result} stale={stale} proposals={result ? proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)) : []} confirmed={saved?.confirmed_fields || []} issues={clientQuestions} agentFields={saved?.agent_fields || []} />
           <button type="submit" form="request-analysis-form" className="primary-button" disabled={busy || !email.trim()}>{busy ? "Analyzing & drafting…" : "Analyze & draft response"}</button>
           {stale ? <p className="stale-banner">Analysis and draft are outdated. Refresh to verify the updated conversation.</p> : null}
-          {result ? <><h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}<p className="review-count">{pendingCount} proposals inspected automatically · {saved?.agent_fields?.length || 0} agent-extracted details</p></> : null}
+          {result ? <><h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}</> : null}
 
           <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
         </aside>
