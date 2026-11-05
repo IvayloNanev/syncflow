@@ -1,0 +1,14 @@
+.flow{margin:24px 0 30px;border:1px solid #d6bd7e35;border-radius:20px;background:linear-gradient(135deg,#ffffff09,#ffffff02);padding:20px;min-width:0;max-width:100%;box-sizing:border-box}
+.heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px 20px;flex-wrap:wrap;margin-bottom:18px;font-size:13px;line-height:1.6}
+.heading>span{color:#d9c38e;font-size:12px}
+.flow nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.step{display:flex;gap:10px;align-items:flex-start;padding:14px 10px;border:1px solid #ffffff20;border-radius:14px;text-decoration:none!important;min-width:0;color:inherit;transition:border-color .2s,background .2s;box-sizing:border-box}
+.step:hover{border-color:#d6bd7e80;background:#d6bd7e0c}
+.number{flex-shrink:0;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:10px;background:#ffffff08;color:#b6b9aa}
+.done .number{background:#d6bd7e25;color:#f0d99c}
+.step>span:last-child{min-width:0;overflow-wrap:anywhere}
+.step strong{display:block;font-size:12px;line-height:1.6}
+.step small{display:block;font-size:11px!important;line-height:1.6;margin-top:6px;color:#bfc3b3}
+@media(max-width:1250px){.flow nav{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.flow{padding:16px}.flow nav{grid-template-columns:minmax(0,1fr)}.step{padding:12px}.step small{margin-top:2px}.heading{flex-direction:column;gap:6px}}
+@media(prefers-reduced-motion:reduce){.step{transition:none}}
