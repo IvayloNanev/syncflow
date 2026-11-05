@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { previewEmail } from "../catalog/email-preview.js";
 import RequestDashboard from "./request-dashboard";
 import ReviewerTracking, {type ReviewTracking} from "./reviewer-tracking";
-import InternalHandoff from "./internal-handoff";
+import InternalHandoff, {type HandoffState} from "./internal-handoff";
 import { reviewRecording } from "../catalog/review.js";
 import RequestCoverage from "./request-coverage";
 import FactReview, { type FactDecision, type FactProposal } from "./fact-review";
@@ -36,6 +36,7 @@ export default function AnalysisWorkspace() {
   const [recordingOverride, setRecordingOverride] = useState(false);
   const [allowUnresolved, setAllowUnresolved] = useState(false);
   const [reviewRun, setReviewRun] = useState<{ run_id: string; result: Result } | null>(null);
+  const [handoff,setHandoff]=useState<HandoffState|null>(null);
   const [workflow,setWorkflow]=useState<Workflow|null>(null);
   const [reviewers,setReviewers]=useState<ReviewTracking>({version:0,reviewers:[],history:[]});
   const [decisions, setDecisions] = useState<FactDecision[]>([]);
@@ -56,7 +57,7 @@ export default function AnalysisWorkspace() {
   const [draft, setDraft] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
   function clearResult() { setResult(null); setError(""); setSubject(""); setDraft(""); setCopyStatus(""); }
-  type Detail = { workflow: Workflow; reviewer_tracking: ReviewTracking; review_analysis: { run_id: string; result: Result } | null; decisions: FactDecision[]; request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
+  type Detail = { handoff:HandoffState; workflow: Workflow; reviewer_tracking: ReviewTracking; review_analysis: { run_id: string; result: Result } | null; decisions: FactDecision[]; request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
   async function command(payload: Record<string, unknown>) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 70000);
@@ -81,7 +82,7 @@ export default function AnalysisWorkspace() {
     return () => { mounted = false; };
   }, []);
   function showSaved(data: Detail) {
-    setWorkflow(data.workflow); setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
+    setHandoff(data.handoff); setWorkflow(data.workflow); setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
     setRecordingOverride(true); setRecording(recordings.find(r => r.id === data.request.recording_id) || null); setAnalyses(data.analyses);
     if (data.active_analysis?.result?.ok) {
       const active = { ...data.active_analysis.result, catalog_review: data.catalog_review };
@@ -115,7 +116,7 @@ export default function AnalysisWorkspace() {
   }
   function newRequest() {
     setDashboardOpen(false); setCatalogOpen(false); setRecordingOverride(false); setAllowUnresolved(false); retryCommands.current.clear();
-    setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
+    setHandoff(null); setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
   }
   async function copyDraft() {
     try { await navigator.clipboard.writeText(`Subject: ${subject}\n\n${draft}`); setCopyStatus("Draft copied. Nothing was sent."); }
@@ -167,7 +168,7 @@ export default function AnalysisWorkspace() {
         {workflow.completion?.needs_reconfirmation ? <p className="stale-banner">Previous completion is outdated after a request or reviewer change.</p> : null}
         {workflow.completed ? <p>Recorded by {workflow.completion?.completed_by} at {workflow.completion?.completed_at}. This is not rights clearance.</p> : <button type="button" className="primary-button" disabled={busy||!workflow.can_complete} onClick={()=>{void perform(async()=>{
           const data:Detail=await command(keyed({action:'complete_review',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version}));
-          setWorkflow(data.workflow);setNotice('Internal review completion recorded. No licence or rights clearance was granted.'); await refresh();
+          setHandoff(data.handoff); setWorkflow(data.workflow);setNotice('Internal review completion recorded. No licence or rights clearance was granted.'); await refresh();
         });}}>Mark internal review complete</button>}
         {workflow.history.length ? <details><summary>Completion history ({workflow.history.length})</summary>{workflow.history.map((event,i)=><p key={i}>Revision {event.request_revision} · {event.completed_by} · {event.completed_at}</p>)}</details> : null}
       </div></section> : null}
@@ -212,12 +213,17 @@ export default function AnalysisWorkspace() {
           showSaved(data); await refresh(); setNotice(`${decision === 'accept' ? 'Accepted' : 'Rejected'} ${label(proposal.field_key)}. Finish reviewing, then refresh the analysis and draft.`);
         });}} /></details>
       </div> : null}
-      {saved ? <InternalHandoff key={`handoff-${saved.id}`} request={saved} questions={clientQuestions} catalog={reviewRecording(saved.recording_id)} analysisCurrent={!!result} pendingCount={pendingCount} busy={busy} /> : null}
+      {saved && handoff ? <InternalHandoff key={`handoff-${saved.id}`} request={saved} questions={clientQuestions} catalog={reviewRecording(saved.recording_id)} analysisCurrent={!!result} pendingCount={pendingCount} busy={busy} savedDraft={handoff} onSave={async(text,source)=>{
+        let success=false;await perform(async()=>{
+          const data:Detail=await command(keyed({action:'save_handoff',request_id:saved.id,expected_revision:saved.revision,expected_handoff_version:handoff.version,source_token:source,text}));
+          setHandoff(data.handoff);success=true;setNotice('Handoff edits saved. Nothing was sent.');
+        });return success;
+      }} /> : null}
       {saved ? <ReviewerTracking key={`reviewers-${saved.id}`} tracking={reviewers} busy={busy} onSave={async input => {
         let success=false;
         await perform(async () => {
           const data: Detail = await command(keyed({action:'reviewer',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version,...input}));
-          setWorkflow(data.workflow); setReviewers(data.reviewer_tracking); success=true; setNotice('Reviewer record saved. No message was sent.'); await refresh();
+          setHandoff(data.handoff); setWorkflow(data.workflow); setReviewers(data.reviewer_tracking); success=true; setNotice('Reviewer record saved. No message was sent.'); await refresh();
         });
         return success;
       }} /> : null}

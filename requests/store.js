@@ -38,6 +38,7 @@ export function openRequestStore(path = ':memory:') {
     CREATE TABLE IF NOT EXISTS fact_decisions (request_id TEXT NOT NULL REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id), proposal_id TEXT NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,run_id,proposal_id)) STRICT;`);
   db.exec('CREATE TABLE IF NOT EXISTS reviewer_tracking (request_id TEXT PRIMARY KEY REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL) STRICT');
   db.exec('CREATE TABLE IF NOT EXISTS review_completions (request_id TEXT NOT NULL REFERENCES requests(id), sequence INTEGER PRIMARY KEY AUTOINCREMENT, body TEXT NOT NULL) STRICT');
+  db.exec('CREATE TABLE IF NOT EXISTS handoff_versions (request_id TEXT NOT NULL REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,version)) STRICT');
   db.exec('INSERT OR IGNORE INTO review_heads SELECT request_id,run_id FROM active_analyses');
   const owned = (actor, id) => {
     identity(actor);
@@ -300,6 +301,30 @@ export function openRequestStore(path = ':memory:') {
         if(this.reviewers(actor_id,request_id).version!==expected_review_version) fail('REVIEW_CONFLICT');
         if(!this.workflow(actor_id,request_id).can_complete) fail('REVIEW_NOT_READY');
         db.prepare('INSERT INTO review_completions (request_id,body) VALUES (?,?)').run(request_id,JSON.stringify({request_revision:expected_revision,review_version:expected_review_version,completed_by:actor_id,completed_at:new Date().toISOString()}));
+        return request;
+      });
+    },
+    handoff(actor,id) {
+      const request=owned(actor,id);
+      const source_token=hash({revision:request.revision,analysis_run:this.activeAnalysis(actor,id)?.run_id ?? null,review_version:this.reviewers(actor,id).version});
+      const versions=db.prepare('SELECT version,body FROM handoff_versions WHERE request_id=? ORDER BY version').all(id).map(row=>JSON.parse(row.body));
+      const latest=versions.at(-1) || null;
+      return {version:latest?.version ?? 0,source_token,latest:latest ? {...latest,outdated:latest.source_token!==source_token} : null,
+        history:versions.map(({version,saved_at,saved_by,request_revision})=>({version,saved_at,saved_by,request_revision}))};
+    },
+    saveHandoff(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','expected_handoff_version','source_token','text','idempotency_key'])) fail('INVALID_INPUT');
+      command(input);
+      if(!Number.isInteger(input.expected_revision)||!Number.isInteger(input.expected_handoff_version)||!text(input.text,50000)||!text(input.source_token,200)) fail('INVALID_HANDOFF');
+      const payload=Object.fromEntries(Object.entries(input).filter(([key])=>!['actor_id','idempotency_key'].includes(key)));
+      return execute(input,`handoff:${input.request_id}`,payload,()=>{
+        const request=owned(input.actor_id,input.request_id);
+        if(request.revision!==input.expected_revision) fail('REVISION_CONFLICT');
+        const state=this.handoff(input.actor_id,input.request_id);
+        if(state.version!==input.expected_handoff_version) fail('HANDOFF_CONFLICT');
+        if(state.source_token!==input.source_token) fail('STALE_HANDOFF');
+        const record={version:state.version+1,source_token:state.source_token,text:input.text,request_revision:request.revision,saved_by:input.actor_id,saved_at:new Date().toISOString()};
+        db.prepare('INSERT INTO handoff_versions VALUES (?,?,?)').run(request.id,record.version,JSON.stringify(record));
         return request;
       });
     },

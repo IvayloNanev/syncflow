@@ -19,6 +19,7 @@ function localStore() {
   return store;
 }
 const allowed = {
+  save_handoff: ['action','request_id','expected_revision','expected_handoff_version','source_token','text','idempotency_key'],
   complete_review: ['action','request_id','expected_revision','expected_review_version','idempotency_key'],
   reviewer: ['action','request_id','expected_revision','expected_review_version','idempotency_key','operation','reviewer_id','name','role','status','notes'],
   list: ['action'], get: ['action', 'request_id'],
@@ -29,11 +30,13 @@ const allowed = {
 };
 function detail(store, id) {
   const request = store.get(actor, id);
-  return { request, workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
+  return { request, handoff: store.handoff(actor,id), workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
     analyses: store.analyses(actor, id).map(({ run_id, base_revision, status, created_at, context, result }) => ({ run_id, base_revision, status, created_at, message_count: context.messages.length, draft: ['completed', 'stale', 'superseded'].includes(status) && result?.ok ? result.stages?.follow_up?.output ?? null : null })),
     catalog_review: reviewRecording(request.recording_id) };
 }
 const safeErrors = {
+  HANDOFF_CONFLICT: [409, 'A newer summary was saved. Reopen the request before saving again.'],
+  STALE_HANDOFF: [409, 'The request, analysis or reviewers changed. Regenerate the summary before saving.'],
   REVIEW_NOT_READY: [409, 'Internal review cannot be completed until current facts, checklist and required approvals are ready.'],
   REVIEW_CONFLICT: [409, 'Reviewer records changed. Reopen the request before saving.'],
   NOT_FOUND: [404, 'Request not found.'],
@@ -92,6 +95,10 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
       if (action === 'reply') {
         const result = store.appendReply({ ...fields, actor_id: actor });
         return json(200, { ...detail(store, result.request.id), replayed: result.replayed });
+      }
+      if (action === 'save_handoff') {
+        const result=store.saveHandoff({...fields,actor_id:actor});
+        return json(200,{...detail(store,result.request.id),replayed:result.replayed});
       }
       if (action === 'complete_review') {
         const result=store.completeReview({...fields,actor_id:actor});

@@ -117,3 +117,13 @@ test('completion API rejects incomplete intake and agent-supplied approval claim
   const detail=await call({action:'get',request_id:r.id});
   assert.equal(detail.workflow.completed,false);assert.equal(detail.workflow.history.length,0);
 });
+
+test('handoff save API restores edited text and rejects conflicting writes without changing facts',async t=>{
+  const {call,calls}=setup(t);const created=await call(create);const r=created.request;
+  const command={action:'save_handoff',request_id:r.id,expected_revision:0,expected_handoff_version:0,source_token:created.handoff.source_token,text:'Edited internal summary',idempotency_key:'handoff-save'};
+  const saved=await call(command);assert.equal(saved.status,200);assert.equal(saved.handoff.latest.text,command.text);assert.equal(saved.request.revision,0);
+  assert.equal((await call(command)).replayed,true);
+  assert.equal((await call({...command,idempotency_key:'conflict'})).status,409);
+  assert.equal((await call({action:'get',request_id:r.id})).handoff.latest.text,command.text);
+  assert.equal(calls(),0);
+});

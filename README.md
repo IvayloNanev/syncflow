@@ -167,7 +167,7 @@ The numbered stage tabs have been replaced by one workspace: conversation and dr
 
 ### Internal handoff summary
 
-Open **Prepare an internal handoff summary** under the fact review, then generate, edit and copy the report for manual sharing. The deterministic generator uses confirmed client facts with source evidence, explicitly marks unconfirmed fields, and separates client questions from fictional catalog/internal verification checks. It makes no extra model call. A record or analysis change invalidates an existing summary until regenerated. Summary edits are browser-local and are not saved; regenerate replaces edits. This does not assign reviewers, record decisions or grant clearance.
+Open **Prepare an internal handoff summary** under the fact review, then generate, edit and copy the report for manual sharing. The deterministic generator uses confirmed client facts with source evidence, explicitly marks unconfirmed fields, and separates client questions from fictional catalog/internal verification checks. It makes no extra model call. A record or analysis change invalidates an existing summary until regenerated. Use Save handoff edits to persist a version; regenerate replaces editor text, while saved versions remain recorded. This does not assign reviewers, record decisions or grant clearance.
 
 ### Internal reviewer tracking
 
@@ -179,4 +179,8 @@ Saved requests now display server-derived status, next action and readiness bloc
 
 ### Request dashboard
 
-Use **View all requests** to see server-derived status, confirmed client/project/song/deadline, responsible internal actor, blockers and next action. Search by client/project/song/source preview/ID, filter status, sort by confirmed calendar deadline or status, and open a saved request. Unconfirmed deadlines remain unknown; times and timezones are never inferred. Responsibility names outstanding internal reviewers only for review-stage work; otherwise the coordinator acts next. Dashboard counts reflect saved data, not cleared licences. Refresh retrieves current local state; this is not a multi-user realtime dashboard. Opening another view can discard browser-local handoff edits; copy them before leaving.
+Use **View all requests** to see server-derived status, confirmed client/project/song/deadline, responsible internal actor, blockers and next action. Search by client/project/song/source preview/ID, filter status, sort by confirmed calendar deadline or status, and open a saved request. Unconfirmed deadlines remain unknown; times and timezones are never inferred. Responsibility names outstanding internal reviewers only for review-stage work; otherwise the coordinator acts next. Dashboard counts reflect saved data, not cleared licences. Refresh retrieves current local state; this is not a multi-user realtime dashboard. Opening another view can discard unsaved handoff edits; save them before leaving.
+
+### Saved handoff versions
+
+Save edited internal summaries using **Save handoff edits**. The latest version is restored on reopen, with actor/time and version history. Request revisions, new analysis runs or reviewer changes mark the saved summary outdated; regenerate before saving or copying. Saves use server source tokens and expected versions to prevent stale or concurrent overwrites, and never change request facts or approvals. Unsaved edits remain browser-local.

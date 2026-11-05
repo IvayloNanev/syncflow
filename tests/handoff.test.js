@@ -30,3 +30,26 @@ test('empty confirmed record keeps unknowns rather than backfilling catalog data
   assert.match(text,/Track title: Not confirmed/);
   assert.match(text,/Reviewer assignment and approval tracking are not recorded/);
 });
+
+// Persistence guards are separate from report generation and never mutate request facts.
+test('saved handoff edits survive reopen and reject stale or conflicting writes', async t => {
+  const {openRequestStore}=await import('../requests/store.js');
+  const {mkdtempSync,rmSync}=await import('node:fs');
+  const {tmpdir}=await import('node:os');const {join}=await import('node:path');
+  const dir=mkdtempSync(join(tmpdir(),'syncflow-handoff-'));let store=openRequestStore(join(dir,'store.sqlite'));
+  t.after(()=>{store.close();rmSync(dir,{recursive:true,force:true});});
+  const r=store.create({actor_id:'A',email:'Fictional request',timezone:'UTC',idempotency_key:'create'}).request;
+  const source=store.handoff('A',r.id).source_token;
+  const command={actor_id:'A',request_id:r.id,expected_revision:0,expected_handoff_version:0,source_token:source,text:'Edited summary\nCoordinator note.',idempotency_key:'save'};
+  store.saveHandoff(command);store.saveHandoff(command);
+  assert.equal(store.handoff('A',r.id).version,1);assert.equal(store.get('A',r.id).revision,0);
+  store.close();store=openRequestStore(join(dir,'store.sqlite'));
+  assert.equal(store.handoff('A',r.id).latest.text,command.text);
+  assert.throws(()=>store.saveHandoff({...command,idempotency_key:'conflict'}),/HANDOFF_CONFLICT/);
+  assert.throws(()=>store.handoff('B',r.id),/NOT_FOUND/);
+  store.recordReview({actor_id:'A',request_id:r.id,expected_revision:0,expected_review_version:0,operation:'assign',name:'Morgan',role:'Director',idempotency_key:'reviewer'});
+  assert.equal(store.handoff('A',r.id).latest.outdated,true);
+  assert.throws(()=>store.saveHandoff({...command,expected_handoff_version:1,idempotency_key:'stale'}),/STALE_HANDOFF/);
+  store.saveHandoff({...command,expected_handoff_version:1,source_token:store.handoff('A',r.id).source_token,idempotency_key:'regenerated',text:'Updated summary'});
+  assert.equal(store.handoff('A',r.id).history.length,2);
+});
