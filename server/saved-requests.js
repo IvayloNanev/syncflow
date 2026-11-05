@@ -49,7 +49,7 @@ const safeErrors = {
   INVALID_TIMEZONE: [400, 'Choose a valid timezone.'],
 };
 export function createSavedRequestsHandler({ enabled = () => process.env.NODE_ENV === 'development',
-  openStore = localStore, providers = () => ({ intakeProvider: createClaudeProvider(), followUpProvider: createFollowUpClaudeProvider() }) } = {}) {
+  openStore = localStore, customerSubmission = false, providers = () => ({ intakeProvider: createClaudeProvider(), followUpProvider: createFollowUpClaudeProvider() }) } = {}) {
   let analyzing = false;
   const json = (status, body) => Response.json(body, { status, headers: { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' } });
   return async function POST(req) {
@@ -75,7 +75,7 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
       try { input = JSON.parse(Buffer.concat(chunks).toString('utf8')); }
       catch { return json(400, { error: { code: 'INVALID_JSON', message: 'Invalid JSON.' } }); }
       const keys = input && !Array.isArray(input) && typeof input === 'object' && Object.hasOwn(allowed, input.action) && allowed[input.action];
-      if (!keys || Object.keys(input).some(key => !keys.includes(key)))
+      if (!keys || (customerSubmission && input.action !== 'create') || Object.keys(input).some(key => !keys.includes(key)))
         return json(400, { error: { code: 'INVALID_INPUT', message: 'Use a supported request command and fields.' } });
       // Prevent duplicate live runs in this process while allowing replies to invalidate an in-flight snapshot.
       if (input.action === 'analyze' && analyzing) return json(429, { error: { code: 'BUSY', message: 'An analysis is running. Wait, then reopen this request before retrying.' } });
@@ -91,7 +91,7 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
       const { action, ...fields } = input;
       if (action === 'create') {
         const result = store.create({ ...fields, actor_id: actor });
-        return json(result.replayed ? 200 : 201, { ...detail(store, result.request.id), replayed: result.replayed });
+        return json(result.replayed ? 200 : 201, customerSubmission ? { request_id: result.request.id, status: "submitted", replayed: result.replayed } : { ...detail(store, result.request.id), replayed: result.replayed });
       }
       if (action === 'reply') {
         const result = store.appendReply({ ...fields, actor_id: actor });

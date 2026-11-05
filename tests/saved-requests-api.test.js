@@ -151,3 +151,22 @@ test('recording correction API preserves request identity and rejects injected c
   const changed=await call(command);assert.equal(changed.status,200);assert.equal(changed.request.id,r.id);assert.equal(changed.request.revision,1);assert.deepEqual(changed.request.messages,r.messages);assert.equal(changed.recording_changes[0].previous_recording_id,'TRACK-0002');
   assert.equal((await call(command)).replayed,true);assert.equal((await call({...command,confirmed_fields:[]})).status,400);
 });
+
+test('customer submission returns only a receipt and rejects internal commands', async t => {
+  const {options,call,calls}=setup(t);
+  const customer=createSavedRequestsHandler({...options,customerSubmission:true});
+  const response=await customer(request({...create,recording_id:null}));
+  assert.equal(response.status,201);
+  const receipt=await response.json();
+  assert.deepEqual(Object.keys(receipt).sort(),['replayed','request_id','status']);
+  assert.equal(receipt.status,'submitted');
+  const internal=await call({action:'get',request_id:receipt.request_id});
+  assert.equal(internal.request.messages[0].text,create.email);
+  assert.equal(internal.request.recording_id,null);
+  for(const action of ['list','get','reply','analyze','reviewer']){
+    const denied=await customer(request({action}));assert.equal(denied.status,400);
+  }
+  const replay=await customer(request({...create,recording_id:null}));
+  assert.equal((await replay.json()).request_id,receipt.request_id);
+  assert.equal(calls(),0);
+});

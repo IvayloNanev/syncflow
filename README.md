@@ -200,3 +200,11 @@ See [product acceptance — Nov 5](docs/acceptance/2026-11-05-product-acceptance
 ### Analysis failure recovery
 
 Failed attempts now keep fixed reason codes and safe validation categories in saved analysis history. The workspace shows what failed, a read-only status check, and an explicit new-attempt action; checking or reopening does not call the model. A failed attempt never replaces an earlier validated result. Long-running attempts require a successful status check and at least 90 seconds since recorded start before a new-attempt action appears. Duplicate retries remain idempotent and there are no automatic model retries. Source messages, confirmed facts, handoffs and reviewer records are retained. This improves diagnosability; it does not establish that every model response will validate or resolve the historical unexplained rejection.
+
+## Three interface areas
+
+- `/`: landing page with customer and coordinator entry points.
+- `/customer`: local customer submission form. Paste a brief; submit to the existing SQLite request queue and receive a reference. No model call is made at submission. Retries preserve an idempotency key until input changes.
+- `/internal`: existing coordinator workspace, with saved requests, analysis, follow-up drafts and internal review.
+
+The local `/api/customer/requests` endpoint accepts create only and returns a receipt without internal facts, analysis, notes or approvals. These pages are navigation separation, not authorization. The application still has one local operator, production-disabled request APIs, and no client accounts. Secure customer status/replies, tenant isolation and authentication remain unimplemented; no external portal is being published. Customer briefs use America/Toronto as the provisional coordinator timezone; explicit deadline timezone confirmation remains required. Submission does not send email, select a recording, confirm facts or grant music rights.
