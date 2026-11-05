@@ -1,0 +1,859 @@
+{
+  "date": "2026-11-05",
+  "code_commit": "0561c49ad1ea91df98f6571aa24246b2aa1c3fc9",
+  "fictional_data_only": true,
+  "purpose": "Browser acceptance evidence, not held-out model evaluation or human timing.",
+  "request": {
+    "id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+    "owner_id": "local-coordinator",
+    "revision": 4,
+    "created_at": "2026-11-05T16:53:57.292Z",
+    "updated_at": "2026-11-05T16:56:11.105Z",
+    "recording_id": "TRACK-0001",
+    "coordinator_timezone": "America/New_York",
+    "messages": [
+      {
+        "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+        "kind": "initial",
+        "text": "Contact: Casey Demo. Project: Aurora Launch. We want Northern Lights for an advertising campaign in Canada for six months. Budget CAD 5,000 for both rights.",
+        "supplied_message_date": null,
+        "received_at": "2026-11-05T16:53:57.292Z",
+        "added_by": "local-coordinator"
+      },
+      {
+        "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+        "kind": "reply",
+        "text": "Artist is Maya Rivers. Use original recording TRACK-0001. Platforms: YouTube and Instagram. Music cue: 30 seconds. Response deadline: November 12, 2026 at 5 pm America/Toronto. Correction: territory is North America, replacing Canada. Project remains Aurora Launch.",
+        "supplied_message_date": null,
+        "received_at": "2026-11-05T16:55:37.598Z",
+        "added_by": "local-coordinator"
+      }
+    ],
+    "confirmed_fields": [
+      {
+        "field_key": "territories",
+        "state": "confirmed",
+        "value": [
+          "North America"
+        ],
+        "evidence": [
+          {
+            "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+            "exact_quote": "Correction: territory is North America, replacing Canada."
+          }
+        ],
+        "confirmed_by": "local-coordinator",
+        "confirmed_at": "2026-11-05T16:56:11.105Z",
+        "not_applicable_reason": null
+      }
+    ],
+    "unresolved_issues": []
+  },
+  "runs": [
+    {
+      "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+      "base_revision": 0,
+      "status": "stale",
+      "context": {
+        "schema_version": "1.0",
+        "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+        "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+        "base_record_version": 0,
+        "checklist_version": "intake-v1",
+        "coordinator_timezone": "America/New_York",
+        "messages": [
+          {
+            "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+            "kind": "initial",
+            "text": "Contact: Casey Demo. Project: Aurora Launch. We want Northern Lights for an advertising campaign in Canada for six months. Budget CAD 5,000 for both rights.",
+            "supplied_message_date": null
+          }
+        ],
+        "confirmed_fields": [],
+        "unresolved_issues": []
+      },
+      "result": {
+        "ok": true,
+        "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+        "base_record_version": 0,
+        "freshness": "checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "server:claude",
+            "mode": "live",
+            "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+            "base_record_version": 0,
+            "freshness": "checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "p-client-contact-1",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Casey Demo",
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "Contact: Casey Demo"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-project-1",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Aurora Launch",
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "Project: Aurora Launch"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-track-title-1",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Northern Lights",
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "We want Northern Lights"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-intended-use-1",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "advertising campaign",
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "for an advertising campaign"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-territories-1",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Canada"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "in Canada"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-campaign-term-1",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "for six months",
+                    "duration_text": "six months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "for six months"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-budget-1",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "CAD 5,000 for both rights",
+                    "amount": "5000",
+                    "currency": "CAD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "Budget CAD 5,000 for both rights"
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "missing-artist",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "artist"
+                  ],
+                  "question": "Please confirm artist.",
+                  "evidence": []
+                },
+                {
+                  "issue_id": "missing-recording_version",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "recording_version"
+                  ],
+                  "question": "Please confirm recording version.",
+                  "evidence": []
+                },
+                {
+                  "issue_id": "missing-platforms",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "platforms"
+                  ],
+                  "question": "Please confirm platforms.",
+                  "evidence": []
+                },
+                {
+                  "issue_id": "missing-music_length",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "music_length"
+                  ],
+                  "question": "Please confirm music length.",
+                  "evidence": []
+                },
+                {
+                  "issue_id": "missing-response_deadline",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "response_deadline"
+                  ],
+                  "question": "Please confirm response deadline.",
+                  "evidence": []
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "server:claude",
+            "mode": "live",
+            "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+            "base_record_version": 0,
+            "freshness": "checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+              "base_record_version": 0,
+              "subject": "Follow-up on Aurora Launch licensing request",
+              "body": "Hello Casey,\n\nThank you for your request for \"Northern Lights\" for an advertising campaign in Canada lasting six months, with a budget of CAD 5,000 for both master recording and publishing rights.\n\nTo move forward, could you please confirm the following:\n\n1. The artist name for this recording.\n2. The specific recording version you need (for example, the original version or a particular edit or mix).\n3. The platforms where the campaign will run.\n4. The length of the music you plan to use in the campaign.\n5. Your response deadline, including the time and time zone.\n\nOnce we have these details, we can continue reviewing the request.\n\nKind regards,\nSyncFlow Licensing Team",
+              "addressed_issue_ids": [
+                "missing-artist",
+                "missing-recording_version",
+                "missing-platforms",
+                "missing-music_length",
+                "missing-response_deadline"
+              ]
+            }
+          }
+        }
+      },
+      "created_at": "2026-11-05T16:54:06.752Z",
+      "finished_at": "2026-11-05T16:54:12.898Z"
+    },
+    {
+      "run_id": "ddf6c808-6113-4bff-a362-f066329a61d5",
+      "base_revision": 3,
+      "status": "stale",
+      "context": {
+        "schema_version": "1.0",
+        "run_id": "ddf6c808-6113-4bff-a362-f066329a61d5",
+        "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+        "base_record_version": 3,
+        "checklist_version": "intake-v1",
+        "coordinator_timezone": "America/New_York",
+        "messages": [
+          {
+            "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+            "kind": "initial",
+            "text": "Contact: Casey Demo. Project: Aurora Launch. We want Northern Lights for an advertising campaign in Canada for six months. Budget CAD 5,000 for both rights.",
+            "supplied_message_date": null
+          },
+          {
+            "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+            "kind": "reply",
+            "text": "Artist is Maya Rivers. Use original recording TRACK-0001. Platforms: YouTube and Instagram. Music cue: 30 seconds. Response deadline: November 12, 2026 at 5 pm America/Toronto. Correction: territory is North America, replacing Canada. Project remains Aurora Launch.",
+            "supplied_message_date": null
+          }
+        ],
+        "confirmed_fields": [
+          {
+            "field_key": "territories",
+            "state": "confirmed",
+            "value": [
+              "Canada"
+            ],
+            "evidence": [
+              {
+                "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                "exact_quote": "in Canada"
+              }
+            ],
+            "confirmed_by": "local-coordinator",
+            "confirmed_at": "2026-11-05T16:55:10.388Z",
+            "not_applicable_reason": null
+          }
+        ],
+        "unresolved_issues": []
+      },
+      "result": {
+        "ok": true,
+        "run_id": "ddf6c808-6113-4bff-a362-f066329a61d5",
+        "base_record_version": 3,
+        "freshness": "checked",
+        "status": "review_required",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "server:claude",
+            "mode": "live",
+            "run_id": "ddf6c808-6113-4bff-a362-f066329a61d5",
+            "base_record_version": 3,
+            "freshness": "checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "ddf6c808-6113-4bff-a362-f066329a61d5",
+              "base_record_version": 3,
+              "proposed_changes": [
+                {
+                  "proposal_id": "p-client-contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Casey Demo",
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "Contact: Casey Demo"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Aurora Launch",
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "Project: Aurora Launch"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-track-title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Northern Lights",
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "We want Northern Lights"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Maya Rivers",
+                  "evidence": [
+                    {
+                      "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+                      "exact_quote": "Artist is Maya Rivers"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-recording-version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "original recording",
+                  "evidence": [
+                    {
+                      "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+                      "exact_quote": "Use original recording TRACK-0001"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-intended-use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "advertising campaign",
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "for an advertising campaign"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "YouTube",
+                    "Instagram"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+                      "exact_quote": "Platforms: YouTube and Instagram"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-campaign-term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "for six months",
+                    "duration_text": "six months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "for six months"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-music-length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "30 seconds",
+                    "seconds": 30
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+                      "exact_quote": "Music cue: 30 seconds"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Budget CAD 5,000 for both rights",
+                    "amount": "5000",
+                    "currency": "CAD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+                      "exact_quote": "Budget CAD 5,000 for both rights"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-response-deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "November 12, 2026 at 5 pm America/Toronto",
+                    "date": "2026-11-12",
+                    "time": "17:00",
+                    "timezone": "America/Toronto"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+                      "exact_quote": "Response deadline: November 12, 2026 at 5 pm America/Toronto"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-territories",
+                  "field_key": "territories",
+                  "previous_value": [
+                    "Canada"
+                  ],
+                  "proposed_value": [
+                    "North America"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+                      "exact_quote": "Correction: territory is North America, replacing Canada."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "ddf6c808-6113-4bff-a362-f066329a61d5",
+              "base_record_version": 3,
+              "issues": [],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "skipped": true,
+            "reason": "NO_UNRESOLVED_ISSUES",
+            "output": null
+          }
+        }
+      },
+      "created_at": "2026-11-05T16:55:37.865Z",
+      "finished_at": "2026-11-05T16:55:43.159Z"
+    }
+  ],
+  "decisions": [
+    {
+      "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+      "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+      "proposal_id": "p-territories-1",
+      "field_key": "territories",
+      "decision": "accept",
+      "previous_value": null,
+      "proposed_value": [
+        "Canada"
+      ],
+      "evidence": [
+        {
+          "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+          "exact_quote": "in Canada"
+        }
+      ],
+      "decided_by": "local-coordinator",
+      "decided_at": "2026-11-05T16:55:10.388Z",
+      "based_on_revision": 0,
+      "resulting_revision": 1
+    },
+    {
+      "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+      "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+      "proposal_id": "p-project-1",
+      "field_key": "project",
+      "decision": "reject",
+      "previous_value": null,
+      "proposed_value": "Aurora Launch",
+      "evidence": [
+        {
+          "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+          "exact_quote": "Project: Aurora Launch"
+        }
+      ],
+      "decided_by": "local-coordinator",
+      "decided_at": "2026-11-05T16:55:10.629Z",
+      "based_on_revision": 1,
+      "resulting_revision": 2
+    },
+    {
+      "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+      "run_id": "ddf6c808-6113-4bff-a362-f066329a61d5",
+      "proposal_id": "p-territories",
+      "field_key": "territories",
+      "decision": "accept",
+      "previous_value": [
+        "Canada"
+      ],
+      "proposed_value": [
+        "North America"
+      ],
+      "evidence": [
+        {
+          "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+          "exact_quote": "Correction: territory is North America, replacing Canada."
+        }
+      ],
+      "decided_by": "local-coordinator",
+      "decided_at": "2026-11-05T16:56:11.105Z",
+      "based_on_revision": 3,
+      "resulting_revision": 4
+    }
+  ],
+  "events": [
+    {
+      "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+      "revision": 0,
+      "actor_id": "local-coordinator",
+      "action": "request_created",
+      "message_id": "83c61caf-a7d1-42a6-b9d5-b941e2625fc9",
+      "at": "2026-11-05T16:53:57.292Z"
+    },
+    {
+      "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+      "revision": 1,
+      "actor_id": "local-coordinator",
+      "action": "proposal_decided",
+      "message_id": null,
+      "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+      "proposal_id": "p-territories-1",
+      "decision": "accept",
+      "at": "2026-11-05T16:55:10.388Z"
+    },
+    {
+      "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+      "revision": 2,
+      "actor_id": "local-coordinator",
+      "action": "proposal_decided",
+      "message_id": null,
+      "run_id": "16b71243-5c6e-4947-9952-7673ec391973",
+      "proposal_id": "p-project-1",
+      "decision": "reject",
+      "at": "2026-11-05T16:55:10.629Z"
+    },
+    {
+      "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+      "revision": 3,
+      "actor_id": "local-coordinator",
+      "action": "reply_appended",
+      "message_id": "99ee031f-03e8-4c10-ba93-cd67de59f7a3",
+      "at": "2026-11-05T16:55:37.598Z"
+    },
+    {
+      "request_id": "296b3c7f-e02f-408b-9f81-4e14e34dca7a",
+      "revision": 4,
+      "actor_id": "local-coordinator",
+      "action": "proposal_decided",
+      "message_id": null,
+      "run_id": "ddf6c808-6113-4bff-a362-f066329a61d5",
+      "proposal_id": "p-territories",
+      "decision": "accept",
+      "at": "2026-11-05T16:56:11.105Z"
+    }
+  ],
+  "catalog_review": {
+    "recording": {
+      "id": "TRACK-0001",
+      "title": "Northern Lights",
+      "artist": "Maya Rivers",
+      "version": "Original",
+      "genre": "Pop",
+      "mood": "Uplifting",
+      "bpm": 70,
+      "label": "Example Label 1",
+      "master_contact": null,
+      "publishing_status": "Missing information",
+      "assets": [],
+      "metadata_warning": "Conflicting publisher entries: coordinator must verify source records.",
+      "synthetic": true
+    },
+    "source": "synthetic_catalog",
+    "cleared": false,
+    "blockers": [
+      {
+        "code": "PUBLISHING_UNVERIFIED",
+        "question": "Verify publishing ownership and the required publishing clearance.",
+        "audience": "coordinator"
+      },
+      {
+        "code": "MASTER_CONTACT_MISSING",
+        "question": "Find and verify the master rights contact.",
+        "audience": "coordinator"
+      },
+      {
+        "code": "ASSETS_UNAVAILABLE",
+        "question": "Verify which audio assets are available before promising delivery.",
+        "audience": "coordinator"
+      },
+      {
+        "code": "METADATA_CONFLICT",
+        "question": "Conflicting publisher entries: coordinator must verify source records.",
+        "audience": "coordinator"
+      }
+    ]
+  },
+  "live_calls": 3,
+  "browser_observations": [
+    "Eight Northern Lights candidates; coordinator selected TRACK-0001",
+    "Save/refresh/reopen retained source and selection",
+    "Seven supplied facts; five expected missing fields; four catalog blockers",
+    "Edited subject and clicked Copy draft; UI reported copied, not sent; system clipboard bytes not independently inspected",
+    "Accepted Canada and rejected project; refresh/reopen retained both decisions",
+    "Reply replaced territory with North America and supplied five missing fields",
+    "Reanalysis retained confirmed Canada and proposed North America; only explicit acceptance replaced it",
+    "Final refresh/reopen retained North America, two messages and three fact decisions"
+  ]
+}
