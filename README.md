@@ -12,6 +12,10 @@ Detailed acceptance criteria are in [the coordinator user stories](docs/user-sto
 
 A school prototype by Ivaylo Nanev and Mosiah James.
 
+## Setup guide
+
+New checkout? Follow the [setup and collaborator guide](docs/setup-guide.md): environment variables, `pnpm smoke` (no API key), `pnpm data:reset`, what is live versus rule-based, and known gaps.
+
 ## Application development
 
 The coordinator app uses Next.js App Router, TypeScript, Prisma 7, and a local SQLite database for the prototype. Node.js 24 and pnpm 11.25.0 are used by this branch.
