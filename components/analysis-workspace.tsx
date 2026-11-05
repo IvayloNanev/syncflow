@@ -2,6 +2,8 @@
 
 import { useRef, useState, type FormEvent } from "react";
 
+import RecordingPicker, { type Recording } from "./recording-picker";
+
 type Evidence = { message_id: string; exact_quote: string };
 type Proposal = { proposal_id: string; field_key: string; proposed_value: unknown; evidence: Evidence[] };
 type Issue = { issue_id: string; type: string; severity: string; field_keys: string[]; question: string };
@@ -26,6 +28,7 @@ function display(value: unknown): string {
 }
 
 export default function AnalysisWorkspace() {
+  const [recording, setRecording] = useState<Recording | null>(null);
   const [email, setEmail] = useState("");
   const [timezone, setTimezone] = useState("America/New_York");
   const [busy, setBusy] = useState(false);
@@ -62,16 +65,17 @@ export default function AnalysisWorkspace() {
   const issues = result?.stages?.review?.output?.issues || [];
   return (
     <>
+      <RecordingPicker selected={recording} disabled={busy} onSelect={r => { setRecording(r); clearResult(); }} onScenario={text => { setEmail(text); clearResult(); }} />
       <section className="request-section analysis-input" id="analyze" aria-labelledby="analyze-heading">
         <div className="section-heading"><div><p className="eyebrow">START WITH THE CLIENT EMAIL</p><h2 id="analyze-heading">Review a music request</h2></div><span className="count">Unsaved request</span></div>
         <form onSubmit={analyze} aria-busy={busy}>
           <label htmlFor="client-email">Client email</label>
           <textarea id="client-email" rows={7} maxLength={20000} value={email} disabled={busy} required
-            placeholder="Paste the client's music-use request here…" onChange={e => { setEmail(e.target.value); clearResult(); }} />
+            placeholder="Paste the client's music-use request here…" onChange={e => { setEmail(e.target.value); setRecording(null); clearResult(); }} />
           <div className="input-actions">
             <div><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy} required
               onChange={e => { setTimezone(e.target.value); clearResult(); }} aria-describedby="timezone-help" /><small id="timezone-help">For example, America/New_York. Client deadlines are never inferred from this.</small></div>
-            <button className="secondary-button" type="button" disabled={busy} onClick={() => { setEmail(example); clearResult(); }}>Use fictional example</button>
+            <button className="secondary-button" type="button" disabled={busy} onClick={() => { setEmail(example); setRecording(null); clearResult(); }}>Use fictional example</button>
             <button className="primary-button" type="submit" disabled={busy || !email.trim()}>{busy ? "Analyzing…" : "Analyze email →"}</button>
           </div>
           <p className="prototype-note">Uses Claude API credits. The email is sent to Claude for analysis. Nothing is saved or sent to the client.</p>
@@ -80,6 +84,7 @@ export default function AnalysisWorkspace() {
         {error ? <div role="alert" className="analysis-error"><strong>Analysis needs attention</strong><p>{error}</p><p>The original email has not changed. You can edit it or select Analyze email to retry.</p></div> : null}
       </section>
       {result ? <section className="analysis-results" aria-label="Analysis results">
+        <p className="prototype-note">{recording ? `Coordinator-selected recording: ${recording.id} · ${recording.artist} · ${recording.version}. Catalog information is displayed separately below the search; it is not agent evidence.` : "Recording identity remains unresolved. Confirm the recording before any handoff."}</p>
         <div className="result-heading"><h2>Your review workspace</h2><span className="count">Live Claude · not saved</span></div>
         <div className="result-grid">
           <article className="result-panel facts-panel"><p className="eyebrow">1 · INTAKE</p><h3>Proposed facts <span>{proposals.length}</span></h3><p className="panel-note">Check the source quotes. These details are not confirmed.</p>

@@ -125,3 +125,9 @@ The Next.js/Prisma application foundation from `developer` is combined with the 
 ## Connected browser demo
 
 `pnpm dev` opens the local coordinator screen at http://127.0.0.1:3000. Paste a fictional email to see live proposed facts/source quotes, issues and an editable draft. It uses the existing server-only Claude credentials. Requests are unsaved; confirmation, login and saved-request integration remain unfinished. See [browser flow and verification](docs/browser-analysis.md).
+
+## Fictional recording catalog
+
+The browser now includes 1,000 deterministic synthetic recordings from `catalog/recordings.js`, with title/artist/ID search, version filtering, pagination and explicit coordinator selection. Ten selectable client scenarios in `catalog/scenarios.js` cover ambiguous titles, alternate versions, missing matches, incomplete metadata and multiple recordings. Their expected candidate IDs are tested; they are not live model accuracy scores.
+
+All artists, labels and metadata are fictional; contacts use example.com. No audio files, commercial catalog integrations or verified rights are included. Metadata gaps and conflicts are deliberate test cases. Selecting a recording identifies it only in the unsaved browser view. Catalog metadata stays separate from email evidence and is not sent to the agents. Editing the email clears selection and prior results. Multiple recordings require separate requests; automated splitting, catalog-aware agent checks and saved recording associations remain future work.
