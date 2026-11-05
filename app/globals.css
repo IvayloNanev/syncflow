@@ -2103,3 +2103,20 @@ h2 {
 .inline-next-action { margin-top: 28px; padding-top: 24px; border-top: 1px solid #dce1d6; }
 .inline-next-action .draft-panel { border: 0; padding: 0; box-shadow: none; }
 .outcome-grid { grid-template-columns: minmax(0, 1fr); }
+
+/* Start with the only information the coordinator needs to provide. */
+.email-only { display: block; }
+.email-only .app-sidebar,
+.email-only .workspace-title,
+.email-only .request-summary,
+.email-only .workspace-footer,
+.email-only .analysis-input > .eyebrow,
+.email-only .analysis-input > h2,
+.email-only form > .text-button,
+.email-only .settings-disclosure,
+.email-only .form-footer { display: none; }
+.email-only .main-workspace { margin: 0; width: 100%; }
+.email-only .workspace-body { max-width: 850px; margin: 0 auto; padding: clamp(24px, 10vh, 100px) 24px; }
+.email-only .intake-grid { display: block; margin: 0; }
+.email-only .analysis-input { border: 0; background: transparent; box-shadow: none; padding: 0; }
+.email-only textarea { min-height: 300px; background: white; }

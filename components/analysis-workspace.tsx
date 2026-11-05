@@ -138,7 +138,7 @@ export default function AnalysisWorkspace() {
     newRequest(); setEmail(original); setCatalogOpen(true);
     setNotice("Original email copied into a new unsaved request. The previous request and its history remain saved.");
   }
-  return <div className="app-shell">
+  return <div className={`app-shell${!saved && !email.trim() ? " email-only" : ""}`}>
     <a className="skip-link" href="#main-workspace">Skip to workspace</a>
     <aside className="app-sidebar" aria-label="Request navigation">
       <a className="brand" href="#main-workspace">syncflow<span className="brand-period">.</span></a>
