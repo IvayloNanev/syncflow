@@ -1,3 +1,4 @@
+import { explicitTerritoryConflict } from './territory-conflict.js';
 import checklist from '../../contracts/checklists/intake-v1.json' with { type: 'json' };
 import { validateContract } from '../../contracts/validate.js';
 
@@ -27,6 +28,9 @@ export function runReview(context, intake) {
   });
   for (const [index, ambiguity] of intake.ambiguities.entries())
     add(`intake-ambiguity-${index}`, ambiguity.issue_type || 'ambiguous', ambiguity.field_keys, `Please clarify: ${ambiguity.reason}`, ambiguity.evidence);
+  const territoryEvidence=explicitTerritoryConflict(context.messages);
+  if(territoryEvidence && !issues.some(i=>i.type==='conflict'&&i.field_keys.includes('territories')))
+    add('source-conflict-territories','conflict',['territories'],'The request gives incompatible territory statements without a confirmed correction. Which territory applies?',territoryEvidence);
   const inspect = (key, unclear, question) => {
     const field = fields.get(key);
     if (field?.value && unclear(field.value))

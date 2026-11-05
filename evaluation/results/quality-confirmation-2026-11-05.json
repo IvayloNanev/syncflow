@@ -1,0 +1,1218 @@
+{
+  "kind": "targeted-new-wording-quality-check-not-global-acceptance",
+  "model": "claude-haiku-5-5",
+  "sha256": "1ab1d05b0dba483291cb705d81e2a4b693906317c20afc3b374276c0e4df43f4",
+  "started_at": "2026-11-05T18:30:58.199Z",
+  "cases": [
+    {
+      "id": "W01",
+      "checks": {
+        "workflow_ok": true,
+        "territory_conflict": true,
+        "platforms_gap": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "W01",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "W01",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W01",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "p_client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Elena Vale at Cedar Films",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Contact: Elena Vale at Cedar Films"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Lantern campaign",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Lantern campaign"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Iris North",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Iris North"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Copper Window",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Copper Window"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "original recording",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording version: original recording"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "brand advertisement",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: brand advertisement"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "YouTube",
+                    "Instagram"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: YouTube and Instagram"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Portugal",
+                    "Belgium"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territory: Portugal"
+                    },
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territory: Belgium"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "four months",
+                    "duration_text": "four months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Term: four months"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "25 seconds",
+                    "seconds": 25
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 25 seconds"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "EUR 4200 for both rights",
+                    "amount": "4200",
+                    "currency": "EUR",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: EUR 4200 for both rights"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "December 10, 2026 at 15:30 Europe/Berlin",
+                    "date": "2026-12-10",
+                    "time": "15:30",
+                    "timezone": "Europe/Berlin"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Response deadline: December 10, 2026 at 15:30 Europe/Berlin"
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W01",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "source-conflict-territories",
+                  "type": "conflict",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "territories"
+                  ],
+                  "question": "The request gives incompatible territory statements without a confirmed correction. Which territory applies?",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territory: Portugal"
+                    },
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territory: Belgium"
+                    }
+                  ]
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "fail"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "W01",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W01",
+              "base_record_version": 0,
+              "subject": "Clarification needed: territory for Copper Window license request",
+              "body": "Dear Elena,\n\nThank you for your licensing request for \"Copper Window\" by Iris North for the Lantern campaign.\n\nYour request lists two territories, Portugal and Belgium, without indicating which one applies or whether both are intended. Could you please confirm the territory or territories for this license?\n\nThank you for your help. We look forward to your reply.\n\nKind regards",
+              "addressed_issue_ids": [
+                "source-conflict-territories"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "W02",
+      "checks": {
+        "workflow_ok": true,
+        "territory_conflict": true,
+        "platforms_gap": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "W02",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "review_required",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "W02",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W02",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "p_client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Elena Vale at Cedar Films",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Contact: Elena Vale at Cedar Films"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Lantern campaign",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Lantern campaign"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Iris North",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Iris North"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Copper Window",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Copper Window"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "original recording",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording version: original recording"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "brand advertisement",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: brand advertisement"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "YouTube",
+                    "Instagram"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: YouTube and Instagram"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Term: four months",
+                    "duration_text": "four months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Term: four months"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Music length: 25 seconds",
+                    "seconds": 25
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 25 seconds"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Budget: EUR 4200 for both rights",
+                    "amount": "4200",
+                    "currency": "EUR",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: EUR 4200 for both rights"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Response deadline: December 10, 2026 at 15:30 Europe/Berlin",
+                    "date": "2026-12-10",
+                    "time": "15:30",
+                    "timezone": "Europe/Berlin"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Response deadline: December 10, 2026 at 15:30 Europe/Berlin"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Finland"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "reply",
+                      "exact_quote": "Correction: territory is Finland."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W02",
+              "base_record_version": 0,
+              "issues": [],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "skipped": true,
+            "reason": "NO_UNRESOLVED_ISSUES",
+            "output": null
+          }
+        }
+      }
+    },
+    {
+      "id": "W03",
+      "checks": {
+        "workflow_ok": true,
+        "territory_conflict": true,
+        "platforms_gap": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "W03",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "W03",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W03",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "W03-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Elena Vale at Cedar Films",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Contact: Elena Vale at Cedar Films"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Lantern campaign",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Lantern campaign"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Iris North",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Iris North"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Copper Window",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Copper Window"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "original recording",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording version: original recording"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "brand advertisement",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: brand advertisement"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Term: four months",
+                    "duration_text": "four months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Term: four months"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Music length: 25 seconds",
+                    "seconds": 25
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 25 seconds"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Budget: EUR 4200 for both rights",
+                    "amount": "4200",
+                    "currency": "EUR",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: EUR 4200 for both rights"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Response deadline: December 10, 2026 at 15:30 Europe/Berlin",
+                    "date": "2026-12-10",
+                    "time": "15:30",
+                    "timezone": "Europe/Berlin"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Response deadline: December 10, 2026 at 15:30 Europe/Berlin"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W03-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Sweden"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territory: Sweden"
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W03",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "missing-platforms",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "platforms"
+                  ],
+                  "question": "Please confirm platforms.",
+                  "evidence": []
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "W03",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W03",
+              "base_record_version": 0,
+              "subject": "Clarification needed: Copper Window licensing request",
+              "body": "Hello Elena,\n\nThank you for your request for \"Copper Window\" by Iris North for the Lantern campaign. We are reviewing the details and need one more piece of information before we can proceed.\n\nCould you please confirm the online platforms where the brand advertisement will run (for example, a website, social media channels, or video platforms)?\n\nThank you, and we look forward to your reply.\n\nBest regards,\nSyncFlow Licensing Coordination",
+              "addressed_issue_ids": [
+                "missing-platforms"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "W04",
+      "checks": {
+        "workflow_ok": true,
+        "territory_conflict": true,
+        "platforms_gap": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "W04",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "review_required",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "W04",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W04",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "W04-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Elena Vale at Cedar Films",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Contact: Elena Vale at Cedar Films"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Lantern campaign",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Lantern campaign"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Iris North",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Iris North"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Copper Window",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Copper Window"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "original recording",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording version: original recording"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "brand advertisement",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: brand advertisement"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Vimeo",
+                    "cinema screenings"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "reply",
+                      "exact_quote": "Platforms: Vimeo and cinema screenings."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Sweden"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territory: Sweden."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "four months",
+                    "duration_text": "four months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Term: four months."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "25 seconds",
+                    "seconds": 25
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 25 seconds."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "EUR 4200 for both rights",
+                    "amount": "4200",
+                    "currency": "EUR",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: EUR 4200 for both rights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "W04-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "December 10, 2026 at 15:30 Europe/Berlin",
+                    "date": "2026-12-10",
+                    "time": "15:30",
+                    "timezone": "Europe/Berlin"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Response deadline: December 10, 2026 at 15:30 Europe/Berlin."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "W04",
+              "base_record_version": 0,
+              "issues": [],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "skipped": true,
+            "reason": "NO_UNRESOLVED_ISSUES",
+            "output": null
+          }
+        }
+      }
+    }
+  ],
+  "finished_at": "2026-11-05T18:31:18.788Z"
+}

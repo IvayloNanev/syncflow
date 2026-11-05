@@ -1,0 +1,114 @@
+[
+  {
+    "id": "W01",
+    "expect": {
+      "conflict": true,
+      "platforms_issue": false
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "W01",
+      "request_id": "W01",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Elena Vale at Cedar Films. Project: Lantern campaign. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. Platforms: YouTube and Instagram. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Portugal. Territory: Belgium. No correction has been confirmed.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  },
+  {
+    "id": "W02",
+    "expect": {
+      "conflict": false,
+      "platforms_issue": false
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "W02",
+      "request_id": "W02",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Elena Vale at Cedar Films. Project: Lantern campaign. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. Platforms: YouTube and Instagram. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Sweden only. Territory: Norway only.",
+          "supplied_message_date": null
+        },
+        {
+          "message_id": "reply",
+          "kind": "reply",
+          "text": "Correction: territory is Finland.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  },
+  {
+    "id": "W03",
+    "expect": {
+      "conflict": false,
+      "platforms_issue": true
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "W03",
+      "request_id": "W03",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Elena Vale at Cedar Films. Project: Lantern campaign. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. The advertisement will be online. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Sweden.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  },
+  {
+    "id": "W04",
+    "expect": {
+      "conflict": false,
+      "platforms_issue": false
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "W04",
+      "request_id": "W04",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Elena Vale at Cedar Films. Project: Lantern campaign. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. The advertisement will be online. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Sweden.",
+          "supplied_message_date": null
+        },
+        {
+          "message_id": "reply",
+          "kind": "reply",
+          "text": "Platforms: Vimeo and cinema screenings.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  }
+]

@@ -1,3 +1,4 @@
+import { validationCodes } from './validation-codes.js';
 import { validateContract } from '../../contracts/validate.js';
 
 const messages = {
@@ -23,7 +24,7 @@ function freeze(value) {
   return value;
 }
 class RunFailure extends Error {
-  constructor(code) { super(code); this.code = code; }
+  constructor(code,diagnostics=[]) { super(code); this.code = code; this.diagnostics=diagnostics; }
 }
 
 /**
@@ -34,8 +35,9 @@ class RunFailure extends Error {
 export async function runIntake(context, { provider, timeoutMs = 30000, getCurrentVersion } = {}) {
   const meta = { stage: 'intake', provider: null, mode: 'unconfigured', run_id: null,
     base_record_version: null, freshness: 'not_checked' };
+  let diagnostics=[];
   const fail = code => ({ ok: false, ...meta, error: {
-    code, message: messages[code], retryable: ['PROVIDER_FAILED', 'PROVIDER_RATE_LIMITED', 'TIMEOUT', 'VERSION_CHECK_FAILED'].includes(code),
+    code, message: messages[code], ...(diagnostics.length ? {validation_codes:diagnostics} : {}), retryable: ['PROVIDER_FAILED', 'PROVIDER_RATE_LIMITED', 'TIMEOUT', 'VERSION_CHECK_FAILED'].includes(code),
     manual_review_required: true,
   } });
   let snapshot;
@@ -61,13 +63,14 @@ export async function runIntake(context, { provider, timeoutMs = 30000, getCurre
     try { output = await provider.generate({ context: snapshot, signal: controller.signal }); }
     catch (error) {
       const allowed = ['UNSUPPORTED_MOCK_INPUT', 'PROVIDER_NOT_CONFIGURED', 'PROVIDER_AUTH_FAILED', 'PROVIDER_RATE_LIMITED', 'PROVIDER_REQUEST_REJECTED', 'INVALID_OUTPUT'];
-      throw new RunFailure(allowed.includes(error?.code) ? error.code : 'PROVIDER_FAILED');
+      const safeDiagnostics=['INVALID_RESPONSE_JSON','UNEXPECTED_STOP_REASON','INVALID_TOOL_ENVELOPE'];
+      throw new RunFailure(allowed.includes(error?.code) ? error.code : 'PROVIDER_FAILED',safeDiagnostics.includes(error?.diagnostic_code)?[error.diagnostic_code]:[]);
     }
     // No provider-owned objects survive into a caller's result.
     try {
       output = structuredClone(output);
       validateContract('intake', output, snapshot);
-    } catch { throw new RunFailure('INVALID_OUTPUT'); }
+    } catch(error) { throw new RunFailure('INVALID_OUTPUT',validationCodes(error)); }
     if (getCurrentVersion) {
       let current;
       try { current = await getCurrentVersion(snapshot.request_id, { signal: controller.signal }); }
@@ -87,6 +90,6 @@ export async function runIntake(context, { provider, timeoutMs = 30000, getCurre
     });
     const output = await Promise.race([operation(), timeout]);
     return { ok: true, ...meta, output };
-  } catch (error) { return fail(error instanceof RunFailure ? error.code : 'PROVIDER_FAILED'); }
+  } catch (error) { diagnostics=error instanceof RunFailure ? error.diagnostics : []; return fail(error instanceof RunFailure ? error.code : 'PROVIDER_FAILED'); }
   finally { clearTimeout(timer); }
 }

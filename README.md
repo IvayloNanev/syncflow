@@ -188,3 +188,7 @@ Save edited internal summaries using **Save handoff edits**. The latest version 
 ### Latest acceptance result
 
 See [product acceptance — Nov 5](docs/acceptance/2026-11-05-product-acceptance.md). Functional regression/build checks pass, but live field recall was 93.8% against a 95% target; a territory contradiction was missed and one case failed validation. Raw false-discovery scores also miss target, largely due to the documented deadline-policy/key mismatch. Human time savings and uncoached usability remain unmeasured. Do not treat passing code tests as full PRD acceptance. A human study worksheet is included in the report folder.
+
+### Quality follow-up
+
+[Territory conflict and rejection follow-up](docs/acceptance/2026-11-05-quality-follow-up.md): explicit contradictory territory statements now have a deterministic blocking check, and Intake handles explicit correction supersession more clearly. Four new confirmation workflows passed 12 checks; 185 regressions pass. The old validation failure did not reproduce in three diagnostic calls; safe diagnostic categories were added, but its cause remains unresolved. Original failed acceptance results and earlier failed targeted assertions remain preserved; global accuracy and human-study targets are not yet re-established.
