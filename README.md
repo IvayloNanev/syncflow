@@ -214,3 +214,11 @@ The project landing page uses a dark, warm-gold glass visual presentation. The C
 ## Corrected page organization
 
 The three active pages are Landing (`/`), Coordinator (`/coordinator`) and Internal review (`/internal`). Coordinator contains client email intake, the fictional music catalog, analysis, fact review and client follow-up drafts. Internal review contains saved-request selection, readiness, handoff summaries and manually recorded reviewer decisions. Links carry the saved request ID between both workspaces. The old `/customer` page redirects to Coordinator; an external client portal is no longer the chosen interface scope. The earlier customer submission endpoint remains local-only and unused by the active pages. Internal review is coordinator-managed tracking, not team chat or automatic messaging.
+
+## UX logic safeguards
+
+Coordinator and Internal review share a request-aware header. Opening a saved request updates the URL, and header links retain that ID. The selected request shows confirmed project/contact (or explicitly unconfirmed labels), catalog recording/version, revision and status. Only Internal review exposes the completion action. There is one queue entry; return-to-request only appears with a selection.
+
+Empty intake shows guidance rather than twelve missing fields. `Analyze & draft response` explicitly saves first and uses Claude credits. Source-backed Confirm/Reject controls appear in the summary's visible fact-review section. Stored confirmed values remain primary during stale analysis; detected excerpts and proposed changes never inherit a confirmation badge.
+
+Unsaved original briefs, client reply/draft edits and generated/edited handoffs have tab-local sessionStorage recovery (not shared or durable database storage). Navigation/replacement warns about unsaved text where supported; browser reload/close warnings remain subject to browser behavior. Recovered draft text whose analysis is outdated is displayed separately and is never a current response or confirmed fact. Saving a handoff remains an explicit server operation. Use fictional data locally; closing the tab or clearing browser storage can remove recovery copies.
