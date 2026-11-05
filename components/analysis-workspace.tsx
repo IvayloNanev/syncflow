@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from "react";
 
 import { previewEmail } from "../catalog/email-preview.js";
+import LandingStory from "./landing-story";
 import AnalysisRecovery from "./analysis-recovery";
 import RequestDashboard from "./request-dashboard";
 import ReviewerTracking, {type ReviewTracking} from "./reviewer-tracking";
@@ -166,6 +167,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       {dashboardOpen ? <RequestDashboard requests={requests} busy={busy} onOpen={navigationProps.onOpen} onNew={mode === "internal" ? () => {router.push("/coordinator");} : newRequest} onRefresh={navigationProps.onRefresh} /> : <>
 
       <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1>{mode === 'internal' ? 'Internal handoffs & decisions' : saved ? 'Coordinator workspace' : 'Start with the client’s email.'}</h1><p>{mode === "internal" ? "Prepare the reviewer handoff and record decisions received from your team." : "See the recording, resolve the gaps and prepare your next email."}</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
+      {mode === "coordinator" ? <details className="coordinator-walkthrough" open><summary>How the client-email workflow works · animated example</summary><LandingStory /></details> : null}
       <div aria-live="polite">{busy ? <p className="busy-notice">Working on the request. Saved facts and history are preserved…</p> : notice ? <p className="notice">{notice}</p> : null}</div>
       {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p>{saved ? <button className="secondary-button" disabled={busy} onClick={()=>{void perform(async()=>{const data:Detail=await command({action:"get",request_id:saved.id});showSaved(data);setNotice("Saved request checked. Review its latest status before retrying.");});}}>Check saved request</button> : null}</div> : null}
       {saved ? <p><Link className="secondary-button" href={`${mode === "internal" ? "/coordinator" : "/internal"}?request=${encodeURIComponent(saved.id)}`}>{mode === "internal" ? "← Back to this request in Coordinator" : "Open this request in Internal review →"}</Link></p> : null}

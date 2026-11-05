@@ -209,7 +209,7 @@ Failed attempts now keep fixed reason codes and safe validation categories in sa
 
 The local `/api/customer/requests` endpoint accepts create only and returns a receipt without internal facts, analysis, notes or approvals. These pages are navigation separation, not authorization. The application still has one local operator, production-disabled request APIs, and no client accounts. Secure customer status/replies, tenant isolation and authentication remain unimplemented; no external portal is being published. Customer briefs use America/Toronto as the provisional coordinator timezone; explicit deadline timezone confirmation remains required. Submission does not send email, select a recording, confirm facts or grant music rights.
 
-The project landing page includes a dark, warm-gold glass visual presentation and an optional Play/Pause walkthrough with five selectable stages. The walkthrough uses fixed fictional examples, makes no agent calls, saves no records and grants no approvals. Its motion is user initiated; reduced-motion settings disable animated transitions. The operational customer and coordinator pages remain separate.
+The project landing page uses a dark, warm-gold glass visual presentation. The Coordinator page contains an optional Play/Pause walkthrough with five selectable stages. The walkthrough uses fixed fictional examples, makes no agent calls, saves no records and grants no approvals. Its motion is user initiated; reduced-motion settings disable animated transitions. The operational customer and coordinator pages remain separate.
 
 ## Corrected page organization
 

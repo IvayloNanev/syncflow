@@ -1,6 +1,5 @@
 import Link from "next/link";
 import PageNavigation from "../components/page-navigation";
-import LandingStory from "../components/landing-story";
 
 const steps = [
   { number: "01", role: "CLIENT", title: "Start with the request.", text: "A song, a project, an idea. The client shares what they know about the intended music use." },
@@ -31,7 +30,6 @@ export default function Home() {
             <a className="portal-primary" href="#how-it-works">See the flow <span aria-hidden="true">↓</span></a>
           </div>
         </section>
-        <LandingStory />
 
         <section className="project-problem" id="the-project" aria-labelledby="problem-title">
           <div><p className="portal-eyebrow">THE PROBLEM WE’RE BUILDING FOR</p><h2 id="problem-title">The music is exciting.<br /><mark>The admin gets tangled.</mark></h2></div>
