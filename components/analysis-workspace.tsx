@@ -153,19 +153,26 @@ export default function AnalysisWorkspace() {
       {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p></div> : null}
       <div className="intake-grid">
         <section className="result-panel analysis-input" aria-labelledby="analyze-heading">
-          <p className="eyebrow">CLIENT CONVERSATION</p><h2 id="analyze-heading">{saved ? 'Original email' : 'Paste the request'}</h2>
+          <p className="eyebrow">CLIENT CONVERSATION</p><h2 id="analyze-heading">{saved ? 'Email conversation' : 'Paste the request'}</h2>
           <form id="request-analysis-form" onSubmit={analyze} aria-busy={busy}>
-            <label htmlFor="client-email">Client email</label><textarea id="client-email" rows={12} maxLength={20000} value={email} disabled={busy || !!saved} required onChange={e => editEmail(e.target.value)} placeholder="Paste the client’s email here…" />
+            <div hidden={!!saved}><label htmlFor="client-email">Client email</label><textarea id="client-email" rows={12} maxLength={20000} value={email} disabled={busy || !!saved} required onChange={e => editEmail(e.target.value)} placeholder="Paste the client’s email here…" /></div>
             {!saved ? <button type="button" className="text-button" disabled={busy} onClick={() => editEmail(example)}>Try an example</button> : <p className="panel-note">Original email preserved. Add replies below.</p>}
             <details className="settings-disclosure"><summary>Request settings</summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => {setTimezone(e.target.value); clearResult();}} /></details>
             {!saved && email.trim() && !effectiveRecording ? <div className="identity-warning"><p>No exact recording selected. Analysis can clarify the request, but this identity gap will remain locked on the saved record.</p><label><input type="checkbox" checked={allowUnresolved} disabled={busy} onChange={e => setAllowUnresolved(e.target.checked)} /> Continue with unresolved recording identity</label></div> : null}
             <div className="form-footer"><small>Uses Claude API credits. Use fictional data.<br />Nothing is sent to the client.</small></div>
           </form>
           {saved && analyses.some(a => a.status === 'running') ? <button className="text-button" disabled={busy} onClick={() => { retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision})); setNotice('New run enabled. Click Draft a response to retry; this uses additional API credits.'); }}>Enable a new analysis attempt</button> : null}
-          {saved ? <div className="inline-next-action">        <section className="result-panel draft-panel" aria-labelledby="next-action-heading"><p className="eyebrow">NEXT ACTION</p><h2 id="next-action-heading">{stale ? 'Refresh the analysis' : result?.stages?.follow_up?.skipped ? 'Review facts and internal checks' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2>
+          {saved ? <SavedRequests {...navigationProps} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} response={<div className="inline-next-action">        <section className="result-panel draft-panel" aria-labelledby="next-action-heading"><p className="eyebrow">NEXT ACTION</p><h2 id="next-action-heading">{stale ? 'Refresh the analysis' : result?.stages?.follow_up?.skipped ? 'Review facts and internal checks' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2>
           {result && !result.stages?.follow_up?.skipped ? <><p className="panel-note">Questions for the client only. Internal checks remain in the summary above. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {setDraft(e.target.value);setCopyStatus('');}} /><button type="button" className="primary-button" disabled={busy} onClick={copyDraft}>Copy draft</button><p role="status">{copyStatus}</p></> : <p>{stale ? 'Use Draft a response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Confirm the supplied facts and complete the internal checks; this does not approve a licence.' : 'Use Draft a response to generate the checklist and any necessary email.'}</p>}
         </section>
-</div> : null}
+</div>} onRecheck={() => {void perform(async () => {
+            const appended: Detail = await command(keyed({action:'reply',request_id:saved.id,expected_revision:saved.revision,text:reply}));
+            showSaved(appended); setReply(''); await refresh();
+            const payload = {action:'analyze', request_id:saved.id,expected_revision:appended.request.revision};
+            const checked: Detail = await command(keyed(payload)); showSaved(checked); await refresh();
+            if (checked.analysis_status === 'completed') retryCommands.current.delete(JSON.stringify(payload));
+            setNotice(checked.analysis_status === 'completed' ? 'Reply checked. Checklist and next response updated.' : 'Reply saved. Analysis needs attention; retry drafting the response.');
+          });}} /> : null}
         </section>
         <aside className="result-panel request-summary" aria-labelledby="summary-heading">
           <p className="eyebrow">REQUEST SUMMARY</p><h2 id="summary-heading">What needs attention?</h2>
@@ -185,7 +192,6 @@ export default function AnalysisWorkspace() {
           showSaved(data); await refresh(); setNotice(`${decision === 'accept' ? 'Accepted' : 'Rejected'} ${label(proposal.field_key)}. Finish reviewing, then refresh the analysis and draft.`);
         });}} /></details>
       </div> : null}
-      {saved ? <details className="conversation-disclosure" open><summary>Conversation & replies · {saved.messages.length} messages</summary><SavedRequests {...navigationProps} variant="conversation" /></details> : null}
       <footer className="workspace-footer">Local prototype · Intake and coordination support · No automatic sending or rights approval</footer>
     </div></main>
   </div>;

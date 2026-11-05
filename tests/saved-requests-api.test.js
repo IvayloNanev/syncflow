@@ -43,6 +43,11 @@ test('save analysis, reopen, append reply, invalidate then analyze new revision 
   const command={action:'reply',request_id:r.id,expected_revision:0,idempotency_key:'reply-1',text:'Budget is CAD 5000.'};
   const reply=await call(command);assert.equal(reply.request.revision,1);assert.equal(reply.request.messages.length,2);
   assert.equal(reply.active_analysis,null);assert.equal(reply.analyses[0].status,'stale');
+  assert.equal(reply.analyses[0].message_count,1);
+  assert.deepEqual(reply.analyses[0].draft,analyzed.active_analysis.result.stages.follow_up.output);
+  assert.equal('context' in reply.analyses[0],false); // historical draft projection does not expose agent context
+  const history=await call({action:'get',request_id:r.id});
+  assert.deepEqual(history.analyses[0].draft,reply.analyses[0].draft);
   assert.equal((await call(command)).request.messages.length,2);
   assert.equal((await call({...command,idempotency_key:'reply-2'})).status,409);
   assert.equal((await call({...run,idempotency_key:'old-revision'})).status,409);

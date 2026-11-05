@@ -2142,3 +2142,6 @@ h2 {
 .coverage-row p { margin: 5px 0 0; font-size: 13px; overflow-wrap: anywhere; line-height: 1.6; white-space: pre-wrap; }
 .coverage-row.missing p { color: #9a6440; }
 .coverage-question { color: #8d6b16; }
+.historical-response { margin: 12px 0 24px 16px; padding: 16px; border-left: 3px solid #9caf87; background: #f3f6ed; border-radius: 8px; }
+.historical-response summary { font-size: 12px; cursor: pointer; margin-bottom: 10px; }
+.conversation-panel .inline-next-action { margin: 20px 0; padding: 20px; background: #f3f6ed; border-radius: 12px; border: 1px solid #d8e2cb; }
