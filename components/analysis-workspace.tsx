@@ -2,10 +2,13 @@
 
 import { useRef, useState, type FormEvent } from "react";
 
+import RecordingPicker, { type Recording } from "./recording-picker";
+
 type Evidence = { message_id: string; exact_quote: string };
 type Proposal = { proposal_id: string; field_key: string; proposed_value: unknown; evidence: Evidence[] };
 type Issue = { issue_id: string; type: string; severity: string; field_keys: string[]; question: string };
 type Result = {
+  catalog_review?: { recording: Recording | null; cleared: false; blockers: { code: string; question: string; audience: string }[] };
   ok: boolean;
   error?: { message?: string };
   coordinator_review_issue_ids?: string[];
@@ -26,6 +29,7 @@ function display(value: unknown): string {
 }
 
 export default function AnalysisWorkspace() {
+  const [recording, setRecording] = useState<Recording | null>(null);
   const [email, setEmail] = useState("");
   const [timezone, setTimezone] = useState("America/New_York");
   const [busy, setBusy] = useState(false);
@@ -44,7 +48,7 @@ export default function AnalysisWorkspace() {
     const timer = setTimeout(() => controller.abort(), 70000);
     try {
       const response = await fetch("/api/analyze", { method: "POST", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, timezone }), signal: controller.signal });
+        body: JSON.stringify({ email, timezone, recording_id: recording?.id ?? null }), signal: controller.signal });
       const data: Result = await response.json();
       if (!response.ok || !data.ok) { setError(data.error?.message || "Analysis could not complete. Check the local configuration and retry explicitly."); return; }
       if (!Array.isArray(data.stages?.intake?.output?.proposed_changes) || !Array.isArray(data.stages?.review?.output?.issues)) {
@@ -62,16 +66,17 @@ export default function AnalysisWorkspace() {
   const issues = result?.stages?.review?.output?.issues || [];
   return (
     <>
+      <RecordingPicker selected={recording} disabled={busy} onSelect={r => { setRecording(r); clearResult(); }} onScenario={text => { setEmail(text); clearResult(); }} />
       <section className="request-section analysis-input" id="analyze" aria-labelledby="analyze-heading">
         <div className="section-heading"><div><p className="eyebrow">START WITH THE CLIENT EMAIL</p><h2 id="analyze-heading">Review a music request</h2></div><span className="count">Unsaved request</span></div>
         <form onSubmit={analyze} aria-busy={busy}>
           <label htmlFor="client-email">Client email</label>
           <textarea id="client-email" rows={7} maxLength={20000} value={email} disabled={busy} required
-            placeholder="Paste the client's music-use request here…" onChange={e => { setEmail(e.target.value); clearResult(); }} />
+            placeholder="Paste the client's music-use request here…" onChange={e => { setEmail(e.target.value); setRecording(null); clearResult(); }} />
           <div className="input-actions">
             <div><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy} required
               onChange={e => { setTimezone(e.target.value); clearResult(); }} aria-describedby="timezone-help" /><small id="timezone-help">For example, America/New_York. Client deadlines are never inferred from this.</small></div>
-            <button className="secondary-button" type="button" disabled={busy} onClick={() => { setEmail(example); clearResult(); }}>Use fictional example</button>
+            <button className="secondary-button" type="button" disabled={busy} onClick={() => { setEmail(example); setRecording(null); clearResult(); }}>Use fictional example</button>
             <button className="primary-button" type="submit" disabled={busy || !email.trim()}>{busy ? "Analyzing…" : "Analyze email →"}</button>
           </div>
           <p className="prototype-note">Uses Claude API credits. The email is sent to Claude for analysis. Nothing is saved or sent to the client.</p>
@@ -80,7 +85,9 @@ export default function AnalysisWorkspace() {
         {error ? <div role="alert" className="analysis-error"><strong>Analysis needs attention</strong><p>{error}</p><p>The original email has not changed. You can edit it or select Analyze email to retry.</p></div> : null}
       </section>
       {result ? <section className="analysis-results" aria-label="Analysis results">
+        <p className="prototype-note">{recording ? `Coordinator-selected recording: ${recording.id} · ${recording.artist} · ${recording.version}. Catalog blockers are checked separately on the server; catalog metadata is not email evidence.` : "Recording identity remains unresolved. Confirm the recording before any handoff."}</p>
         <div className="result-heading"><h2>Your review workspace</h2><span className="count">Live Claude · not saved</span></div>
+        <article className="result-panel"><p className="eyebrow">CATALOG REVIEW · COORDINATOR ACTION</p><h3>Recording blockers</h3><p>Server-checked fictional catalog metadata. These internal tasks are separate from the client clarification draft. No rights are cleared.</p>{result.catalog_review?.blockers.map(b => <div className="issue" key={b.code}><h4>{label(b.code.toLowerCase())}</h4><p>{b.question}</p></div>)}</article>
         <div className="result-grid">
           <article className="result-panel facts-panel"><p className="eyebrow">1 · INTAKE</p><h3>Proposed facts <span>{proposals.length}</span></h3><p className="panel-note">Check the source quotes. These details are not confirmed.</p>
             {proposals.length ? proposals.map(p => <div className="fact" key={p.proposal_id}><h4>{label(p.field_key)}</h4><p className="fact-value">{display(p.proposed_value)}</p><details><summary>View source evidence</summary>{p.evidence.map((e, i) => <blockquote key={`${e.message_id}-${i}`}>{e.exact_quote}<small>Source: {e.message_id}</small></blockquote>)}</details></div>) : <p>No supplied facts were extracted.</p>}
