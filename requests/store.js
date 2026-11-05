@@ -1,3 +1,4 @@
+import { resolveRecording } from '../catalog/review.js';
 import { DatabaseSync } from 'node:sqlite';
 import { randomUUID, createHash } from 'node:crypto';
 import { validateSuccessfulAnalysis } from './validate-analysis.js';
@@ -62,14 +63,16 @@ export function openRequestStore(path = ':memory:') {
     JSON.stringify({ request_id: request.id, revision: request.revision, actor_id: actor, action, message_id: messageId, at: request.updated_at }));
   return {
     create(input) {
-      if (!keys(input, ['actor_id', 'idempotency_key', 'email', 'timezone'])) fail('INVALID_INPUT');
+      if (!keys(input, ['actor_id', 'idempotency_key', 'email', 'timezone', 'recording_id'])) fail('INVALID_INPUT');
       command(input);
       if (!text(input.email) || !text(input.timezone, 100)) fail('INVALID_INPUT');
       try { new Intl.DateTimeFormat('en', { timeZone: input.timezone }); } catch { fail('INVALID_TIMEZONE'); }
-      return execute(input, 'create', { email: input.email, timezone: input.timezone }, () => {
+      let recording;
+      try { recording = resolveRecording(input.recording_id); } catch { fail('INVALID_RECORDING'); }
+      return execute(input, 'create', { email: input.email, timezone: input.timezone, ...(recording ? { recording_id: recording.id } : {}) }, () => {
         const now = new Date().toISOString(); const messageId = randomUUID();
         const request = { id: randomUUID(), owner_id: input.actor_id, revision: 0, created_at: now, updated_at: now,
-          coordinator_timezone: input.timezone, messages: [{ message_id: messageId, kind: 'initial', text: input.email,
+          recording_id: recording?.id ?? null, coordinator_timezone: input.timezone, messages: [{ message_id: messageId, kind: 'initial', text: input.email,
             supplied_message_date: null, received_at: now, added_by: input.actor_id }], confirmed_fields: [], unresolved_issues: [] };
         db.prepare('INSERT INTO requests VALUES (?,?,?,?)').run(request.id, request.owner_id, request.revision, JSON.stringify(request));
         event(request, input.actor_id, 'request_created', messageId);
