@@ -1,3 +1,4 @@
+import {effectiveFields} from "../requests/effective-fields.js";
 import { dashboardRequest } from '../requests/dashboard.js';
 import { mkdirSync, chmodSync } from 'node:fs';
 import { join } from 'node:path';
@@ -31,6 +32,7 @@ const allowed = {
 };
 function detail(store, id) {
   const request = store.get(actor, id);
+  request.agent_fields=effectiveFields(request,store.activeAnalysis(actor,id),store.decisions(actor,id)).filter(f=>f.origin==="agent");
   return { request, recording_changes:store.history(actor,id).filter(event=>event.action==='recording_corrected'), handoff: store.handoff(actor,id), workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
     analyses: store.analyses(actor, id).map(({ run_id, base_revision, status, created_at, context, result }) => ({ run_id, base_revision, status, created_at, message_count: context.messages.length, failure: result?.ok===false ? result : null, draft: ['completed', 'stale', 'superseded'].includes(status) && result?.ok ? result.stages?.follow_up?.output ?? null : null })),
     catalog_review: reviewRecording(request.recording_id) };
@@ -83,6 +85,7 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
       if (input.action === 'list') {
         const requests = store.list(actor).map(item => {
           const r = store.get(actor, item.id);
+          r.agent_fields=effectiveFields(r,store.activeAnalysis(actor,r.id),store.decisions(actor,r.id)).filter(f=>f.origin==="agent");
           return { ...item, ...dashboardRequest(r,store.workflow(actor,r.id),store.reviewers(actor,r.id)), preview: r.messages[0].text.slice(0, 100), recording_id: r.recording_id ?? null };
         }).sort((a, b) => b.updated_at.localeCompare(a.updated_at));
         return json(200, { requests });

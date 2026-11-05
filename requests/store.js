@@ -1,3 +1,4 @@
+import {effectiveFields} from "./effective-fields.js";
 import { safeAnalysisFailure } from './analysis-failure.js';
 import { requestReadiness } from './readiness.js';
 import { resolveRecording } from '../catalog/review.js';
@@ -272,7 +273,10 @@ export function openRequestStore(path = ':memory:') {
       const request = owned(actor,id);
       const row = db.prepare('SELECT version,body FROM reviewer_tracking WHERE request_id=?').get(id);
       const state = row ? JSON.parse(row.body) : {reviewers:[],history:[]};
-      return {version:row?.version ?? 0, ...state, reviewers:state.reviewers.map(r => ({...r, needs_reconfirmation:r.status !== 'Pending' && r.reviewed_revision !== request.revision}))};
+      const fields=effectiveFields(request,this.activeAnalysis(actor,id),this.decisions(actor,id));
+      const token=hash(fields.map(f=>({field_key:f.field_key,value:f.value,evidence:f.evidence})).sort((a,b)=>a.field_key.localeCompare(b.field_key)));
+      const hasAutomatic=fields.some(f=>f.origin==='agent');
+      return {version:row?.version ?? 0, ...state, reviewers:state.reviewers.map(r => ({...r, needs_reconfirmation:r.status !== 'Pending' && (r.reviewed_revision !== request.revision || (hasAutomatic && r.reviewed_fields_token!==token))}))};
     },
     recordReview(input) {
       if (!keys(input,['actor_id','request_id','expected_revision','expected_review_version','idempotency_key','operation','reviewer_id','name','role','status','notes'])) fail('INVALID_INPUT');
@@ -299,6 +303,8 @@ export function openRequestStore(path = ':memory:') {
           if(!reviewer) fail('NOT_FOUND');
           reviewer.status=input.status;reviewer.notes=input.notes;reviewer.reviewed_revision=request.revision;
         }
+        const fields=effectiveFields(request,this.activeAnalysis(actor_id,request.id),this.decisions(actor_id,request.id));
+        reviewer.reviewed_fields_token=hash(fields.map(f=>({field_key:f.field_key,value:f.value,evidence:f.evidence})).sort((a,b)=>a.field_key.localeCompare(b.field_key)));
         reviewer.recorded_by=actor_id;reviewer.recorded_at=new Date().toISOString();
         state.history.push({...reviewer,operation:input.operation});
         db.prepare('INSERT INTO reviewer_tracking VALUES (?,?,?) ON CONFLICT(request_id) DO UPDATE SET version=excluded.version,body=excluded.body').run(request.id,(row?.version ?? 0)+1,JSON.stringify(state));
@@ -308,7 +314,7 @@ export function openRequestStore(path = ':memory:') {
     workflow(actor,id) {
       const request=owned(actor,id);
       const history=db.prepare('SELECT body FROM review_completions WHERE request_id=? ORDER BY sequence').all(id).map(row=>JSON.parse(row.body));
-      return {...requestReadiness({request,analysis:this.activeAnalysis(actor,id),tracking:this.reviewers(actor,id),completion:history.at(-1) || null}),history};
+      return {...requestReadiness({request,analysis:this.activeAnalysis(actor,id),tracking:this.reviewers(actor,id),decisions:this.decisions(actor,id),completion:history.at(-1) || null}),history};
     },
     completeReview(input) {
       if(!keys(input,['actor_id','request_id','expected_revision','expected_review_version','idempotency_key'])) fail('INVALID_INPUT');
@@ -326,7 +332,7 @@ export function openRequestStore(path = ':memory:') {
     },
     handoff(actor,id) {
       const request=owned(actor,id);
-      const source_token=hash({revision:request.revision,analysis_run:this.activeAnalysis(actor,id)?.run_id ?? null,review_version:this.reviewers(actor,id).version});
+      const source_token=hash({intake_policy:"exceptions-v1",revision:request.revision,analysis_run:this.activeAnalysis(actor,id)?.run_id ?? null,review_version:this.reviewers(actor,id).version});
       const versions=db.prepare('SELECT version,body FROM handoff_versions WHERE request_id=? ORDER BY version').all(id).map(row=>JSON.parse(row.body));
       const latest=versions.at(-1) || null;
       return {version:latest?.version ?? 0,source_token,latest:latest ? {...latest,outdated:latest.source_token!==source_token} : null,

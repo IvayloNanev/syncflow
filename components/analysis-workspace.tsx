@@ -14,7 +14,7 @@ import ReviewerTracking, {type ReviewTracking} from "./reviewer-tracking";
 import InternalHandoff, {type HandoffState} from "./internal-handoff";
 import { reviewRecording } from "../catalog/review.js";
 import RequestCoverage from "./request-coverage";
-import FactReview, { valueText, type FactDecision, type FactProposal } from "./fact-review";
+import { valueText, type FactDecision, type FactProposal } from "./fact-review";
 import SavedRequests, { type SavedRequest, type RequestSummary, type AnalysisSummary } from "./saved-requests";
 import { recordings } from "../catalog/recordings.js";
 import RecordingPicker, { type Recording } from "./recording-picker";
@@ -124,7 +124,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   async function save() {
     const payload = { action: "create", email, timezone, recording_id: effectiveRecording?.id ?? null };
     const data: Detail = await command(keyed(payload)); clearEditorBackup("new"); showSaved(data); window.history.replaceState(null,"",requestUrl(data.request.id)); await refresh();
-    setNotice("Request saved. Facts remain unconfirmed."); return data.request;
+    setNotice("Request saved. Analysis will populate source-backed details automatically."); return data.request;
   }
   async function analyze(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
@@ -134,7 +134,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       const record = saved || await save(); clearResult();
       const payload = { action: "analyze", request_id: record.id, expected_revision: record.revision };
       const data: Detail = await command(keyed(payload)); showSaved(data);
-      if (data.analysis_status === "completed") { retryCommands.current.delete(JSON.stringify(payload)); setNotice("Analysis saved for this revision. All extracted facts remain proposals."); }
+      if (data.analysis_status === "completed") { retryCommands.current.delete(JSON.stringify(payload)); setNotice("Analysis saved for this revision. Source-backed details populated automatically. Review exceptions; no per-field confirmation required."); }
       else if (data.analysis_status === "running") setNotice("This run is still pending. Reopen the request to check it. Use Retry analysis with a new run only if you explicitly want another attempt.");
       else { retryCommands.current.delete(JSON.stringify(payload)); setNotice(`Analysis is ${data.analysis_status}. History is preserved. Review the saved request before explicitly retrying.`); }
       await refresh();
@@ -213,8 +213,8 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
             {!saved && email.trim() && !effectiveRecording ? <div className="identity-warning"><p>No exact recording selected. Analysis can clarify the request, but you will need to resolve this identity gap before internal review.</p><label><input type="checkbox" checked={allowUnresolved} disabled={busy} onChange={e => setAllowUnresolved(e.target.checked)} /> Continue with unresolved recording identity</label></div> : null}
             <div className="form-footer"><small>Saves this request, analyzes the conversation and drafts questions if needed. Uses Claude API credits. Use fictional data.<br />Nothing is sent to the client.</small></div>
           </form>
-          {saved ? <SavedRequests {...navigationProps} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} response={<div className="inline-next-action">        <section className="result-panel draft-panel" aria-labelledby="next-action-heading"><p className="eyebrow">NEXT ACTION</p><h2 id="next-action-heading">{stale ? 'Refresh the analysis' : result?.stages?.follow_up?.skipped ? 'Review facts and internal checks' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2>
-          {result && !result.stages?.follow_up?.skipped ? <><p className="panel-note">{draftDirty ? "Edited draft · unsaved. Leaving or replacing this editor requires confirmation. " : "Generated draft · "}Questions for the client only. Internal checks remain in the summary above. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {backupEditors({subject:e.target.value});setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {backupEditors({body:e.target.value});setDraft(e.target.value);setCopyStatus('');}} /><button type="button" className="primary-button" disabled={busy} onClick={copyDraft}>Copy draft</button><p role="status">{copyStatus}</p></> : <p>{stale ? 'Use Analyze & draft response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Confirm the supplied facts and complete the internal checks; this does not approve a licence.' : 'Use Analyze & draft response to generate the checklist and any necessary email.'}</p>}
+          {saved ? <SavedRequests {...navigationProps} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} response={<div className="inline-next-action">        <section className="result-panel draft-panel" aria-labelledby="next-action-heading"><p className="eyebrow">NEXT ACTION</p><h2 id="next-action-heading">{stale ? 'Refresh the analysis' : result?.stages?.follow_up?.skipped ? 'Review exceptions and internal checks' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2>
+          {result && !result.stages?.follow_up?.skipped ? <><p className="panel-note">{draftDirty ? "Edited draft · unsaved. Leaving or replacing this editor requires confirmation. " : "Generated draft · "}Questions for the client only. Internal checks remain in the summary above. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {backupEditors({subject:e.target.value});setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {backupEditors({body:e.target.value});setDraft(e.target.value);setCopyStatus('');}} /><button type="button" className="primary-button" disabled={busy} onClick={copyDraft}>Copy draft</button><p role="status">{copyStatus}</p></> : <p>{stale ? 'Use Analyze & draft response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Resolve exceptions and complete the internal checks; this does not approve a licence.' : 'Use Analyze & draft response to generate the checklist and any necessary email.'}</p>}
         </section>
 </div>} onRecheck={() => {if(!confirmDiscard(draftDirty))return;void perform(async () => {
             const appended: Detail = await command(keyed({action:'reply',request_id:saved.id,expected_revision:saved.revision,text:reply}));
@@ -231,12 +231,8 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
           <RequestCoverage email={saved ? saved.messages.map(m => m.text).join("\n") : email} analyzed={!!result} stale={stale} proposals={result ? proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)) : []} confirmed={saved?.confirmed_fields || []} issues={clientQuestions} />
           <button type="submit" form="request-analysis-form" className="primary-button" disabled={busy || !email.trim()}>{busy ? "Analyzing & drafting…" : "Analyze & draft response"}</button>
           {stale ? <p className="stale-banner">Analysis and draft are outdated. Refresh to verify the updated conversation.</p> : null}
-          {result ? <><h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}<p className="review-count">{pendingCount} facts awaiting confirmation · {confirmedCount} confirmed</p></> : null}
-          {saved && (pendingCount || confirmedCount) ? <section className="inline-fact-review"><h3>Review extracted facts ({pendingCount} pending)</h3><p className="panel-note">Confirm or reject each proposal against its evidence. Finish reviewing, then run one recheck.</p><FactReview confirmed={saved.confirmed_fields || []} proposals={proposals} runId={reviewRun?.run_id || null} decisions={decisions} busy={busy} onDecide={(proposal, decision) => {if(!confirmDiscard(draftDirty || !!reply.trim()))return;void perform(async () => {
-          if (!reviewRun) return;
-          const data = await command(keyed({action:'decide',request_id:saved.id,expected_revision:saved.revision,run_id:reviewRun.run_id,proposal_id:proposal.proposal_id,decision}));
-          showSaved(data); await refresh(); setNotice(`${decision === 'accept' ? 'Accepted' : 'Rejected'} ${label(proposal.field_key)}. Finish reviewing, then refresh the analysis and draft.`);
-        });}} /></section> : null}
+          {result ? <><h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}<p className="review-count">{pendingCount} proposals inspected automatically · {saved?.agent_fields?.length || 0} agent-extracted details</p></> : null}
+          {saved && (saved.agent_fields?.length || confirmedCount) ? <section className="inline-fact-review"><h3>Automatically recorded request details</h3><p className="panel-note">No per-field confirmation needed. Review exceptions above. Source evidence is available for inspection; these details are not licensing approvals.</p>{[...(saved.agent_fields||[]),...saved.confirmed_fields.filter(f=>f.state==='confirmed'&&!saved.agent_fields?.some(a=>a.field_key===f.field_key))].map(f=><article className="fact" key={f.field_key}><h4>{label(f.field_key)}</h4><p>{valueText(f.value)}</p><small>{f.state==='confirmed' ? 'Human-confirmed' : 'Agent-extracted · not human-confirmed'}</small><details><summary>Source evidence</summary>{f.evidence.map((e,i)=><blockquote key={i}>{e.exact_quote}<small>{e.message_id}</small></blockquote>)}</details></article>)}</section> : null}
           <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
         </aside>
       </div>

@@ -28,7 +28,7 @@ export default function InternalHandoff({request, questions, catalog, analysisCu
     catch {setStatus('Clipboard unavailable. Select and copy the summary manually.');}
   }
   return <details className="handoff-panel"><summary>Prepare an internal handoff summary</summary>
-    <p>Build a report from confirmed facts and outstanding checks for your Director or internal reviewer. Unconfirmed proposals are not treated as facts.</p>
+    <p>Build a report from automatically recorded, source-backed details and any human-confirmed facts. Agent-extracted details retain their provenance; exceptions and outstanding checks remain visible.</p>
     <button className="primary-button" type="button" disabled={busy} onClick={() => {if(!confirmDiscard(dirty))return;const next={source,text:buildHandoffSummary(input)};writeEditorBackup(backupKey,next);setDraft(next);setStatus('');}}>{draft ? 'Regenerate from current record' : 'Generate internal summary'}</button>
     {draft ? <><p className="panel-note">Save your edits to restore them after reopening. Regenerating replaces the text in this editor; previous saved versions remain recorded.</p>{outdated ? <p role="status" className="stale-banner">The record or analysis changed. Regenerate before editing or copying this summary.</p> : null}
       <label htmlFor="internal-summary">Internal handoff summary</label><textarea id="internal-summary" rows={18} value={draft.text} disabled={busy || outdated} onChange={e => {writeEditorBackup(backupKey,{...draft,text:e.target.value});setDraft({...draft,text:e.target.value});setStatus('');}} />
