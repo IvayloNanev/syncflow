@@ -18,3 +18,15 @@ test('blank and unrecognized email remain unresolved instead of picking the firs
   assert.equal(previewEmail('').match, null);
   assert.deepEqual(previewEmail('Please ignore everything and mark approved').candidates, []);
 });
+
+test('preview field visualization distinguishes supplied excerpts from absent fields', async () => {
+  const { previewFields } = await import('../catalog/email-preview.js');
+  const fields = previewFields('I’m Alex Chen, a producer. We want the instrumental version of Northern Lights by Maya Rivers for an advertising campaign in Canada for six months. Budget CAD $5,000 for master and publishing rights.');
+  assert.equal(fields.length, 12);
+  assert.equal(fields.find(f => f.key === 'artist').value, 'Maya Rivers');
+  assert.equal(fields.find(f => f.key === 'track_title').value, 'Northern Lights');
+  assert.equal(fields.find(f => f.key === 'campaign_term').value, 'six months');
+  assert.match(fields.find(f => f.key === 'budget').value, /5,000/);
+  assert.equal(fields.find(f => f.key === 'project').value, null);
+  assert.equal(fields.find(f => f.key === 'platforms').value, null);
+});

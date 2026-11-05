@@ -52,3 +52,9 @@ Before analysis, provisional hints inspect the full saved conversation. After an
 Acceptance checks: saved fictional request showed four client questions, one internal check and eight facts awaiting confirmation alongside the draft; appended reply invalidated and hid the old draft/questions. Regression suite: 163 passed. Production build, TypeScript and lint passed. Real-practitioner usability testing remains outstanding; browser verification does not substitute for it.
 
 Reply walkthrough completed: after supplying project, platforms, music length and a full response deadline, refreshed analysis showed zero client questions, one internal publishing check, twelve facts awaiting confirmation and no unnecessary clarification draft. Expanded the single fact review location to verify proposal values and evidence controls. Responsive check at 390px showed document width equal to viewport width; temporary overrides were reset.
+
+## Visual email detail coverage
+
+“What needs attention?” now shows a twelve-segment detail coverage bar, explicit counts and value rows for Provided, Missing/Not detected and Needs clarification. Each status has text and an icon as well as color. Immediate preview shows only detected excerpts (not inferred catalog facts) and labels absence as Not detected. Current agent outputs and confirmed facts drive the view after analysis; partially supplied fields with client questions become Needs clarification. Counts describe information coverage, not model confidence or licensing readiness. Internal checks remain separate.
+
+Verified the Alex Chen email before analysis: eight provided values and four not-detected details, with artist, recording version, territory, term and budget visible. Added an extraction regression case; suite now has 164 passing tests.

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { previewEmail } from "../catalog/email-preview.js";
+import RequestCoverage from "./request-coverage";
 import FactReview, { type FactDecision, type FactProposal } from "./fact-review";
 import SavedRequests, { type SavedRequest, type RequestSummary, type AnalysisSummary } from "./saved-requests";
 import { recordings } from "../catalog/recordings.js";
@@ -169,12 +170,9 @@ export default function AnalysisWorkspace() {
         <aside className="result-panel request-summary" aria-labelledby="summary-heading">
           <p className="eyebrow">REQUEST SUMMARY</p><h2 id="summary-heading">What needs attention?</h2>
           <div className="preview-recording"><small>{saved ? 'SAVED RECORDING' : recordingOverride ? 'YOUR SELECTION' : 'PROVISIONAL CATALOG MATCH'}</small><h3>{effectiveRecording?.title || 'Recording unresolved'}</h3><p>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : preview.candidates.length ? 'Several recordings may match. Confirm the artist and exact version.' : 'Paste a title, artist and version, or inspect the catalog.'}</p><button type="button" className="text-button" disabled={busy} onClick={() => setCatalogOpen(!catalogOpen)} aria-expanded={catalogOpen}>{catalogOpen ? 'Close catalog' : 'Inspect / change recording'}</button>{saved && !effectiveRecording ? <button type="button" className="text-button" disabled={busy} onClick={recoverIdentity}>Copy original email to resolve identity in a new request</button> : null}</div>
-          {stale ? <div className="stale-banner"><strong>Analysis and draft need refreshing.</strong><p>The conversation or confirmed facts changed. Previous questions are hidden until you analyze again.</p></div> : result ? <>
-            <h3>{clientQuestions.length} client questions</h3>{clientQuestions.length ? <ul>{clientQuestions.map(i => <li key={i.issue_id}>{i.question}</li>)}</ul> : <p>No client clarification needed. Human and internal checks may remain.</p>}
-            <h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported. This is not clearance.</p>}
-            <p className="review-count">{pendingCount} facts awaiting confirmation · {confirmedCount} confirmed</p>
-            {result.coordinator_review_issue_ids?.length ? <p>Some supplied answers need your confirmation; do not ask the client again.</p> : null}
-          </> : <><h3>Likely missing details</h3>{!email.trim() ? <p>Paste an email to see a catalog match and likely gaps immediately.</p> : <><p className="panel-note">Quick checks across the saved conversation. Analyze verifies meaning and conflicts.</p><ul>{preview.missing.filter(i => i !== 'Exact catalog recording' || !effectiveRecording).map(i => <li key={i}>{i}</li>)}</ul>{!preview.missing.length ? <p>No obvious gaps detected. Analyze to verify.</p> : null}</>}</>}
+          <RequestCoverage email={saved ? saved.messages.map(m => m.text).join("\n") : email} analyzed={!!result} stale={stale} proposals={result ? proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)) : []} confirmed={saved?.confirmed_fields || []} issues={clientQuestions} />
+          {stale ? <p className="stale-banner">Analysis and draft are outdated. Refresh to verify the updated conversation.</p> : null}
+          {result ? <><h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}<p className="review-count">{pendingCount} facts awaiting confirmation · {confirmedCount} confirmed</p></> : null}
           <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
         </aside>
       </div>

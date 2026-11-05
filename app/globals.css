@@ -2120,3 +2120,25 @@ h2 {
 .email-only .intake-grid { display: block; margin: 0; }
 .email-only .analysis-input { border: 0; background: transparent; box-shadow: none; padding: 0; }
 .email-only textarea { min-height: 300px; background: white; }
+
+.coverage-totals { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 18px; }
+.coverage-totals > div { padding: 12px 8px; border-radius: 10px; background: #f1f5eb; text-align: center; }
+.coverage-totals > div:nth-child(2) { background: #faf0e7; }
+.coverage-totals > div:nth-child(3) { background: #fff5d8; }
+.coverage-totals strong { display: block; font-size: 26px; }
+.coverage-totals span { font-size: 11px; }
+.coverage-bar { display: flex; gap: 4px; margin: 16px 0; height: 9px; }
+.coverage-segment { flex: 1; border-radius: 4px; }
+.coverage-segment.provided { background: #6d8959; }
+.coverage-segment.missing { background: #d5a17e; }
+.coverage-segment.attention { background: #d7b443; }
+.coverage-row { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 10px; padding: 13px 0; border-bottom: 1px solid #e6e9e0; }
+.coverage-icon { width: 22px; height: 22px; border-radius: 50%; text-align: center; background: #e7eedf; color: #3d602d; font-weight: 700; }
+.coverage-row.missing .coverage-icon { background: #faeadf; color: #8d512c; }
+.coverage-row.attention .coverage-icon { background: #fff0bb; color: #7c6012; }
+.coverage-row-label { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.request-summary .coverage-row h3 { margin: 0; font-size: 12px; font-weight: 600; }
+.coverage-row-label > span { font-size: 10px; color: #66705e; }
+.coverage-row p { margin: 5px 0 0; font-size: 13px; overflow-wrap: anywhere; line-height: 1.6; white-space: pre-wrap; }
+.coverage-row.missing p { color: #9a6440; }
+.coverage-question { color: #8d6b16; }
