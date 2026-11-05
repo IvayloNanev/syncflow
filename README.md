@@ -184,3 +184,7 @@ Use **View all requests** to see server-derived status, confirmed client/project
 ### Saved handoff versions
 
 Save edited internal summaries using **Save handoff edits**. The latest version is restored on reopen, with actor/time and version history. Request revisions, new analysis runs or reviewer changes mark the saved summary outdated; regenerate before saving or copying. Saves use server source tokens and expected versions to prevent stale or concurrent overwrites, and never change request facts or approvals. Unsaved edits remain browser-local.
+
+### Latest acceptance result
+
+See [product acceptance — Nov 5](docs/acceptance/2026-11-05-product-acceptance.md). Functional regression/build checks pass, but live field recall was 93.8% against a 95% target; a territory contradiction was missed and one case failed validation. Raw false-discovery scores also miss target, largely due to the documented deadline-policy/key mismatch. Human time savings and uncoached usability remain unmeasured. Do not treat passing code tests as full PRD acceptance. A human study worksheet is included in the report folder.
