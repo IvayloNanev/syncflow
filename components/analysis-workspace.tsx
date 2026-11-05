@@ -34,7 +34,6 @@ type Result = {
   };
 };
 const example = "Hi, this is Jordan Pike. We’d like to use Northern Lights by Maya Rivers (original recording) in a Canadian online advertising campaign for six months. Our budget is CAD 5,000 for both rights. Please respond by November 6, 2026.";
-const label = (key: string) => key.replaceAll("_", " ");
 
 export default function AnalysisWorkspace({ mode = "coordinator", initialRequestId }: {mode?: "coordinator" | "internal"; initialRequestId?: string}) {
   const router=useRouter();
@@ -155,7 +154,6 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const effectiveRecording = recordingOverride || saved ? recording : preview.match;
   const proposals = reviewRun?.result.stages?.intake?.output?.proposed_changes || [];
   const issues = result?.stages?.review?.output?.issues || [];
-  const confirmedCount = (saved?.confirmed_fields || []).filter(f => f.state === "confirmed").length;
   const pendingCount = proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)).length;
   const navigationProps = { requests, saved, analyses, busy, reply, onReply: (value:string)=>{backupEditors({reply:value});setReply(value);},
     onRefresh: () => { void perform(refresh); }, onNew: newRequest,
@@ -228,11 +226,11 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
         <aside className="result-panel request-summary" aria-labelledby="summary-heading">
           <p className="eyebrow">REQUEST SUMMARY</p><h2 id="summary-heading">What needs attention?</h2>
           <div className="preview-recording"><small>{saved ? 'SAVED RECORDING' : recordingOverride ? 'YOUR SELECTION' : 'PROVISIONAL CATALOG MATCH'}</small><h3>{effectiveRecording?.title || (!email.trim() && !saved ? 'Waiting for client email' : 'Recording unresolved')}</h3><p>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : preview.candidates.length ? 'Several recordings may match. Confirm the artist and exact version.' : 'Paste a title, artist and version, or inspect the catalog.'}</p><button type="button" className="text-button" disabled={busy} onClick={() => setCatalogOpen(!catalogOpen)} aria-expanded={catalogOpen}>{catalogOpen ? 'Close catalog' : 'Inspect / change recording'}</button></div>
-          <RequestCoverage email={saved ? saved.messages.map(m => m.text).join("\n") : email} analyzed={!!result} stale={stale} proposals={result ? proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)) : []} confirmed={saved?.confirmed_fields || []} issues={clientQuestions} />
+          <RequestCoverage email={saved ? saved.messages.map(m => m.text).join("\n") : email} analyzed={!!result} stale={stale} proposals={result ? proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)) : []} confirmed={saved?.confirmed_fields || []} issues={clientQuestions} agentFields={saved?.agent_fields || []} />
           <button type="submit" form="request-analysis-form" className="primary-button" disabled={busy || !email.trim()}>{busy ? "Analyzing & drafting…" : "Analyze & draft response"}</button>
           {stale ? <p className="stale-banner">Analysis and draft are outdated. Refresh to verify the updated conversation.</p> : null}
           {result ? <><h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}<p className="review-count">{pendingCount} proposals inspected automatically · {saved?.agent_fields?.length || 0} agent-extracted details</p></> : null}
-          {saved && (saved.agent_fields?.length || confirmedCount) ? <section className="inline-fact-review"><h3>Automatically recorded request details</h3><p className="panel-note">No per-field confirmation needed. Review exceptions above. Source evidence is available for inspection; these details are not licensing approvals.</p>{[...(saved.agent_fields||[]),...saved.confirmed_fields.filter(f=>f.state==='confirmed'&&!saved.agent_fields?.some(a=>a.field_key===f.field_key))].map(f=><article className="fact" key={f.field_key}><h4>{label(f.field_key)}</h4><p>{valueText(f.value)}</p><small>{f.state==='confirmed' ? 'Human-confirmed' : 'Agent-extracted · not human-confirmed'}</small><details><summary>Source evidence</summary>{f.evidence.map((e,i)=><blockquote key={i}>{e.exact_quote}<small>{e.message_id}</small></blockquote>)}</details></article>)}</section> : null}
+
           <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
         </aside>
       </div>
