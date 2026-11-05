@@ -1,6 +1,6 @@
 # Local saved-request foundation
 
-> Current integration: the local browser now saves/reopens requests and analyses through `/api/requests` and the RequestStore adapter. See [saved browser requests](saved-browser-requests.md). Earlier unsaved/unconnected limitations below describe the original deliverable. Prisma integration, authentication and human confirmation remain unfinished.
+> Current integration: the local browser now saves/reopens requests and analyses through `/api/requests` and the RequestStore adapter. See [saved browser requests](saved-browser-requests.md). Earlier unsaved/unconnected limitations below describe the original deliverable. Local fact confirmation is now available through explicit proposal decisions; Prisma integration and shared authentication remain unfinished.
 
 
 Implemented: a storage module for create/get/list, append-only replies, audit history and projecting a saved revision into the existing agent context. SQLite persistence uses Node's built-in node:sqlite API; use Node 24+ (the existing CI already uses Node 24). No extra dependency is installed. API reference: https://nodejs.org/api/sqlite.html.
@@ -39,3 +39,7 @@ The parent directory must already exist. Use a private local directory, normally
 This is a local storage module, **not shared authenticated persistence**. No new HTTP routes were added; /api/analyze still handles unsaved requests. The UI is not connected. Authentication, workspace membership/sharing, a production database adapter/migrations/backups, analysis-run persistence and atomic activation, human confirmation/issue-resolution commands, summary storage and approval invalidation remain separate deliverables. Owner-bound storage tests do not constitute an authentication test.
 
 All 114 tests pass, including durable reopen, retries, stale revisions, independent database handles and cross-actor access rejection. The demo reopens revision 1 with two messages/two audit events. No production load, corruption recovery, backup/restore or deployment verification was performed. The shared database/auth choice remains open; SQLite here is a reversible local-development adapter.
+
+## Explicit proposal decisions
+
+`decideProposal({actor_id,request_id,expected_revision,idempotency_key,run_id,proposal_id,decision})` accepts accept/reject only. It resolves the value/evidence from the saved review head; callers cannot submit arbitrary confirmed data. `decisions(actor,id)` returns immutable decision history and `reviewAnalysis(actor,id)` returns the source for remaining undecided fields. Decisions advance the revision, invalidate active analysis, and preserve source messages. See saved-browser-requests.md for review-head lifecycle and current local UI behavior.

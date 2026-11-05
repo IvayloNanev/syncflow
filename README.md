@@ -44,7 +44,7 @@ These are prototype decisions to validate with a coordinator, not confirmed Warn
 - **Multi-recording requests flagged:** an email covering several recordings is flagged for coordinator review and splitting into separate requests. The agent must not silently select one recording or combine their terms.
 - **Saving does not confirm agent facts:** storing an email or an analysis preserves the record only. Extracted details remain proposals until the coordinator explicitly confirms them.
 
-The local browser now saves requests and analysis through the tested SQLite adapter in .syncflow-data/browser-requests.sqlite. This is a single-operator development workspace on this computer, not shared authenticated storage. Prisma integration and coordinator fact confirmation remain pending.
+The local browser now saves requests and analysis through the tested SQLite adapter in .syncflow-data/browser-requests.sqlite. This is a single-operator development workspace on this computer, not shared authenticated storage. Prisma integration remains pending; explicit local Accept/Reject decisions are implemented below.
 
 ## Agent pipeline and shared contracts
 
@@ -115,7 +115,7 @@ Saved requests/reply history, a third AI agent for internal summaries of confirm
 
 Run `pnpm requests:demo` to see a fictional email/reply persist across a database close/reopen. The [SQLite request store](docs/request-store.md) supports revisions, idempotent commands and audit history. It is connected to the local browser through /api/requests and does not implement login/shared storage. Node 24+ is required.
 
-Run `pnpm requests:analysis:demo` to persist/reopen a mock analysis against a saved revision and see a reply invalidate it. See [saved analysis](docs/saved-analysis.md): results stay proposals; the local browser integration is implemented below, while login and confirmation remain unfinished.
+Run `pnpm requests:analysis:demo` to persist/reopen a mock analysis against a saved revision and see a reply invalidate it. See [saved analysis](docs/saved-analysis.md): results stay proposals; the local browser integration is implemented below, while shared login remains unfinished; local fact confirmation is implemented below.
 
 ## Branch reconciliation
 
@@ -123,7 +123,7 @@ The Next.js/Prisma application foundation from `developer` is combined with the 
 
 ## Connected browser demo
 
-`pnpm dev` opens the local coordinator screen at http://127.0.0.1:3000. Paste a fictional email to see live proposed facts/source quotes, issues and an editable draft. It uses the existing server-only Claude credentials. Requests and analyses persist locally; confirmation and login remain unfinished. See [browser flow and verification](docs/browser-analysis.md).
+`pnpm dev` opens the local coordinator screen at http://127.0.0.1:3000. Paste a fictional email to see live proposed facts/source quotes, issues and an editable draft. It uses the existing server-only Claude credentials. Requests and analyses persist locally; local fact confirmation is available; shared login remains unfinished. See [browser flow and verification](docs/browser-analysis.md).
 
 ## Fictional recording catalog
 
@@ -145,4 +145,10 @@ The browser's only writer is the existing RequestStore adapter, in the ignored `
 
 The development-only POST `/api/requests` supports list/get/create/reply/analyze commands. Host/Origin checks restrict it to the same loopback app; production returns 503. The local operator identity is server-owned and cannot be supplied by a browser. There is no authentication: anyone with access to this local development app can read its local requests. Do not expose it through a tunnel or network listener. Shared partner access requires authentication and hosted storage first.
 
-Mutations use stable command keys across network retries. Replies require the current revision, append history atomically and invalidate previous active analysis. Analysis reads saved messages, runs outside database transactions, persists its immutable context/results and activates only if the source revision is still current. Saving never confirms proposed facts. Provider failures preserve messages and safe run status; explicit new-key retries create a new run. Interrupted running commands can remain pending after process failure; reopen first, then use **Retry analysis with a new run** if another paid attempt is intended. No automatic recovery, background queue, email sending, fact confirmation or approvals are implemented.
+Mutations use stable command keys across network retries. Replies require the current revision, append history atomically and invalidate previous active analysis. Analysis reads saved messages, runs outside database transactions, persists its immutable context/results and activates only if the source revision is still current. Saving never confirms proposed facts. Provider failures preserve messages and safe run status; explicit new-key retries create a new run. Interrupted running commands can remain pending after process failure; reopen first, then use **Retry analysis with a new run** if another paid attempt is intended. No automatic recovery, background queue, email sending or licensing approvals are implemented. Local fact confirmation is described below.
+
+## Coordinator fact decisions
+
+Open a saved request with an analysis. The fact-review panel shows confirmed values separately from agent proposals and their exact source quotes. **Accept** saves that proposal's value/evidence with the server-owned local coordinator identity and timestamp. **Reject** records the decision without changing a confirmed value. Values and evidence are loaded from the saved run; the browser submits IDs and a decision only. Repeated commands replay safely rather than applying twice.
+
+Every saved decision advances the request revision and makes previous analysis/drafts outdated. Remaining undecided fields from that same review source can still be reviewed; rerun analysis to refresh checklist/draft. A reply removes the remaining review source, and a newer completed analysis replaces it. Confirmed fields are included in future agent context; an agent may propose a different value but cannot overwrite it. Old values, evidence and human decisions remain in history. This is local request-fact verification, not music-rights clearance. Rejection does not permanently suppress an agent from proposing the same value on a later run. Undo, manual value editing, N/A waivers and issue-resolution commands are not included.

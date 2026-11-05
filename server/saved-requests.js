@@ -21,11 +21,12 @@ const allowed = {
   list: ['action'], get: ['action', 'request_id'],
   create: ['action', 'email', 'timezone', 'recording_id', 'idempotency_key'],
   reply: ['action', 'request_id', 'expected_revision', 'text', 'idempotency_key'],
+  decide: ['action','request_id','expected_revision','idempotency_key','run_id','proposal_id','decision'],
   analyze: ['action', 'request_id', 'expected_revision', 'idempotency_key'],
 };
 function detail(store, id) {
   const request = store.get(actor, id);
-  return { request, active_analysis: store.activeAnalysis(actor, id),
+  return { request, review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
     analyses: store.analyses(actor, id).map(({ run_id, base_revision, status, created_at }) => ({ run_id, base_revision, status, created_at })),
     catalog_review: reviewRecording(request.recording_id) };
 }
@@ -33,6 +34,8 @@ const safeErrors = {
   NOT_FOUND: [404, 'Request not found.'],
   REVISION_CONFLICT: [409, 'This request changed. Reopen it before adding a reply or analyzing again.'],
   IDEMPOTENCY_CONFLICT: [409, 'This retry key belongs to different input. Reopen the request and review your changes.'],
+  STALE_PROPOSAL: [409, 'This proposal is no longer current. Reopen and analyze the current request.'],
+  DECISION_EXISTS: [409, 'This proposal already has a saved decision. Reopen to see it.'],
   INVALID_RECORDING: [400, 'Choose a valid catalog recording.'],
   INVALID_TIMEZONE: [400, 'Choose a valid timezone.'],
 };
@@ -84,6 +87,10 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
       if (action === 'reply') {
         const result = store.appendReply({ ...fields, actor_id: actor });
         return json(200, { ...detail(store, result.request.id), replayed: result.replayed });
+      }
+      if (action === 'decide') {
+        const result = store.decideProposal({ ...fields, actor_id: actor });
+        return json(200, { ...detail(store, result.request.id), replayed:result.replayed });
       }
       analyzing = true;
       try {

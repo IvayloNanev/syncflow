@@ -1,6 +1,6 @@
 # Saved-revision analysis
 
-> Current integration: the local browser now saves/reopens requests and analyses through `/api/requests` and the RequestStore adapter. See [saved browser requests](saved-browser-requests.md). Earlier unsaved/unconnected limitations below describe the original deliverable. Prisma integration, authentication and human confirmation remain unfinished.
+> Current integration: the local browser now saves/reopens requests and analyses through `/api/requests` and the RequestStore adapter. See [saved browser requests](saved-browser-requests.md). Earlier unsaved/unconnected limitations below describe the original deliverable. Local fact confirmation is now available through explicit proposal decisions; Prisma integration and shared authentication remain unfinished.
 
 
 Implemented locally: `analyzeSavedRequest(store, command, providers)` reads a saved request snapshot, runs Intake → Review → Follow-up outside the SQLite transaction, then stores the result and atomically checks whether it can become active. Trusted actor identity and the existing provider ports are required. No new HTTP routes or login are implemented.

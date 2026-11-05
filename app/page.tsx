@@ -9,6 +9,6 @@ export default function Home() {
     </header>
     <section className="intro" id="home"><div><p className="eyebrow">COORDINATOR WORKSPACE</p><h1>A clear next step<br />for every request.</h1><p className="lede">Turn a client email into proposed facts, open questions, and a draft you can review.</p></div></section>
     <AnalysisWorkspace />
-    <footer>Agents propose. You review. Requests are saved locally on this computer. Human fact confirmation, shared access and approvals remain unfinished.</footer>
+    <footer>Agents propose. You review. Requests are saved locally on this computer. Fact decisions are saved locally. Shared access and licensing approvals remain unfinished.</footer>
   </main>;
 }

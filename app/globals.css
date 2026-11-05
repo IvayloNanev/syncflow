@@ -331,3 +331,12 @@ blockquote { border-left: 3px solid var(--violet-soft); margin: 10px 0 0; paddin
 .saved-panel { margin-bottom: 24px; }
 .message-body { white-space: pre-wrap; overflow-wrap: anywhere; }
 .saved-panel details { margin: 14px 0; }
+.fact-review { margin: 24px 0; }
+.confirmed-grid, .fact-diff { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.confirmed-fact { padding: 16px; background: #edf7f1; border-radius: 10px; }
+.fact-review pre { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; margin: 8px 0; }
+.fact-review small { display: block; overflow-wrap: anywhere; }
+.fact-diff > div { background: #f5f3fa; border-radius: 8px; padding: 12px; }
+.change-warning { color: #774500; font-weight: 600; }
+.decision-actions { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; }
+@media (max-width: 640px) { .confirmed-grid, .fact-diff { grid-template-columns: 1fr; } }

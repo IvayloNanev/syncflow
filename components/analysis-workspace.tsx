@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
+import FactReview, { type FactDecision, type FactProposal } from "./fact-review";
 import SavedRequests, { type SavedRequest, type RequestSummary, type AnalysisSummary } from "./saved-requests";
 import { recordings } from "../catalog/recordings.js";
 import RecordingPicker, { type Recording } from "./recording-picker";
 
-type Evidence = { message_id: string; exact_quote: string };
-type Proposal = { proposal_id: string; field_key: string; proposed_value: unknown; evidence: Evidence[] };
+type Proposal = FactProposal;
 type Issue = { issue_id: string; type: string; severity: string; field_keys: string[]; question: string };
 type Result = {
   catalog_review?: { recording: Recording | null; cleared: false; blockers: { code: string; question: string; audience: string }[] };
@@ -22,15 +22,10 @@ type Result = {
 };
 const example = "Contact: Jordan Pike. Artist A / Track X (original recording) for an online ad in Canada. Budget CAD 5,000 for both rights. Deadline November 6, 2026.";
 const label = (key: string) => key.replaceAll("_", " ");
-function display(value: unknown): string {
-  if (value === null) return "Not supplied";
-  if (Array.isArray(value)) return value.join(", ");
-  if (typeof value === "object") return Object.entries(value as Record<string, unknown>)
-    .map(([key, item]) => `${label(key)}: ${item === null ? "Not supplied" : String(item)}`).join("\n");
-  return String(value);
-}
 
 export default function AnalysisWorkspace() {
+  const [reviewRun, setReviewRun] = useState<{ run_id: string; result: Result } | null>(null);
+  const [decisions, setDecisions] = useState<FactDecision[]>([]);
   const [saved, setSaved] = useState<SavedRequest | null>(null);
   const [requests, setRequests] = useState<RequestSummary[]>([]);
   const [analyses, setAnalyses] = useState<AnalysisSummary[]>([]);
@@ -48,7 +43,7 @@ export default function AnalysisWorkspace() {
   const [draft, setDraft] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
   function clearResult() { setResult(null); setError(""); setSubject(""); setDraft(""); setCopyStatus(""); }
-  type Detail = { request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
+  type Detail = { review_analysis: { run_id: string; result: Result } | null; decisions: FactDecision[]; request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
   async function command(payload: Record<string, unknown>) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 70000);
@@ -73,7 +68,7 @@ export default function AnalysisWorkspace() {
     return () => { mounted = false; };
   }, []);
   function showSaved(data: Detail) {
-    clearResult(); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
+    clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
     setRecording(recordings.find(r => r.id === data.request.recording_id) || null); setAnalyses(data.analyses);
     if (data.active_analysis?.result?.ok) {
       const active = { ...data.active_analysis.result, catalog_review: data.catalog_review };
@@ -106,13 +101,13 @@ export default function AnalysisWorkspace() {
   }
   function newRequest() {
     retryCommands.current.clear();
-    setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
+    setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
   }
   async function copyDraft() {
     try { await navigator.clipboard.writeText(`Subject: ${subject}\n\n${draft}`); setCopyStatus("Draft copied. Nothing was sent."); }
     catch { setCopyStatus("Clipboard unavailable. Select and copy the draft manually."); }
   }
-  const proposals = result?.stages?.intake?.output?.proposed_changes || [];
+  const proposals = reviewRun?.result.stages?.intake?.output?.proposed_changes || [];
   const issues = result?.stages?.review?.output?.issues || [];
   return (
     <>
@@ -145,14 +140,19 @@ export default function AnalysisWorkspace() {
         {saved && analyses.some(a => a.status === "running") ? <button type="button" disabled={busy} onClick={() => { retryCommands.current.delete(JSON.stringify({ action: "analyze", request_id: saved.id, expected_revision: saved.revision })); setNotice("A new run is enabled. Select Analyze saved revision to retry explicitly; this may use additional API credits."); }}>Retry analysis with a new run</button> : null}
         {error ? <div role="alert" className="analysis-error"><strong>Analysis needs attention</strong><p>{error}</p><p>The original email has not changed. Reopen the saved request before retrying an interrupted command. Add corrections as replies.</p></div> : null}
       </section>
+      {saved ? <FactReview confirmed={saved.confirmed_fields || []} proposals={proposals} runId={reviewRun?.run_id || null} decisions={decisions} busy={busy}
+        onDecide={(proposal, decision) => { void perform(async () => {
+          if (!reviewRun) return;
+          const data = await command(keyed({ action: "decide", request_id: saved.id, expected_revision: saved.revision,
+            run_id: reviewRun.run_id, proposal_id: proposal.proposal_id, decision }));
+          showSaved(data); await refresh();
+          setNotice(`${decision === "accept" ? "Accepted" : "Rejected"} ${label(proposal.field_key)}. Decision saved. Review remaining proposals or analyze again to refresh the checklist.`);
+        }); }} /> : null}
       {result ? <section className="analysis-results" aria-label="Analysis results">
         <p className="prototype-note">{recording ? `Coordinator-selected recording: ${recording.id} · ${recording.artist} · ${recording.version}. Catalog blockers are checked separately on the server; catalog metadata is not email evidence.` : "Recording identity remains unresolved. Confirm the recording before any handoff."}</p>
         <div className="result-heading"><h2>Your review workspace</h2><span className="count">Saved Claude analysis</span></div>
         <article className="result-panel"><p className="eyebrow">CATALOG REVIEW · COORDINATOR ACTION</p><h3>Recording blockers</h3><p>Server-checked fictional catalog metadata. These internal tasks are separate from the client clarification draft. No rights are cleared.</p>{result.catalog_review?.blockers.map(b => <div className="issue" key={b.code}><h4>{label(b.code.toLowerCase())}</h4><p>{b.question}</p></div>)}</article>
         <div className="result-grid">
-          <article className="result-panel facts-panel"><p className="eyebrow">1 · INTAKE</p><h3>Proposed facts <span>{proposals.length}</span></h3><p className="panel-note">Check the source quotes. These details are not confirmed.</p>
-            {proposals.length ? proposals.map(p => <div className="fact" key={p.proposal_id}><h4>{label(p.field_key)}</h4><p className="fact-value">{display(p.proposed_value)}</p><details><summary>View source evidence</summary>{p.evidence.map((e, i) => <blockquote key={`${e.message_id}-${i}`}>{e.exact_quote}<small>Source: {e.message_id}</small></blockquote>)}</details></div>) : <p>No supplied facts were extracted.</p>}
-          </article>
           <article className="result-panel issues-panel"><p className="eyebrow">2 · REVIEW</p><h3>Needs attention <span>{issues.length}</span></h3><p className="panel-note">Resolve these details before an internal handoff.</p>
             {issues.length ? issues.map(i => <div className="issue" key={i.issue_id}><span className="issue-kind">{label(i.type)} · {i.severity}</span><h4>{i.field_keys.map(label).join(", ")}</h4><p>{i.question}</p></div>) : <p>No checklist issues were found. Human review is still required.</p>}
             {result.coordinator_review_issue_ids?.length ? <p className="analysis-error">{result.coordinator_review_issue_ids.length} answered issues await coordinator confirmation.</p> : null}

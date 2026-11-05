@@ -1,6 +1,6 @@
 # Browser analysis workspace
 
-> Current integration: the local browser now saves/reopens requests and analyses through `/api/requests` and the RequestStore adapter. See [saved browser requests](saved-browser-requests.md). Earlier unsaved/unconnected limitations below describe the original deliverable. Prisma integration, authentication and human confirmation remain unfinished.
+> Current integration: the local browser now saves/reopens requests and analyses through `/api/requests` and the RequestStore adapter. See [saved browser requests](saved-browser-requests.md). Earlier unsaved/unconnected limitations below describe the original deliverable. Local fact confirmation is now available through explicit proposal decisions; Prisma integration and shared authentication remain unfinished.
 
 
 Run `pnpm dev` and open http://127.0.0.1:3000. The development server binds to loopback. Keep existing Claude credentials in the ignored local .env; never use NEXT_PUBLIC_ for credentials. No second server on port 3001 is needed for this screen.
