@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PageNavigation from "../components/page-navigation";
 import LandingStory from "../components/landing-story";
 
 const steps = [
@@ -13,7 +14,7 @@ export default function Home() {
       <a className="project-skip" href="#project-main">Skip to project overview</a>
       <header className="portal-nav">
         <Link className="portal-brand" href="/" aria-label="SyncFlow home">Sync<span>Flow</span><sup>↗</sup></Link>
-        <nav aria-label="Project navigation"><a href="#the-project">01 / THE PROBLEM</a><a href="#how-it-works">02 / THE FLOW</a><a href="#spaces-title">03 / THE PRODUCT</a></nav>
+        <PageNavigation current="home" />
         <span className="project-nav-label">AI-ASSISTED · HUMAN-LED</span>
       </header>
       <main id="project-main">
