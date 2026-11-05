@@ -1,0 +1,27 @@
+{
+  "kind": "development-reproduction-not-acceptance",
+  "model": "claude-haiku-5-5",
+  "cases": [
+    {
+      "attempt": 1,
+      "ok": true,
+      "error": null,
+      "validation_codes": [],
+      "evidence_mismatch_fields": []
+    },
+    {
+      "attempt": 2,
+      "ok": true,
+      "error": null,
+      "validation_codes": [],
+      "evidence_mismatch_fields": []
+    },
+    {
+      "attempt": 3,
+      "ok": true,
+      "error": null,
+      "validation_codes": [],
+      "evidence_mismatch_fields": []
+    }
+  ]
+}

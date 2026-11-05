@@ -1,0 +1,7 @@
+# Request dashboard
+
+The local saved-request list now includes a server-derived projection of current workflow, confirmed labels and deadline, responsible internal actor, blockers and next action. The main dashboard offers search, status filtering, confirmed-date/status sorting and row-level workspace opening. Source previews remain expandable and explicitly separate from confirmed names. Unknown values stay labeled unconfirmed; no proposal is treated as a confirmed fact and no deadline time/timezone is inferred. Empty lists and empty filter results have explicit states.
+
+The sidebar no longer repeats a long list of email fragments; it provides New request and View all requests. The input-first start remains available, with a small dashboard entry. Data loads on opening/refreshing the dashboard; there are no background notifications, reviewer access grants or clearing claims. All assigned reviewers are required under the existing prototype policy. Role responsibility is derived as next internal actor, not an independently assigned project owner.
+
+Validation: 175 tests passed, including confirmed-only dashboard labels, unknown date components, outstanding reviewer responsibility and no-clearance wording. Browser verified search and status filter reduced results to the intended request, confirmed-deadline sort and opening that saved workspace. Desktop preview and a 390px mobile viewport were checked; the table scrolls horizontally inside its container and document width stayed 390px. Production build, TypeScript and lint passed.

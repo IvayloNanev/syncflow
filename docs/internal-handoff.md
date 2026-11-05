@@ -1,0 +1,10 @@
+# Internal handoff summary
+
+The coordinator can generate a deterministic report from a saved request, edit it and copy it for a Director or other internal reviewer. Confirmed requirements include source excerpts, message IDs and confirmation attribution. Proposals are never promoted into report facts. Missing confirmations remain explicit. Recording metadata and internal checks remain separate, with fictional-data and no-clearance labels.
+
+The report records request ID/revision and message count. When current analysis is absent, it states that open questions are unknown and completeness cannot be relied upon. Existing summaries are marked outdated and copy/edit disabled whenever their request revision, current analysis run or reviewer version changes. Server source tokens enforce the same rule on save. Regeneration uses the latest record and replaces browser-local edits. Save handoff edits persists a version in local SQLite. The latest saved text restores on reopen; unsaved edits remain browser-local. Nothing is sent automatically. Reviewer assignment and approval tracking remain future work.
+
+Validation: 167 tests passed, including confirmed-only reporting, exact evidence, no catalog backfill, no mutation and safe stale-analysis handling. Live browser checked generation with zero confirmations, invalidation after a project confirmation, disabled stale copy, regeneration with the confirmed project/source, and editable coordinator notes. Copy action displayed successful clipboard completion; independent browser clipboard inspection did not return matching text, so clipboard contents were not independently verified. Production build and lint passed.
+
+
+Saved-edit validation: 177 tests passed, including disk reopen, exact edited-text persistence, ownership isolation, retry replay, conflict rejection and source invalidation. Browser saved an added coordinator note, performed a full page refresh, reopened the request and verified the note was restored. Save does not change request revision or model/approval state. Saved history exposes version metadata; earlier version text remains stored but a restore-old-version action is not implemented.

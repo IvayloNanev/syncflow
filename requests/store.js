@@ -1,3 +1,6 @@
+import {effectiveFields} from "./effective-fields.js";
+import { safeAnalysisFailure } from './analysis-failure.js';
+import { requestReadiness } from './readiness.js';
 import { resolveRecording } from '../catalog/review.js';
 import { DatabaseSync } from 'node:sqlite';
 import { randomUUID, createHash } from 'node:crypto';
@@ -35,6 +38,9 @@ export function openRequestStore(path = ':memory:') {
     CREATE TABLE IF NOT EXISTS active_analyses (request_id TEXT PRIMARY KEY REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id)) STRICT;
     CREATE TABLE IF NOT EXISTS review_heads (request_id TEXT PRIMARY KEY REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id)) STRICT;
     CREATE TABLE IF NOT EXISTS fact_decisions (request_id TEXT NOT NULL REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id), proposal_id TEXT NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,run_id,proposal_id)) STRICT;`);
+  db.exec('CREATE TABLE IF NOT EXISTS reviewer_tracking (request_id TEXT PRIMARY KEY REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL) STRICT');
+  db.exec('CREATE TABLE IF NOT EXISTS review_completions (request_id TEXT NOT NULL REFERENCES requests(id), sequence INTEGER PRIMARY KEY AUTOINCREMENT, body TEXT NOT NULL) STRICT');
+  db.exec('CREATE TABLE IF NOT EXISTS handoff_versions (request_id TEXT NOT NULL REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,version)) STRICT');
   db.exec('INSERT OR IGNORE INTO review_heads SELECT request_id,run_id FROM active_analyses');
   const owned = (actor, id) => {
     identity(actor);
@@ -79,6 +85,26 @@ export function openRequestStore(path = ':memory:') {
             supplied_message_date: null, received_at: now, added_by: input.actor_id }], confirmed_fields: [], unresolved_issues: [] };
         db.prepare('INSERT INTO requests VALUES (?,?,?,?)').run(request.id, request.owner_id, request.revision, JSON.stringify(request));
         event(request, input.actor_id, 'request_created', messageId);
+        return request;
+      });
+    },
+    changeRecording(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','recording_id','reason','idempotency_key'])) fail('INVALID_INPUT');
+      command(input);owned(input.actor_id,input.request_id);
+      if(!Object.hasOwn(input,'recording_id')||!Number.isSafeInteger(input.expected_revision)||input.expected_revision<0||!text(input.reason,2000)) fail('INVALID_RECORDING_CHANGE');
+      let recording;try{recording=resolveRecording(input.recording_id);}catch{fail('INVALID_RECORDING');}
+      return execute(input,`recording:${input.request_id}`,{expected_revision:input.expected_revision,recording_id:recording?.id??null,reason:input.reason},()=>{
+        const request=owned(input.actor_id,input.request_id);
+        if(request.revision!==input.expected_revision||request.revision>=Number.MAX_SAFE_INTEGER)fail('REVISION_CONFLICT');
+        const previous=request.recording_id??null;
+        if(previous===(recording?.id??null))fail('INVALID_RECORDING_CHANGE');
+        request.recording_id=recording?.id??null;request.revision++;request.updated_at=new Date().toISOString();
+        const update=db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?').run(request.revision,JSON.stringify(request),request.id,input.actor_id,input.expected_revision);
+        if(update.changes!==1)fail('REVISION_CONFLICT');
+        db.prepare('DELETE FROM active_analyses WHERE request_id=?').run(request.id);
+        db.prepare("UPDATE analysis_runs SET status='stale' WHERE request_id=? AND status='completed'").run(request.id);
+        db.prepare('DELETE FROM review_heads WHERE request_id=?').run(request.id);
+        event(request,input.actor_id,'recording_corrected',null,{previous_recording_id:previous,recording_id:request.recording_id,reason:input.reason.trim()});
         return request;
       });
     },
@@ -225,8 +251,7 @@ export function openRequestStore(path = ':memory:') {
           try { result=structuredClone(input.result); validateSuccessfulAnalysis(result,context); } catch { fail('INVALID_ANALYSIS'); }
         } else if (input.result?.ok===false) {
           // Persist only a safe failure label, never arbitrary provider errors or unvalidated payloads.
-          result={ok:false,failed_stage:['intake','review','follow_up'].includes(input.result.failed_stage)?input.result.failed_stage:'intake',
-            error:{code:'ANALYSIS_FAILED',message:'Analysis failed. Review the request or explicitly retry with a new command key.'}};
+          result=safeAnalysisFailure(input.result);
         } else fail('INVALID_ANALYSIS');
         const digest=hash(result);
         if (row.status!=='running') {
@@ -242,6 +267,91 @@ export function openRequestStore(path = ':memory:') {
           db.prepare('INSERT INTO review_heads VALUES (?,?) ON CONFLICT(request_id) DO UPDATE SET run_id=excluded.run_id').run(request.id,row.run_id);
         }
         return this.analysis(input.actor_id,request.id,row.run_id);
+      });
+    },
+    reviewers(actor,id) {
+      const request = owned(actor,id);
+      const row = db.prepare('SELECT version,body FROM reviewer_tracking WHERE request_id=?').get(id);
+      const state = row ? JSON.parse(row.body) : {reviewers:[],history:[]};
+      const fields=effectiveFields(request,this.activeAnalysis(actor,id),this.decisions(actor,id));
+      const token=hash(fields.map(f=>({field_key:f.field_key,value:f.value,evidence:f.evidence})).sort((a,b)=>a.field_key.localeCompare(b.field_key)));
+      const hasAutomatic=fields.some(f=>f.origin==='agent');
+      return {version:row?.version ?? 0, ...state, reviewers:state.reviewers.map(r => ({...r, needs_reconfirmation:r.status !== 'Pending' && (r.reviewed_revision !== request.revision || (hasAutomatic && r.reviewed_fields_token!==token))}))};
+    },
+    recordReview(input) {
+      if (!keys(input,['actor_id','request_id','expected_revision','expected_review_version','idempotency_key','operation','reviewer_id','name','role','status','notes'])) fail('INVALID_INPUT');
+      command(input);
+      if (!Number.isInteger(input.expected_revision) || !Number.isInteger(input.expected_review_version) || input.expected_review_version < 0) fail('INVALID_REVISION');
+      if (!['assign','decision'].includes(input.operation)) fail('INVALID_REVIEW');
+      if (input.operation === 'assign' && (!text(input.name,200) || !text(input.role,200))) fail('INVALID_REVIEW');
+      if (input.operation === 'decision' && (!text(input.reviewer_id,200) || !['Pending','Approved','Changes requested','Declined'].includes(input.status) || typeof input.notes !== 'string' || input.notes.length > 4000)) fail('INVALID_REVIEW');
+      const actor_id=input.actor_id;
+      const payload=Object.fromEntries(Object.entries(input).filter(([key]) => !['actor_id','idempotency_key'].includes(key)));
+      return execute(input,`reviewers:${input.request_id}`,payload,() => {
+        const request = owned(actor_id,input.request_id);
+        if(request.revision !== input.expected_revision) fail('REVISION_CONFLICT');
+        const row = db.prepare('SELECT version,body FROM reviewer_tracking WHERE request_id=?').get(request.id);
+        if((row?.version ?? 0) !== input.expected_review_version) fail('REVIEW_CONFLICT');
+        const state = row ? JSON.parse(row.body) : {reviewers:[],history:[]};
+        let reviewer;
+        if(input.operation === 'assign') {
+          if(state.reviewers.length >= 20 || state.reviewers.some(r => r.name.toLowerCase() === input.name.trim().toLowerCase() && r.role.toLowerCase() === input.role.trim().toLowerCase())) fail('INVALID_REVIEW');
+          reviewer = {id:randomUUID(),name:input.name.trim(),role:input.role.trim(),status:'Pending',notes:'',reviewed_revision:request.revision};
+          state.reviewers.push(reviewer);
+        } else {
+          reviewer = state.reviewers.find(r => r.id === input.reviewer_id);
+          if(!reviewer) fail('NOT_FOUND');
+          reviewer.status=input.status;reviewer.notes=input.notes;reviewer.reviewed_revision=request.revision;
+        }
+        const fields=effectiveFields(request,this.activeAnalysis(actor_id,request.id),this.decisions(actor_id,request.id));
+        reviewer.reviewed_fields_token=hash(fields.map(f=>({field_key:f.field_key,value:f.value,evidence:f.evidence})).sort((a,b)=>a.field_key.localeCompare(b.field_key)));
+        reviewer.recorded_by=actor_id;reviewer.recorded_at=new Date().toISOString();
+        state.history.push({...reviewer,operation:input.operation});
+        db.prepare('INSERT INTO reviewer_tracking VALUES (?,?,?) ON CONFLICT(request_id) DO UPDATE SET version=excluded.version,body=excluded.body').run(request.id,(row?.version ?? 0)+1,JSON.stringify(state));
+        return request;
+      });
+    },
+    workflow(actor,id) {
+      const request=owned(actor,id);
+      const history=db.prepare('SELECT body FROM review_completions WHERE request_id=? ORDER BY sequence').all(id).map(row=>JSON.parse(row.body));
+      return {...requestReadiness({request,analysis:this.activeAnalysis(actor,id),tracking:this.reviewers(actor,id),decisions:this.decisions(actor,id),completion:history.at(-1) || null}),history};
+    },
+    completeReview(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','expected_review_version','idempotency_key'])) fail('INVALID_INPUT');
+      command(input);
+      const {actor_id,request_id,expected_revision,expected_review_version}=input;
+      if(!Number.isInteger(expected_revision)||!Number.isInteger(expected_review_version)) fail('INVALID_REVISION');
+      return execute(input,`complete-review:${request_id}`,{request_id,expected_revision,expected_review_version},()=>{
+        const request=owned(actor_id,request_id);
+        if(request.revision!==expected_revision) fail('REVISION_CONFLICT');
+        if(this.reviewers(actor_id,request_id).version!==expected_review_version) fail('REVIEW_CONFLICT');
+        if(!this.workflow(actor_id,request_id).can_complete) fail('REVIEW_NOT_READY');
+        db.prepare('INSERT INTO review_completions (request_id,body) VALUES (?,?)').run(request_id,JSON.stringify({request_revision:expected_revision,review_version:expected_review_version,completed_by:actor_id,completed_at:new Date().toISOString()}));
+        return request;
+      });
+    },
+    handoff(actor,id) {
+      const request=owned(actor,id);
+      const source_token=hash({intake_policy:"exceptions-v1",revision:request.revision,analysis_run:this.activeAnalysis(actor,id)?.run_id ?? null,review_version:this.reviewers(actor,id).version});
+      const versions=db.prepare('SELECT version,body FROM handoff_versions WHERE request_id=? ORDER BY version').all(id).map(row=>JSON.parse(row.body));
+      const latest=versions.at(-1) || null;
+      return {version:latest?.version ?? 0,source_token,latest:latest ? {...latest,outdated:latest.source_token!==source_token} : null,
+        history:versions.map(({version,saved_at,saved_by,request_revision})=>({version,saved_at,saved_by,request_revision}))};
+    },
+    saveHandoff(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','expected_handoff_version','source_token','text','idempotency_key'])) fail('INVALID_INPUT');
+      command(input);
+      if(!Number.isInteger(input.expected_revision)||!Number.isInteger(input.expected_handoff_version)||!text(input.text,50000)||!text(input.source_token,200)) fail('INVALID_HANDOFF');
+      const payload=Object.fromEntries(Object.entries(input).filter(([key])=>!['actor_id','idempotency_key'].includes(key)));
+      return execute(input,`handoff:${input.request_id}`,payload,()=>{
+        const request=owned(input.actor_id,input.request_id);
+        if(request.revision!==input.expected_revision) fail('REVISION_CONFLICT');
+        const state=this.handoff(input.actor_id,input.request_id);
+        if(state.version!==input.expected_handoff_version) fail('HANDOFF_CONFLICT');
+        if(state.source_token!==input.source_token) fail('STALE_HANDOFF');
+        const record={version:state.version+1,source_token:state.source_token,text:input.text,request_revision:request.revision,saved_by:input.actor_id,saved_at:new Date().toISOString()};
+        db.prepare('INSERT INTO handoff_versions VALUES (?,?,?)').run(request.id,record.version,JSON.stringify(record));
+        return request;
       });
     },
     close() { db.close(); },

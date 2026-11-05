@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "SyncFlow · Coordinator workspace",
+  title: "SyncFlow · Music licensing requests",
   description:
     "An AI-assisted workspace for sync licensing request intake and review.",
 };

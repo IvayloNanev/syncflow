@@ -1,0 +1,1901 @@
+{
+  "suite_sha256": "378c76c012693a2eb96c00333d96d8e18e49ec80286234b37243751ad609b673",
+  "model": "claude-haiku-5-5",
+  "started_at": "2026-11-05T18:22:43.006Z",
+  "cases": [
+    {
+      "case_id": "Q01",
+      "checks": {
+        "workflow_ok": true,
+        "contact_retained": true,
+        "no_issues": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "Q01",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "review_required",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q01",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q01",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "P-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Rina Sol",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Hello, I am Rina Sol from Juniper Films."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Glass Orchard trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Glass Orchard trailer."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Elio Moss",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Elio Moss."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Lantern Circuit",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Lantern Circuit."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "2024 acoustic master",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording: 2024 acoustic master."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "documentary trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: documentary trailer."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Vimeo",
+                    "cinema screenings"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: Vimeo and cinema screenings."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "New Zealand",
+                    "Australia"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territories: New Zealand and Australia."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Campaign duration: eight months.",
+                    "duration_text": "eight months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Campaign duration: eight months."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Music length: 24 seconds.",
+                    "seconds": 24
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 24 seconds."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Budget: NZD 6200 for both master and publishing rights.",
+                    "amount": "6200",
+                    "currency": "NZD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: NZD 6200 for both master and publishing rights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Respond by December 9, 2026 at 14:30 Pacific/Auckland.",
+                    "date": "2026-12-09",
+                    "time": "14:30",
+                    "timezone": "Pacific/Auckland"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Respond by December 9, 2026 at 14:30 Pacific/Auckland."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q01",
+              "base_record_version": 0,
+              "issues": [],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "skipped": true,
+            "reason": "NO_UNRESOLVED_ISSUES",
+            "output": null
+          }
+        }
+      }
+    },
+    {
+      "case_id": "Q02",
+      "checks": {
+        "workflow_ok": true,
+        "contact_retained": true,
+        "field_flagged": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "Q02",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q02",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q02",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "P-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Rina Sol from Juniper Films",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Hello, I am Rina Sol from Juniper Films."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Glass Orchard trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Glass Orchard trailer."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Elio Moss",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Elio Moss."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Lantern Circuit",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Lantern Circuit."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "2024 acoustic master",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording: 2024 acoustic master."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "documentary trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: documentary trailer."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "online"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: online."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "New Zealand",
+                    "Australia"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territories: New Zealand and Australia."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Campaign duration: eight months.",
+                    "duration_text": "eight months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Campaign duration: eight months."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "24 seconds",
+                    "seconds": 24
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 24 seconds."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "NZD 6200 for both master and publishing rights",
+                    "amount": "6200",
+                    "currency": "NZD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: NZD 6200 for both master and publishing rights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "P-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "December 9, 2026 at 14:30 Pacific/Auckland",
+                    "date": "2026-12-09",
+                    "time": "14:30",
+                    "timezone": "Pacific/Auckland"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Respond by December 9, 2026 at 14:30 Pacific/Auckland."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q02",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "ambiguous-platforms",
+                  "type": "ambiguous",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "platforms"
+                  ],
+                  "question": "Which specific platforms or channels will the music appear on?",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: online."
+                    }
+                  ]
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "fail"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q02",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q02",
+              "base_record_version": 0,
+              "subject": "Clarification needed: platforms for Glass Orchard trailer",
+              "body": "Hello Rina,\n\nThank you for your request regarding the Glass Orchard trailer and the track \"Lantern Circuit\" by Elio Moss.\n\nTo move forward, could you please confirm the specific platforms or channels where the music will appear? You mentioned \"online,\" but we need the particular platforms or channels (for example, the names of the websites, apps, or social channels) so we can review the request accurately.\n\nThank you, and we look forward to your reply.\n\nBest regards,\nSyncFlow Licensing Coordinator",
+              "addressed_issue_ids": [
+                "ambiguous-platforms"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "case_id": "Q03",
+      "checks": {
+        "workflow_ok": true,
+        "contact_retained": true,
+        "typed_issue": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "Q03",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q03",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q03",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "p_client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Rina Sol",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "I am Rina Sol from Juniper Films"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Glass Orchard trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Glass Orchard trailer"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Elio Moss",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Elio Moss"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Lantern Circuit",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Lantern Circuit"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "2024 acoustic master",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording: 2024 acoustic master"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "documentary trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: documentary trailer"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Vimeo",
+                    "cinema screenings"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: Vimeo and cinema screenings"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Campaign duration: eight months",
+                    "duration_text": "eight months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Campaign duration: eight months"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "24 seconds",
+                    "seconds": 24
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 24 seconds"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "NZD 6200 for both master and publishing rights",
+                    "amount": "6200",
+                    "currency": "NZD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: NZD 6200 for both master and publishing rights"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p_response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "December 9, 2026 at 14:30 Pacific/Auckland",
+                    "date": "2026-12-09",
+                    "time": "14:30",
+                    "timezone": "Pacific/Auckland"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Respond by December 9, 2026 at 14:30 Pacific/Auckland"
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": [
+                {
+                  "issue_type": "conflict",
+                  "field_keys": [
+                    "territories"
+                  ],
+                  "reason": "The client explicitly states territory must be New Zealand only, and another stakeholder states Australia only for the same use. The client states these are incompatible and not a correction, so territories is not proposed.",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "The territory must be New Zealand only."
+                    },
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Another stakeholder says Australia only for the same use."
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q03",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "missing-territories",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "territories"
+                  ],
+                  "question": "Please confirm territories.",
+                  "evidence": []
+                },
+                {
+                  "issue_id": "intake-ambiguity-0",
+                  "type": "conflict",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "territories"
+                  ],
+                  "question": "Please clarify: The client explicitly states territory must be New Zealand only, and another stakeholder states Australia only for the same use. The client states these are incompatible and not a correction, so territories is not proposed.",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "The territory must be New Zealand only."
+                    },
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Another stakeholder says Australia only for the same use."
+                    }
+                  ]
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "fail"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q03",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q03",
+              "base_record_version": 0,
+              "subject": "Glass Orchard trailer: territory clarification",
+              "body": "Hello Rina,\n\nThank premy you for the details on the Glass Orchard trailer and the Lantern Circuit licence request.\n\nWe have received two different territory requirements for this use: New Zealand only, and Australia only. You have noted that these are not a correction and that they should not be combined. Could you please confirm which territory should apply to this request, or let us know if the licence should be handled as separate requests for each territory?\n\nOnce the territory is confirmed, we can continue with the next steps.\n\nKind regards,\nSyncFlow Licensing Coordinator",
+              "addressed_issue_ids": [
+                "missing-territories",
+                "intake-ambiguity-0"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "case_id": "Q04",
+      "checks": {
+        "workflow_ok": true,
+        "contact_retained": true,
+        "typed_issue": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "Q04",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q04",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q04",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "p-client-contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Rina Sol, Juniper Films",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "I am Rina Sol from Juniper Films"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Glass Orchard trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Glass Orchard trailer"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Elio Moss",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Elio Moss"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-track-title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Lantern Circuit",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Lantern Circuit"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-recording-version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "2024 acoustic master",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording: 2024 acoustic master"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-intended-use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "documentary trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: documentary trailer"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Vimeo",
+                    "cinema screenings"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: Vimeo and cinema screenings"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "New Zealand",
+                    "Australia"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territories: New Zealand and Australia"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-campaign-term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Campaign duration: eight months",
+                    "duration_text": "eight months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Campaign duration: eight months"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-music-length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "24 seconds",
+                    "seconds": 24
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 24 seconds"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "NZD 6200 for both master and publishing rights",
+                    "amount": "6200",
+                    "currency": "NZD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: NZD 6200 for both master and publishing rights"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-response-deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "December 9, 2026 at 14:30 Pacific/Auckland",
+                    "date": "2026-12-09",
+                    "time": "14:30",
+                    "timezone": "Pacific/Auckland"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Respond by December 9, 2026 at 14:30 Pacific/Auckland"
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": [
+                {
+                  "issue_type": "split_request",
+                  "field_keys": [
+                    "artist",
+                    "track_title"
+                  ],
+                  "reason": "The request includes a second recording (Drift Atlas by Niko Cedar) in addition to Lantern Circuit by Elio Moss. Multiple recordings require separate requests; no recording has been selected silently.",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "We also need a second recording, Drift Atlas by Niko Cedar. Please include both tracks."
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q04",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "intake-ambiguity-0",
+                  "type": "split_request",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "artist",
+                    "track_title"
+                  ],
+                  "question": "Please clarify: The request includes a second recording (Drift Atlas by Niko Cedar) in addition to Lantern Circuit by Elio Moss. Multiple recordings require separate requests; no recording has been selected silently.",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "We also need a second recording, Drift Atlas by Niko Cedar. Please include both tracks."
+                    }
+                  ]
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q04",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q04",
+              "base_record_version": 0,
+              "subject": "Clarification needed: separate requests for recordings",
+              "body": "Hello Rina,\n\nThank you for your request for the Glass Orchard trailer. Your message includes two recordings: \"Lantern Circuit\" by Elio Moss (2024 acoustic master) and \"Drift Atlas\" by Niko Cedar.\n\nTo proceed, could you please separate these into individual requests, one per recording? Each recording needs its own request so that we can review them separately. Please let us know which recording you would like us to start with, or send a separate request for each.\n\nThank you for your help. We look forward to hearing from you.\n\nKind regards,\nSyncFlow Licensing Team",
+              "addressed_issue_ids": [
+                "intake-ambiguity-0"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "case_id": "Q05",
+      "checks": {
+        "workflow_ok": true,
+        "contact_retained": true,
+        "coordinator_routed": true,
+        "issue_preserved": true,
+        "not_asked_again": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "Q05",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "review_required",
+        "coordinator_review_issue_ids": [
+          "project-pending"
+        ],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q05",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q05",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "p-client-contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Rina Sol",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Rina Sol"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Glass Orchard trailer",
+                  "evidence": [
+                    {
+                      "message_id": "reply",
+                      "exact_quote": "The project name is Glass Orchard trailer."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Elio Moss",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Elio Moss."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-track-title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Lantern Circuit",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Lantern Circuit."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-recording-version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "2024 acoustic master",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording: 2024 acoustic master."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-intended-use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "documentary trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: documentary trailer."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Vimeo",
+                    "cinema screenings"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: Vimeo and cinema screenings."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "New Zealand",
+                    "Australia"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territories: New Zealand and Australia."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-campaign-term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "eight months",
+                    "duration_text": "eight months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Campaign duration: eight months."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-music-length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "24 seconds",
+                    "seconds": 24
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 24 seconds."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "NZD 6200 for both master and publishing rights",
+                    "amount": "6200",
+                    "currency": "NZD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Budget: NZD 6200 for both master and publishing rights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "p-response-deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "December 9, 2026 at 14:30 Pacific/Auckland",
+                    "date": "2026-12-09",
+                    "time": "14:30",
+                    "timezone": "Pacific/Auckland"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Respond by December 9, 2026 at 14:30 Pacific/Auckland."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [
+              "project-pending"
+            ],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q05",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "project-pending",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "project"
+                  ],
+                  "question": "What is the project name?",
+                  "evidence": []
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "skipped": true,
+            "reason": "NO_UNRESOLVED_ISSUES",
+            "output": null
+          }
+        }
+      }
+    },
+    {
+      "case_id": "Q06",
+      "checks": {
+        "workflow_ok": true,
+        "contact_retained": true,
+        "field_flagged": true,
+        "budget_components": true
+      },
+      "result": {
+        "ok": true,
+        "run_id": "Q06",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q06",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q06",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "Q06-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "Rina Sol from Juniper Films",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "I am Rina Sol from Juniper Films"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Glass Orchard trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Project: Glass Orchard trailer"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Elio Moss",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Artist: Elio Moss"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Lantern Circuit",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Track title: Lantern Circuit"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "2024 acoustic master",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Recording: 2024 acoustic master"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "documentary trailer",
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Intended use: documentary trailer"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Vimeo",
+                    "cinema screenings"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Platforms: Vimeo and cinema screenings"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "New Zealand",
+                    "Australia"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Territories: New Zealand and Australia"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Campaign duration: eight months",
+                    "duration_text": "eight months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Campaign duration: eight months"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "Music length: 24 seconds",
+                    "seconds": 24
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Music length: 24 seconds"
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "Q06-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "December 9, 2026 at 14:30 Pacific/Auckland",
+                    "date": "2026-12-09",
+                    "time": "14:30",
+                    "timezone": "Pacific/Auckland"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "initial",
+                      "exact_quote": "Respond by December 9, 2026 at 14:30 Pacific/Auckland"
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "mode": "rules",
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q06",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "missing-budget",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "budget"
+                  ],
+                  "question": "Please confirm the budget amount, currency and rights scope (master, publishing or both).",
+                  "evidence": []
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q06",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q06",
+              "base_record_version": 0,
+              "subject": "Follow-up on Lantern Circuit licensing request",
+              "body": "Hello Rina,\n\nThank you for your licensing request for the Glass Orchard trailer, featuring Lantern Circuit by Elio Moss (2024 acoustic master).\n\nTo move forward, could you please confirm the budget for this request, including:\n- the budget amount,\n- the currency, and\n- the rights scope (master recording, publishing, or both).\n\nThank you, and I look forward to hearing from you.\n\nKind regards,",
+              "addressed_issue_ids": [
+                "missing-budget"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "finished_at": "2026-11-05T18:23:15.232Z"
+}

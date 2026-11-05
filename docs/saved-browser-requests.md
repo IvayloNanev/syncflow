@@ -10,7 +10,7 @@ Current scope: single local operator, fictional data, Next development server bo
 4. Append the client's reply as a new message. The revision advances, previous active analysis is invalidated, and run history shows stale status.
 5. Analyze the new revision. The context contains all original messages in order. Extracted facts remain proposals.
 
-Original input is locked after saving. Recording changes require a separate request; automatic split/reassignment and manual value editing and undo are future work; explicit proposal acceptance/rejection is implemented below. Draft editing is not persisted. Opening another request/new request deliberately replaces the current unsent draft/reply view.
+Original input is locked after saving. Recording corrections are supported with a required reason, revision check and audit history; see [Recording corrections](recording-correction.md). Automatic splitting, manual fact editing and undo remain future work; explicit proposal acceptance/rejection is implemented below. Saved internal handoff edits persist separately from unsent client follow-up drafts. Opening another request/new request deliberately replaces the current unsent draft/reply view.
 
 ## Endpoint
 

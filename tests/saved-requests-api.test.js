@@ -43,6 +43,11 @@ test('save analysis, reopen, append reply, invalidate then analyze new revision 
   const command={action:'reply',request_id:r.id,expected_revision:0,idempotency_key:'reply-1',text:'Budget is CAD 5000.'};
   const reply=await call(command);assert.equal(reply.request.revision,1);assert.equal(reply.request.messages.length,2);
   assert.equal(reply.active_analysis,null);assert.equal(reply.analyses[0].status,'stale');
+  assert.equal(reply.analyses[0].message_count,1);
+  assert.deepEqual(reply.analyses[0].draft,analyzed.active_analysis.result.stages.follow_up.output);
+  assert.equal('context' in reply.analyses[0],false); // historical draft projection does not expose agent context
+  const history=await call({action:'get',request_id:r.id});
+  assert.deepEqual(history.analyses[0].draft,reply.analyses[0].draft);
   assert.equal((await call(command)).request.messages.length,2);
   assert.equal((await call({...command,idempotency_key:'reply-2'})).status,409);
   assert.equal((await call({...run,idempotency_key:'old-revision'})).status,409);
@@ -88,4 +93,80 @@ test('provider failure is saved safely, never leaks errors, and explicit new-key
   const failed=await call(command);assert.equal(failed.analysis_status,'failed');assert.ok(!JSON.stringify(failed).includes('secret transport'));
   fail=false;assert.equal((await call(command)).analysis_status,'failed');
   assert.equal((await call({...command,idempotency_key:'retry'})).analysis_status,'completed');
+});
+
+test('reviewer API records manual decisions and preserves request revision', async t => {
+  const {call,calls}=setup(t);const {request:r}=await call(create);
+  const assign={action:'reviewer',request_id:r.id,expected_revision:0,expected_review_version:0,operation:'assign',name:'Demo Director',role:'Director',idempotency_key:'reviewer-assign'};
+  const assigned=await call(assign);assert.equal(assigned.status,200);
+  assert.equal(assigned.reviewer_tracking.reviewers[0].status,'Pending');
+  assert.equal((await call(assign)).replayed,true);
+  const review={action:'reviewer',request_id:r.id,expected_revision:0,expected_review_version:1,operation:'decision',reviewer_id:assigned.reviewer_tracking.reviewers[0].id,status:'Changes requested',notes:'Clarify scope.',idempotency_key:'reviewer-decision'};
+  const decided=await call(review);assert.equal(decided.status,200);
+  assert.equal(decided.request.revision,0);assert.equal(decided.reviewer_tracking.history.length,2);
+  assert.equal((await call({...review,idempotency_key:'reviewer-conflict'})).status,409);
+  assert.equal((await call({...review,actor_id:'forged'})).status,400);
+  assert.equal(calls(),0);
+});
+
+test('completion API rejects incomplete intake and agent-supplied approval claims', async t => {
+  const {call}=setup(t);const {request:r}=await call(create);
+  const command={action:'complete_review',request_id:r.id,expected_revision:0,expected_review_version:0,idempotency_key:'complete'};
+  assert.equal((await call(command)).status,409);
+  assert.equal((await call({...command,approved:true})).status,400);
+  const detail=await call({action:'get',request_id:r.id});
+  assert.equal(detail.workflow.completed,false);assert.equal(detail.workflow.history.length,0);
+});
+
+test('handoff save API restores edited text and rejects conflicting writes without changing facts',async t=>{
+  const {call,calls}=setup(t);const created=await call(create);const r=created.request;
+  const command={action:'save_handoff',request_id:r.id,expected_revision:0,expected_handoff_version:0,source_token:created.handoff.source_token,text:'Edited internal summary',idempotency_key:'handoff-save'};
+  const saved=await call(command);assert.equal(saved.status,200);assert.equal(saved.handoff.latest.text,command.text);assert.equal(saved.request.revision,0);
+  assert.equal((await call(command)).replayed,true);
+  assert.equal((await call({...command,idempotency_key:'conflict'})).status,409);
+  assert.equal((await call({action:'get',request_id:r.id})).handoff.latest.text,command.text);
+  assert.equal(calls(),0);
+});
+
+test('failed analysis API returns safe durable recovery details and read-only status checks never retry',async t=>{
+  let calls=0;
+  const {call}=setup(t,{providers:()=>({intakeProvider:{id:'invalid-test',mode:'mock',generate:async()=>{calls++;return {secret:'PRIVATE_CANARY'};}},followUpProvider:createFollowUpMockProvider()})});
+  const {request:r}=await call(create);
+  const command={action:'analyze',request_id:r.id,expected_revision:0,idempotency_key:'recovery-attempt'};
+  const failed=await call(command);assert.equal(failed.analysis_status,'failed');
+  const latest=failed.analyses.at(-1);
+  assert.equal(latest.failure.error.code,'INVALID_OUTPUT');
+  assert.deepEqual(latest.failure.error.validation_codes,['SCHEMA_MISMATCH']);
+  assert.ok(!JSON.stringify(failed).includes('PRIVATE_CANARY'));
+  const checked=await call({action:'get',request_id:r.id});
+  assert.equal(checked.analyses.at(-1).failure.error.code,'INVALID_OUTPUT');
+  assert.equal((await call(command)).replayed,true);assert.equal(calls,1);
+  assert.equal(checked.request.messages[0].text,create.email);assert.equal(checked.request.revision,0);
+});
+
+
+test('recording correction API preserves request identity and rejects injected confirmed values',async t=>{
+  const {call}=setup(t);const {request:r}=await call(create);
+  const command={action:'change_recording',request_id:r.id,expected_revision:0,recording_id:'TRACK-0001',reason:'Fictional recording correction',idempotency_key:'recording-correction'};
+  const changed=await call(command);assert.equal(changed.status,200);assert.equal(changed.request.id,r.id);assert.equal(changed.request.revision,1);assert.deepEqual(changed.request.messages,r.messages);assert.equal(changed.recording_changes[0].previous_recording_id,'TRACK-0002');
+  assert.equal((await call(command)).replayed,true);assert.equal((await call({...command,confirmed_fields:[]})).status,400);
+});
+
+test('customer submission returns only a receipt and rejects internal commands', async t => {
+  const {options,call,calls}=setup(t);
+  const customer=createSavedRequestsHandler({...options,customerSubmission:true});
+  const response=await customer(request({...create,recording_id:null}));
+  assert.equal(response.status,201);
+  const receipt=await response.json();
+  assert.deepEqual(Object.keys(receipt).sort(),['replayed','request_id','status']);
+  assert.equal(receipt.status,'submitted');
+  const internal=await call({action:'get',request_id:receipt.request_id});
+  assert.equal(internal.request.messages[0].text,create.email);
+  assert.equal(internal.request.recording_id,null);
+  for(const action of ['list','get','reply','analyze','reviewer']){
+    const denied=await customer(request({action}));assert.equal(denied.status,400);
+  }
+  const replay=await customer(request({...create,recording_id:null}));
+  assert.equal((await replay.json()).request_id,receipt.request_id);
+  assert.equal(calls(),0);
 });

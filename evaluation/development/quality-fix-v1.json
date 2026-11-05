@@ -1,0 +1,164 @@
+[
+  {
+    "id": "V01",
+    "expect": {
+      "conflict": true,
+      "missing_platforms": false
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V01",
+      "request_id": "V01",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Nora Vale at Pine Studio. Project: River launch. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. Platforms: YouTube and Instagram. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Germany only. Territory: France only.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  },
+  {
+    "id": "V02",
+    "expect": {
+      "conflict": true,
+      "missing_platforms": false
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V02",
+      "request_id": "V02",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Nora Vale at Pine Studio. Project: River launch. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. Platforms: YouTube and Instagram. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Italy. Territory: Spain. No correction has been confirmed.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  },
+  {
+    "id": "V03",
+    "expect": {
+      "conflict": false,
+      "missing_platforms": false
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V03",
+      "request_id": "V03",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Nora Vale at Pine Studio. Project: River launch. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. Platforms: YouTube and Instagram. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territories: Germany and France.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  },
+  {
+    "id": "V04",
+    "expect": {
+      "conflict": false,
+      "missing_platforms": false
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V04",
+      "request_id": "V04",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Nora Vale at Pine Studio. Project: River launch. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. Platforms: YouTube and Instagram. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Germany only. Territory: France only.",
+          "supplied_message_date": null
+        },
+        {
+          "message_id": "reply",
+          "kind": "reply",
+          "text": "Correction: territory is Japan.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  },
+  {
+    "id": "V05",
+    "expect": {
+      "conflict": false,
+      "missing_platforms": true
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V05",
+      "request_id": "V05",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Nora Vale at Pine Studio. Project: River launch. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. The advertisement will be online. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Germany.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  },
+  {
+    "id": "V06",
+    "expect": {
+      "conflict": false,
+      "missing_platforms": false
+    },
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V06",
+      "request_id": "V06",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/Berlin",
+      "messages": [
+        {
+          "message_id": "initial",
+          "kind": "initial",
+          "text": "Contact: Nora Vale at Pine Studio. Project: River launch. Artist: Iris North. Track title: Copper Window. Recording version: original recording. Intended use: brand advertisement. The advertisement will be online. Term: four months. Music length: 25 seconds. Budget: EUR 4200 for both rights. Response deadline: December 10, 2026 at 15:30 Europe/Berlin. Territory: Germany.",
+          "supplied_message_date": null
+        },
+        {
+          "message_id": "reply",
+          "kind": "reply",
+          "text": "Platforms: Vimeo and cinema screenings.",
+          "supplied_message_date": null
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    }
+  }
+]
