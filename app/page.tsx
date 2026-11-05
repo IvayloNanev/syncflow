@@ -46,13 +46,13 @@ export default function Home() {
         <section className="project-spaces" aria-labelledby="spaces-title">
           <div className="project-section-heading"><p className="portal-eyebrow">TWO SIDES. ONE WORKFLOW.</p><h2 id="spaces-title">A place for each person.</h2></div>
           <div className="project-space-grid">
-            <article><span className="project-space-label">FOR CLIENTS</span><h3>Share the idea.</h3><p>Start a music-use request with the information you have. The current customer page submits it for coordinator review.</p><Link className="project-text-link" href="/customer">Explore the customer page <span aria-hidden="true">↗</span></Link></article>
-            <article><span className="project-space-label">FOR COORDINATORS</span><h3>Keep the details moving.</h3><p>Review agent suggestions, confirm source-backed facts, draft a response and track internal review in the workspace.</p><Link className="project-text-link" href="/internal">Explore the internal workspace <span aria-hidden="true">↗</span></Link></article>
+            <article><span className="project-space-label">FOR COORDINATORS</span><h3>Start with the email.</h3><p>Paste the client email, inspect the music catalog, review missing details and prepare the client response.</p><Link className="project-text-link" href="/coordinator">Open coordinator page <span aria-hidden="true">↗</span></Link></article>
+            <article><span className="project-space-label">FOR INTERNAL REVIEW</span><h3>Prepare the handoff.</h3><p>Prepare summaries for the label team and record reviewer decisions, notes and reconfirmations.</p><Link className="project-text-link" href="/internal">Open internal review <span aria-hidden="true">↗</span></Link></article>
           </div>
         </section>
         <aside className="project-boundary"><strong>Assistance with the process. People own the decisions.</strong><p>SyncFlow supports intake, clarification and review. It does not grant music licenses, confirm rights clearance or automate contracts, invoices and payments.</p></aside>
       </main>
-      <footer className="project-footer"><Link className="portal-brand" href="/">Sync<span>Flow</span></Link><p>Local development preview · Fictional recording catalog<br />Private customer accounts and secure replies are not connected yet.</p><a href="#project-title">Back to top ↑</a></footer>
+      <footer className="project-footer"><Link className="portal-brand" href="/">Sync<span>Flow</span></Link><p>Local development preview · Fictional recording catalog<br />Handoffs and decisions are recorded by the coordinator. Nothing sends automatically.</p><a href="#project-title">Back to top ↑</a></footer>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from "react";
 
 import { previewEmail } from "../catalog/email-preview.js";
 import AnalysisRecovery from "./analysis-recovery";
@@ -31,8 +33,9 @@ type Result = {
 const example = "Hi, this is Jordan Pike. We’d like to use Northern Lights by Maya Rivers (original recording) in a Canadian online advertising campaign for six months. Our budget is CAD 5,000 for both rights. Please respond by November 6, 2026.";
 const label = (key: string) => key.replaceAll("_", " ");
 
-export default function AnalysisWorkspace() {
-  const [dashboardOpen,setDashboardOpen]=useState(false);
+export default function AnalysisWorkspace({ mode = "coordinator", initialRequestId }: {mode?: "coordinator" | "internal"; initialRequestId?: string}) {
+  const router=useRouter();
+  const [dashboardOpen,setDashboardOpen]=useState(mode === "internal" && !initialRequestId);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [recordingCandidate,setRecordingCandidate]=useState<Recording|null|undefined>(undefined);
   const [recordingReason,setRecordingReason]=useState("");
@@ -79,12 +82,14 @@ export default function AnalysisWorkspace() {
     return { ...payload, idempotency_key: key };
   }
   async function refresh() { const data = await command({ action: "list" }); setRequests(data.requests); }
+  const restoreInitial=useEffectEvent((data:Detail)=>showSaved(data));
   useEffect(() => {
     let mounted = true;
     command({ action: "list" }).then(data => { if (mounted) setRequests(data.requests); })
       .catch(() => { if (mounted) setNotice("Saved requests could not load. Use Refresh saved requests to retry."); });
+    if(initialRequestId) command({action:"get",request_id:initialRequestId}).then(data=>{if(mounted)restoreInitial(data);}).catch(()=>{if(mounted)setError("This saved request could not be opened. Use View all requests.");});
     return () => { mounted = false; };
-  }, []);
+  }, [initialRequestId]);
   function showSaved(data: Detail) {
     setRecordingCandidate(undefined);setRecordingReason("");setRecordingChanges(data.recording_changes||[]); setHandoff(data.handoff); setWorkflow(data.workflow); setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
     setRecordingOverride(true); setRecording(recordings.find(r => r.id === data.request.recording_id) || null); setAnalyses(data.analyses);
@@ -147,22 +152,23 @@ export default function AnalysisWorkspace() {
   function editEmail(value: string) {
     setEmail(value); setRecording(null); setRecordingOverride(false); setAllowUnresolved(false); clearResult();
   }
-  return <div className={`app-shell${!dashboardOpen && !saved && !email.trim() ? " email-only" : ""}`}>
+  return <div className={`app-shell${mode === "coordinator" && !dashboardOpen && !saved && !email.trim() ? " email-only" : ""}`}>
     <a className="skip-link" href="#main-workspace">Skip to workspace</a>
     <aside className="app-sidebar" aria-label="Request navigation">
       <a className="brand" href="#main-workspace">syncflow<span className="brand-period">.</span></a>
       <p className="sidebar-caption">MUSIC LICENSING WORKSPACE</p>
-      <button className="new-request-button" disabled={busy} onClick={newRequest}>＋ New request</button><button type="button" className="dashboard-nav" disabled={busy} onClick={()=>{setDashboardOpen(true);void perform(refresh);}}>View all requests ({requests.length})</button>
+      {mode === "coordinator" ? <button className="new-request-button" disabled={busy} onClick={newRequest}>＋ New request</button> : <Link className="new-request-button" href="/coordinator">Open coordinator page</Link>}<button type="button" className="dashboard-nav" disabled={busy} onClick={()=>{setDashboardOpen(true);void perform(refresh);}}>View all requests ({requests.length})</button>
       <div className="sidebar-bottom"><small>Saved on this computer · Single operator<br />Fictional catalog · Nothing sends automatically</small></div>
     </aside>
     <main className="main-workspace" id="main-workspace"><div className="workspace-body">
       <button type="button" className="dashboard-entry text-button" disabled={busy} onClick={()=>{setDashboardOpen(!dashboardOpen);void perform(refresh);}}>{dashboardOpen ? 'Back to workspace' : 'View all requests'}</button>
       {dashboardOpen && error ? <p role="alert" className="analysis-error">{error}</p> : null}
-      {dashboardOpen ? <RequestDashboard requests={requests} busy={busy} onOpen={navigationProps.onOpen} onNew={newRequest} onRefresh={navigationProps.onRefresh} /> : <>
+      {dashboardOpen ? <RequestDashboard requests={requests} busy={busy} onOpen={navigationProps.onOpen} onNew={mode === "internal" ? () => {router.push("/coordinator");} : newRequest} onRefresh={navigationProps.onRefresh} /> : <>
 
-      <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1>{saved ? 'Request workspace' : 'Start with the client’s email.'}</h1><p>See the recording, resolve the gaps and prepare your next email.</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
+      <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1>{mode === 'internal' ? 'Internal handoffs & decisions' : saved ? 'Coordinator workspace' : 'Start with the client’s email.'}</h1><p>{mode === "internal" ? "Prepare the reviewer handoff and record decisions received from your team." : "See the recording, resolve the gaps and prepare your next email."}</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
       <div aria-live="polite">{busy ? <p className="busy-notice">Working on the request. Saved facts and history are preserved…</p> : notice ? <p className="notice">{notice}</p> : null}</div>
       {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p>{saved ? <button className="secondary-button" disabled={busy} onClick={()=>{void perform(async()=>{const data:Detail=await command({action:"get",request_id:saved.id});showSaved(data);setNotice("Saved request checked. Review its latest status before retrying.");});}}>Check saved request</button> : null}</div> : null}
+      {saved ? <p><Link className="secondary-button" href={`${mode === "internal" ? "/coordinator" : "/internal"}?request=${encodeURIComponent(saved.id)}`}>{mode === "internal" ? "← Back to this request in Coordinator" : "Open this request in Internal review →"}</Link></p> : null}
       {saved && workflow ? <section className="workflow-status" aria-label="Request status and next action"><div><p className="eyebrow">CURRENT STATUS</p><h2>{workflow.status}</h2><p>{workflow.next_action}</p></div><div><details><summary>Readiness checks ({workflow.reasons.length})</summary>{workflow.reasons.map((reason,i)=><p key={i}>{reason}</p>)}<p>Readiness refers to internal review only. Publishing verification and the licensing process remain separate.</p></details>
         {workflow.completion?.needs_reconfirmation ? <p className="stale-banner">Previous completion is outdated after a request or reviewer change.</p> : null}
         {workflow.completed ? <p>Recorded by {workflow.completion?.completed_by} at {workflow.completion?.completed_at}. This is not rights clearance.</p> : <button type="button" className="primary-button" disabled={busy||!workflow.can_complete} onClick={()=>{void perform(async()=>{
@@ -171,6 +177,7 @@ export default function AnalysisWorkspace() {
         });}}>Mark internal review complete</button>}
         {workflow.history.length ? <details><summary>Completion history ({workflow.history.length})</summary>{workflow.history.map((event,i)=><p key={i}>Revision {event.request_revision} · {event.completed_by} · {event.completed_at}</p>)}</details> : null}
       </div></section> : null}
+      {mode === "coordinator" ? <>
       {saved ? <AnalysisRecovery latest={analyses.at(-1)} busy={busy} hasCurrentResult={!!result} onCheck={async()=>{let success=false;await perform(async()=>{const data:Detail=await command({action:'get',request_id:saved.id});showSaved(data);success=true;setNotice('Saved analysis status refreshed. No new agent call was made.');});return success;}} onRetry={()=>{retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision}));void analyze();}} /> : null}
       <div className="intake-grid">
         <section className="result-panel analysis-input" aria-labelledby="analyze-heading">
@@ -217,13 +224,14 @@ export default function AnalysisWorkspace() {
           showSaved(data); await refresh(); setNotice(`${decision === 'accept' ? 'Accepted' : 'Rejected'} ${label(proposal.field_key)}. Finish reviewing, then refresh the analysis and draft.`);
         });}} /></details>
       </div> : null}
-      {saved && handoff ? <InternalHandoff key={`handoff-${saved.id}`} request={saved} questions={clientQuestions} catalog={reviewRecording(saved.recording_id)} analysisCurrent={!!result} pendingCount={pendingCount} busy={busy} savedDraft={handoff} onSave={async(text,source)=>{
+      </> : !saved ? <p>Select a saved request from View all requests to prepare a handoff and record reviewer decisions.</p> : <p>Request {saved.id} · {saved.messages.length} source messages · {saved.recording_id || "Recording unresolved"}. Source emails and music catalog are on the Coordinator page.</p>}
+      {mode === "internal" && saved && handoff ? <InternalHandoff key={`handoff-${saved.id}`} request={saved} questions={clientQuestions} catalog={reviewRecording(saved.recording_id)} analysisCurrent={!!result} pendingCount={pendingCount} busy={busy} savedDraft={handoff} onSave={async(text,source)=>{
         let success=false;await perform(async()=>{
           const data:Detail=await command(keyed({action:'save_handoff',request_id:saved.id,expected_revision:saved.revision,expected_handoff_version:handoff.version,source_token:source,text}));
           setHandoff(data.handoff);success=true;setNotice('Handoff edits saved. Nothing was sent.');
         });return success;
       }} /> : null}
-      {saved ? <ReviewerTracking key={`reviewers-${saved.id}`} tracking={reviewers} busy={busy} onSave={async input => {
+      {mode === "internal" && saved ? <ReviewerTracking key={`reviewers-${saved.id}`} tracking={reviewers} busy={busy} onSave={async input => {
         let success=false;
         await perform(async () => {
           const data: Detail = await command(keyed({action:'reviewer',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version,...input}));
