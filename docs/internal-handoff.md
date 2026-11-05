@@ -1,0 +1,7 @@
+# Internal handoff summary
+
+The coordinator can generate a deterministic report from a saved request, edit it and copy it for a Director or other internal reviewer. Confirmed requirements include source excerpts, message IDs and confirmation attribution. Proposals are never promoted into report facts. Missing confirmations remain explicit. Recording metadata and internal checks remain separate, with fictional-data and no-clearance labels.
+
+The report records request ID/revision and message count. When current analysis is absent, it states that open questions are unknown and completeness cannot be relied upon. Existing summaries are marked outdated and copy/edit disabled whenever their source request, questions or analysis changes. Regeneration uses the latest record and replaces browser-local edits. Reports and edits are not persisted and nothing is sent automatically. Reviewer assignment and approval tracking remain future work.
+
+Validation: 167 tests passed, including confirmed-only reporting, exact evidence, no catalog backfill, no mutation and safe stale-analysis handling. Live browser checked generation with zero confirmations, invalidation after a project confirmation, disabled stale copy, regeneration with the confirmed project/source, and editable coordinator notes. Copy action displayed successful clipboard completion; independent browser clipboard inspection did not return matching text, so clipboard contents were not independently verified. Production build and lint passed.

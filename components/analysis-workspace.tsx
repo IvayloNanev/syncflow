@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { previewEmail } from "../catalog/email-preview.js";
+import InternalHandoff from "./internal-handoff";
+import { reviewRecording } from "../catalog/review.js";
 import RequestCoverage from "./request-coverage";
 import FactReview, { type FactDecision, type FactProposal } from "./fact-review";
 import SavedRequests, { type SavedRequest, type RequestSummary, type AnalysisSummary } from "./saved-requests";
@@ -192,6 +194,7 @@ export default function AnalysisWorkspace() {
           showSaved(data); await refresh(); setNotice(`${decision === 'accept' ? 'Accepted' : 'Rejected'} ${label(proposal.field_key)}. Finish reviewing, then refresh the analysis and draft.`);
         });}} /></details>
       </div> : null}
+      {saved ? <InternalHandoff key={saved.id} request={saved} questions={clientQuestions} catalog={reviewRecording(saved.recording_id)} analysisCurrent={!!result} pendingCount={pendingCount} busy={busy} /> : null}
       <footer className="workspace-footer">Local prototype · Intake and coordination support · No automatic sending or rights approval</footer>
     </div></main>
   </div>;

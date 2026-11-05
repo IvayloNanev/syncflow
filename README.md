@@ -164,3 +164,7 @@ Paste an email to see a provisional catalog match and likely missing details imm
 ### Unified request workspace (UX audit correction)
 
 The numbered stage tabs have been replaced by one workspace: conversation and draft on the left, one recording card plus client questions/internal checks on the right, and expandable fact confirmation below. After analysis, current validated results replace provisional hints; replies and decisions mark outputs stale until refreshed. An unresolved recording requires acknowledgement before saving; recovery copies the original email into a new request and preserves the old history. No clearance, internal-review approval or sending is automated. A practitioner usability check is still needed.
+
+### Internal handoff summary
+
+Open **Prepare an internal handoff summary** under the fact review, then generate, edit and copy the report for manual sharing. The deterministic generator uses confirmed client facts with source evidence, explicitly marks unconfirmed fields, and separates client questions from fictional catalog/internal verification checks. It makes no extra model call. A record or analysis change invalidates an existing summary until regenerated. Summary edits are browser-local and are not saved; regenerate replaces edits. This does not assign reviewers, record decisions or grant clearance.
