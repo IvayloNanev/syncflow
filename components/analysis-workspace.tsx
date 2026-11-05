@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
+import RequestFields from "./request-fields";
 import FactReview, { type FactDecision, type FactProposal } from "./fact-review";
 import SavedRequests, { type SavedRequest, type RequestSummary, type AnalysisSummary } from "./saved-requests";
 import { recordings } from "../catalog/recordings.js";
@@ -94,7 +95,7 @@ export default function AnalysisWorkspace() {
       const record = saved || await save(); clearResult();
       const payload = { action: "analyze", request_id: record.id, expected_revision: record.revision };
       const data: Detail = await command(keyed(payload)); showSaved(data);
-      if (data.analysis_status === "completed") { setStep("review"); retryCommands.current.delete(JSON.stringify(payload)); setNotice("Analysis saved for this revision. All extracted facts remain proposals."); }
+      if (data.analysis_status === "completed") { setStep("brief"); retryCommands.current.delete(JSON.stringify(payload)); setNotice("Analysis saved for this revision. All extracted facts remain proposals."); }
       else if (data.analysis_status === "running") setNotice("This run is still pending. Reopen the request to check it. Use Retry analysis with a new run only if you explicitly want another attempt.");
       else { retryCommands.current.delete(JSON.stringify(payload)); setNotice(`Analysis is ${data.analysis_status}. History is preserved. Review the saved request before explicitly retrying.`); }
       await refresh();
@@ -147,13 +148,13 @@ export default function AnalysisWorkspace() {
                 <form onSubmit={analyze} aria-busy={busy}><label htmlFor="client-email">Client email</label><textarea id="client-email" rows={9} maxLength={20000} value={email} disabled={busy || !!saved} required placeholder="Hi, we’d like to use a song in our upcoming campaign…" onChange={e => { setEmail(e.target.value); setRecording(null); clearResult(); }} />
                   <div className="email-meta"><span>{email.length.toLocaleString()} / 20,000 characters</span>{!saved ? <button className="text-button" type="button" disabled={busy} onClick={() => { setEmail(example); setRecording(null); clearResult(); }}>Try an example</button> : null}</div>
                   <details className="settings-disclosure"><summary>Request settings <span>{timezone}</span></summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => { setTimezone(e.target.value); clearResult(); }} aria-describedby="timezone-help" /><small id="timezone-help">Use an IANA timezone, such as America/New_York. Client deadlines are never inferred from it.</small></details>
-                  <div className="form-footer"><small>Analysis uses Claude API credits.<br />Nothing is sent to the client.</small><div className="button-group">{!saved ? <button className="secondary-button" type="button" disabled={busy || !email.trim()} onClick={() => { void perform(async () => { await save(); }); }}>Save request</button> : null}<button className="primary-button" type="submit" disabled={busy || !email.trim()}>{busy ? 'Working…' : saved ? 'Analyze saved revision →' : 'Save & analyze →'}</button></div></div>
+                  <div className="form-footer"><small>Analysis uses Claude API credits.<br />Nothing is sent to the client.</small><div className="button-group">{!saved ? <button className="secondary-button" type="button" disabled={busy || !email.trim()} onClick={() => { void perform(async () => { await save(); }); }}>Save request</button> : null}<button className="primary-button" type="submit" disabled={busy || !email.trim()}>{busy ? 'Working…' : saved ? 'Update fields from email →' : 'Fill request from email →'}</button></div></div>
                   <small className="privacy-note">The email is sent to Claude for analysis. Use fictional data in this prototype.</small>
                 </form>
                 {saved && analyses.some(a => a.status === "running") ? <button className="text-button" type="button" disabled={busy} onClick={() => { retryCommands.current.delete(JSON.stringify({ action: "analyze", request_id: saved.id, expected_revision: saved.revision })); setNotice("A new run is enabled. Select Analyze saved revision to retry explicitly; this may use additional API credits."); }}>Retry analysis with a new run</button> : null}
               </section>
-              {saved ? <div className="result-panel conversation-card"><SavedRequests {...navigationProps} variant="conversation" /></div> : null}
-            </div><aside className="guidance-column"><div className="guidance-card"><span className="guidance-icon" aria-hidden="true">✦</span><h3>A good request starts<br />with the right questions.</h3><p>SyncFlow organizes the details so you can focus on moving the opportunity forward.</p><ol><li><strong>Capture the request</strong><span>Paste the client’s email.</span></li><li><strong>Match before saving</strong><span>Choose the artist and exact version in Recording.</span></li><li><strong>Save, analyze, then review</strong><span>Confirm facts and ask what’s missing.</span></li></ol></div><div className="quiet-note"><strong>You’re in control.</strong><p>Saving is not confirmation. Agents suggest details; only your review confirms them. This workspace does not clear rights or grant a licence.</p></div></aside></div>
+              
+            </div><aside className="request-fields-column"><RequestFields confirmed={saved?.confirmed_fields || []} proposals={proposals} decisions={decisions} runId={reviewRun?.run_id || null} busy={busy} analyzed={!!reviewRun} stale={!result && !!reviewRun} issues={issues} onReview={() => setStep('review')} /></aside></div>{saved ? <div className="result-panel conversation-card"><SavedRequests {...navigationProps} variant="conversation" /></div> : null}
           </section>
           <section hidden={step !== 'recording'} aria-label="Recording catalog"><RecordingPicker selected={recording} disabled={busy || !!saved} onSelect={r => { setRecording(r); clearResult(); }} onScenario={text => { setEmail(text); clearResult(); }} /><div className="stage-footer"><span>One recording per request. Create separate requests for multiple songs.</span><button type="button" className="primary-button" onClick={() => setStep('brief')}>Back to request →</button></div></section>
           <section hidden={step !== 'review'} aria-label="Fact and issue review">

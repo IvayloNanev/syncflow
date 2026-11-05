@@ -2055,3 +2055,25 @@ h2 {
   font-size:11px;
   color:#85602b
 }
+
+/* Email and extracted record stay together, like the intake PRD sketch. */
+.content-columns:has(.request-fields-column) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); align-items: start; }
+.request-fields-column { min-width: 0; }
+.request-fields { padding: 24px; }
+.request-fields h2 { font-size: 23px; }
+.request-field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 20px 0; }
+.request-field-box { padding: 14px; border: 1px solid var(--border, #dce1d6); border-radius: 10px; background: #f8f9f5; min-width: 0; }
+.request-field-label { display: flex; justify-content: space-between; gap: 8px; align-items: start; }
+.request-field-label h3 { margin: 0; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+.request-field-label > span { font-size: 10px; color: #65705d; }
+.request-field-value { font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; margin: 12px 0; white-space: pre-wrap; }
+.request-field-box details { font-size: 11px; }
+.request-field-box blockquote { margin: 10px 0 0; padding-left: 8px; border-left: 2px solid #a4b48e; overflow-wrap: anywhere; }
+.request-field-box blockquote small { display: block; margin-top: 5px; }
+.field-proposed { background: #f1f5e9; border-color: #c8d5b6; }
+.field-confirmed { border-color: #8fa98d; }
+.field-missing, .field-rejected { background: #fff8ec; border-color: #e7d3a9; }
+.field-waiting { color: #73796e; border-style: dashed; }
+.field-question { font-size: 11px; line-height: 1.5; color: #805b22; }
+@media (max-width: 1100px) { .content-columns:has(.request-fields-column) { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 480px) { .request-field-grid { grid-template-columns: minmax(0, 1fr); } }

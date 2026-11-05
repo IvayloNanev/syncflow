@@ -5,7 +5,7 @@ export type FactProposal = { proposal_id: string; field_key: string; previous_va
 export type ConfirmedFact = { field_key: string; state: string; value: unknown; evidence: Evidence[]; confirmed_by: string | null; confirmed_at: string | null };
 export type FactDecision = { run_id: string; proposal_id: string; field_key: string; decision: string; decided_by: string; decided_at: string; resulting_revision: number };
 const label = (key: string) => key.replaceAll("_", " ");
-function valueText(value: unknown): string {
+export function valueText(value: unknown): string {
   if (value == null) return "Not confirmed";
   if (typeof value === "string") return value;
   if (typeof value === "number" || typeof value === "boolean") return String(value);
