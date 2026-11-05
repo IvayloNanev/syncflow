@@ -35,6 +35,7 @@ export function openRequestStore(path = ':memory:') {
     CREATE TABLE IF NOT EXISTS active_analyses (request_id TEXT PRIMARY KEY REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id)) STRICT;
     CREATE TABLE IF NOT EXISTS review_heads (request_id TEXT PRIMARY KEY REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id)) STRICT;
     CREATE TABLE IF NOT EXISTS fact_decisions (request_id TEXT NOT NULL REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id), proposal_id TEXT NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,run_id,proposal_id)) STRICT;`);
+  db.exec('CREATE TABLE IF NOT EXISTS reviewer_tracking (request_id TEXT PRIMARY KEY REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL) STRICT');
   db.exec('INSERT OR IGNORE INTO review_heads SELECT request_id,run_id FROM active_analyses');
   const owned = (actor, id) => {
     identity(actor);
@@ -242,6 +243,43 @@ export function openRequestStore(path = ':memory:') {
           db.prepare('INSERT INTO review_heads VALUES (?,?) ON CONFLICT(request_id) DO UPDATE SET run_id=excluded.run_id').run(request.id,row.run_id);
         }
         return this.analysis(input.actor_id,request.id,row.run_id);
+      });
+    },
+    reviewers(actor,id) {
+      const request = owned(actor,id);
+      const row = db.prepare('SELECT version,body FROM reviewer_tracking WHERE request_id=?').get(id);
+      const state = row ? JSON.parse(row.body) : {reviewers:[],history:[]};
+      return {version:row?.version ?? 0, ...state, reviewers:state.reviewers.map(r => ({...r, needs_reconfirmation:r.status !== 'Pending' && r.reviewed_revision !== request.revision}))};
+    },
+    recordReview(input) {
+      if (!keys(input,['actor_id','request_id','expected_revision','expected_review_version','idempotency_key','operation','reviewer_id','name','role','status','notes'])) fail('INVALID_INPUT');
+      command(input);
+      if (!Number.isInteger(input.expected_revision) || !Number.isInteger(input.expected_review_version) || input.expected_review_version < 0) fail('INVALID_REVISION');
+      if (!['assign','decision'].includes(input.operation)) fail('INVALID_REVIEW');
+      if (input.operation === 'assign' && (!text(input.name,200) || !text(input.role,200))) fail('INVALID_REVIEW');
+      if (input.operation === 'decision' && (!text(input.reviewer_id,200) || !['Pending','Approved','Changes requested','Declined'].includes(input.status) || typeof input.notes !== 'string' || input.notes.length > 4000)) fail('INVALID_REVIEW');
+      const actor_id=input.actor_id;
+      const payload=Object.fromEntries(Object.entries(input).filter(([key]) => !['actor_id','idempotency_key'].includes(key)));
+      return execute(input,`reviewers:${input.request_id}`,payload,() => {
+        const request = owned(actor_id,input.request_id);
+        if(request.revision !== input.expected_revision) fail('REVISION_CONFLICT');
+        const row = db.prepare('SELECT version,body FROM reviewer_tracking WHERE request_id=?').get(request.id);
+        if((row?.version ?? 0) !== input.expected_review_version) fail('REVIEW_CONFLICT');
+        const state = row ? JSON.parse(row.body) : {reviewers:[],history:[]};
+        let reviewer;
+        if(input.operation === 'assign') {
+          if(state.reviewers.length >= 20 || state.reviewers.some(r => r.name.toLowerCase() === input.name.trim().toLowerCase() && r.role.toLowerCase() === input.role.trim().toLowerCase())) fail('INVALID_REVIEW');
+          reviewer = {id:randomUUID(),name:input.name.trim(),role:input.role.trim(),status:'Pending',notes:'',reviewed_revision:request.revision};
+          state.reviewers.push(reviewer);
+        } else {
+          reviewer = state.reviewers.find(r => r.id === input.reviewer_id);
+          if(!reviewer) fail('NOT_FOUND');
+          reviewer.status=input.status;reviewer.notes=input.notes;reviewer.reviewed_revision=request.revision;
+        }
+        reviewer.recorded_by=actor_id;reviewer.recorded_at=new Date().toISOString();
+        state.history.push({...reviewer,operation:input.operation});
+        db.prepare('INSERT INTO reviewer_tracking VALUES (?,?,?) ON CONFLICT(request_id) DO UPDATE SET version=excluded.version,body=excluded.body').run(request.id,(row?.version ?? 0)+1,JSON.stringify(state));
+        return request;
       });
     },
     close() { db.close(); },

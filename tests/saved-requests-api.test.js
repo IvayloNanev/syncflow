@@ -94,3 +94,17 @@ test('provider failure is saved safely, never leaks errors, and explicit new-key
   fail=false;assert.equal((await call(command)).analysis_status,'failed');
   assert.equal((await call({...command,idempotency_key:'retry'})).analysis_status,'completed');
 });
+
+test('reviewer API records manual decisions and preserves request revision', async t => {
+  const {call,calls}=setup(t);const {request:r}=await call(create);
+  const assign={action:'reviewer',request_id:r.id,expected_revision:0,expected_review_version:0,operation:'assign',name:'Demo Director',role:'Director',idempotency_key:'reviewer-assign'};
+  const assigned=await call(assign);assert.equal(assigned.status,200);
+  assert.equal(assigned.reviewer_tracking.reviewers[0].status,'Pending');
+  assert.equal((await call(assign)).replayed,true);
+  const review={action:'reviewer',request_id:r.id,expected_revision:0,expected_review_version:1,operation:'decision',reviewer_id:assigned.reviewer_tracking.reviewers[0].id,status:'Changes requested',notes:'Clarify scope.',idempotency_key:'reviewer-decision'};
+  const decided=await call(review);assert.equal(decided.status,200);
+  assert.equal(decided.request.revision,0);assert.equal(decided.reviewer_tracking.history.length,2);
+  assert.equal((await call({...review,idempotency_key:'reviewer-conflict'})).status,409);
+  assert.equal((await call({...review,actor_id:'forged'})).status,400);
+  assert.equal(calls(),0);
+});

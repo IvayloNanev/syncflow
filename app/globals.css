@@ -2149,3 +2149,6 @@ h2 {
 .handoff-panel > summary { cursor: pointer; font-size: 17px; font-weight: 600; }
 .handoff-panel > p { line-height: 1.65; }
 .handoff-panel textarea { font-family: inherit; font-size: 13px; line-height: 1.65; margin-bottom: 16px; }
+.reviewer-card { margin-top: 20px; padding: 20px; border: 1px solid #dce1d6; border-radius: 10px; }
+.reviewer-card h3 small { display: block; margin-top: 6px; font-weight: 400; }
+.reviewer-card > small { display: block; margin-top: 12px; overflow-wrap: anywhere; }

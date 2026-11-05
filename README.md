@@ -168,3 +168,7 @@ The numbered stage tabs have been replaced by one workspace: conversation and dr
 ### Internal handoff summary
 
 Open **Prepare an internal handoff summary** under the fact review, then generate, edit and copy the report for manual sharing. The deterministic generator uses confirmed client facts with source evidence, explicitly marks unconfirmed fields, and separates client questions from fictional catalog/internal verification checks. It makes no extra model call. A record or analysis change invalidates an existing summary until regenerated. Summary edits are browser-local and are not saved; regenerate replaces edits. This does not assign reviewers, record decisions or grant clearance.
+
+### Internal reviewer tracking
+
+Expand **Internal reviewers** to assign a named reviewer and record decisions received outside the app: Pending, Approved, Changes requested or Declined, with notes. Reviewer records persist in the local SQLite store with attribution, timestamps and decision history. Assigning someone does not send a notification or grant access. Request revision changes conservatively require all prior non-Pending decisions to be reconfirmed; older approvals do not count as current. Re-analysis alone does not invalidate reviews. Concurrent reviewer edits are version-checked, commands are idempotent, and reviewer decisions do not modify request facts/revision. Formal readiness/completion gates and a dashboard remain future work.
