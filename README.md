@@ -10,7 +10,9 @@
 
 Detailed acceptance criteria are in [the coordinator user stories](docs/user-stories.md).
 
-A school prototype by Ivaylo Nanev and Mosiah James.
+Built by Ivaylo Nanev and Mosiah James.
+
+**Current backend:** Supabase sign-in and workspace-scoped PostgreSQL storage are wired for the web app. See [authenticated shared workspace](#authenticated-shared-workspace-current-web-backend) for setup, access rules and remaining release work. Earlier local-development notes below describe the fallback/CLI adapters.
 
 ## Setup guide
 
@@ -18,7 +20,7 @@ New checkout? Follow the [setup and collaborator guide](docs/setup-guide.md): en
 
 ## Application development
 
-The coordinator app uses Next.js App Router, TypeScript, Prisma 7, and a local SQLite database for the prototype. Node.js 24 and pnpm 11.25.0 are used by this branch.
+The coordinator app uses Next.js App Router and TypeScript, with Supabase Auth/PostgreSQL in shared mode and the existing SQLite adapter in local mode. Prisma 7 is an unused application scaffold. Node.js 24 and pnpm 11.25.0 are used by this branch.
 
 ```sh
 pnpm install --frozen-lockfile
@@ -205,7 +207,7 @@ See [product acceptance — Nov 5](docs/acceptance/2026-11-05-product-acceptance
 
 Failed attempts now keep fixed reason codes and safe validation categories in saved analysis history. The workspace shows what failed, a read-only status check, and an explicit new-attempt action; checking or reopening does not call the model. A failed attempt never replaces an earlier validated result. Long-running attempts require a successful status check and at least 90 seconds since recorded start before a new-attempt action appears. Duplicate retries remain idempotent and there are no automatic model retries. Source messages, confirmed facts, handoffs and reviewer records are retained. This improves diagnosability; it does not establish that every model response will validate or resolve the historical unexplained rejection.
 
-## Three interface areas
+## Earlier interface iteration (superseded)
 
 - `/`: landing page with customer and coordinator entry points.
 - `/customer`: local customer submission form. Paste a brief; submit to the existing SQLite request queue and receive a reference. No model call is made at submission. Retries preserve an idempotency key until input changes.
@@ -215,7 +217,7 @@ The local `/api/customer/requests` endpoint accepts create only and returns a re
 
 The project landing page uses a dark, warm-gold glass visual presentation. The Coordinator page contains an optional Play/Pause walkthrough with five selectable stages. The walkthrough uses fixed fictional examples, makes no agent calls, saves no records and grants no approvals. Its motion is user initiated; reduced-motion settings disable animated transitions. The operational customer and coordinator pages remain separate.
 
-## Corrected page organization
+## Current page organization
 
 The three active pages are Landing (`/`), Coordinator (`/coordinator`) and Internal review (`/internal`). Coordinator contains client email intake, the fictional music catalog, analysis, fact review and client follow-up drafts. Internal review contains saved-request selection, readiness, handoff summaries and manually recorded reviewer decisions. Links carry the saved request ID between both workspaces. The old `/customer` page redirects to Coordinator; an external client portal is no longer the chosen interface scope. The earlier customer submission endpoint remains local-only and unused by the active pages. Internal review is coordinator-managed tracking, not team chat or automatic messaging.
 
@@ -238,3 +240,23 @@ The coordinator handles missing/conflicting details and recording identity, then
 The animated-example disclosure has been replaced by the operational workflow. Five request-aware links jump to the real client brief, extracted record, checklist, response editor and reply input. Status derives from saved messages and the current validated analysis; there are no playback timers or simulated extraction results. While an API operation runs, the workflow says Updating saved request without claiming stage-level provider telemetry.
 
 At wide desktop sizes, the live conversation, record/checklist and draft occupy three adjacent panels; smaller screens use two columns or a stacked layout. Original/reply history, automatic extraction, source evidence, category filters, draft editing/copy, reply-and-recheck, unsaved recovery and separate internal review still use the existing saved-request API. Copying does not send a message. The old standalone LandingStory component is no longer rendered in the working interface.
+
+## Authenticated shared workspace (current web backend)
+
+Setting `NEXT_PUBLIC_SUPABASE_URL` enables shared mode and disables the local fallback; `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and server-only `SUPABASE_SECRET_KEY` must also be configured. In shared mode, `/coordinator` and `/internal` require Supabase sign-in and an assigned workspace membership. `/api/requests` verifies the user at every request, obtains membership from the database, and uses that user ID for new audit events. Profile metadata and browser-supplied actor/workspace IDs never grant access. `/api/analyze` and the unused customer endpoint are disabled in shared mode; use the coordinator workflow. Without Supabase configuration, the existing local-only development mode remains available. Production additionally requires an explicit HTTPS `SYNCFLOW_APP_ORIGIN`; origin checks fail closed without it. Never expose or commit the secret key.
+
+`db/shared-schema.sql` records the hosted schema. Workspace membership is administrator-managed; self-signup alone grants no request access. This first version supports one workspace per account; multiple memberships deliberately require a future workspace chooser rather than picking one silently. Team members can work on the same request; reviewer entries remain coordinator-recorded decisions with the authenticated recorder attributed, not digital signatures from the named reviewer.
+
+PostgreSQL stores one versioned JSON aggregate per request, including structured messages, evidence, analysis runs, reviewer history, command receipts, and handoff versions. A compare-and-swap RPC commits each change atomically and verifies membership again at commit. The existing SQLite domain engine runs **in memory only** to validate and calculate changes to that one request; it is not the shared durable database. This transitional adapter preserves the tested lifecycle rules without maintaining two implementations. A native PostgreSQL domain implementation and large-history archival are future improvements; measure payload and memory costs before high-volume operation. Dashboard summaries are saved with the aggregate and paginated without loading full histories. Agent calls happen outside database transactions: save the run first, then reload before activation, so a concurrent reply makes older analysis stale.
+
+Local `.syncflow-data/browser-requests.sqlite` records are left untouched and are **not automatically uploaded** to a shared team. New shared requests are stored in Supabase. A reviewed import is a separate operation. Unsaved editor recovery is scoped by verified user/workspace and cleared on sign-out; it remains tab-local, not shared storage.
+
+### First account and team access
+
+1. Start the app and open `/login`. Create an account, verify its email, and sign in.
+2. A trusted administrator adds the verified Auth user ID to `syncflow_members` for the intended workspace. Do not grant access to every signup, match by editable metadata, or put the server key into a browser.
+3. Add your partner's verified account to the same workspace. Both accounts then see the same saved requests.
+
+The free hosted Auth email service is suitable for initial verification, but real delivery needs a configured SMTP provider and validated redirect URLs before rollout. Deployment, password recovery UI, operational backups/restore drills, durable agent jobs, load testing and broader live agent quality evaluation remain release work. Shared persistence and login alone do not make this a production-ready licensing system.
+
+Run `node --test tests/shared-store.test.js tests/request-origin.test.js` for concurrency/isolation regression checks. `db/check-shared-isolation.sql` tests real PostgreSQL policies inside a transaction that rolls back all fixtures. For opt-in HTTP/Auth/storage integration tests, start the app and run `SYNCFLOW_LIVE_TEST=1 SYNCFLOW_TEST_APP_URL=http://127.0.0.1:3000 node scripts/check-shared-backend.mjs`; it creates temporary synthetic identities/workspaces and removes precisely those fixtures. It never lists real users or sends email. One team analysis at a time is enforced with a database lease, released on completion and expiring after 180 seconds after a crash. This is concurrency protection, not a complete spending quota or durable job queue.
