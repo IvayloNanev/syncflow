@@ -108,3 +108,12 @@ test('reviewer API records manual decisions and preserves request revision', asy
   assert.equal((await call({...review,actor_id:'forged'})).status,400);
   assert.equal(calls(),0);
 });
+
+test('completion API rejects incomplete intake and agent-supplied approval claims', async t => {
+  const {call}=setup(t);const {request:r}=await call(create);
+  const command={action:'complete_review',request_id:r.id,expected_revision:0,expected_review_version:0,idempotency_key:'complete'};
+  assert.equal((await call(command)).status,409);
+  assert.equal((await call({...command,approved:true})).status,400);
+  const detail=await call({action:'get',request_id:r.id});
+  assert.equal(detail.workflow.completed,false);assert.equal(detail.workflow.history.length,0);
+});

@@ -12,6 +12,7 @@ import SavedRequests, { type SavedRequest, type RequestSummary, type AnalysisSum
 import { recordings } from "../catalog/recordings.js";
 import RecordingPicker, { type Recording } from "./recording-picker";
 
+type Workflow = {status:string;next_action:string;can_complete:boolean;completed:boolean;reasons:string[];completion:{needs_reconfirmation:boolean;completed_by:string;completed_at:string}|null;history:{completed_by:string;completed_at:string;request_revision:number}[]};
 type Proposal = FactProposal;
 type Issue = { issue_id: string; type: string; severity: string; field_keys: string[]; question: string };
 type Result = {
@@ -33,6 +34,7 @@ export default function AnalysisWorkspace() {
   const [recordingOverride, setRecordingOverride] = useState(false);
   const [allowUnresolved, setAllowUnresolved] = useState(false);
   const [reviewRun, setReviewRun] = useState<{ run_id: string; result: Result } | null>(null);
+  const [workflow,setWorkflow]=useState<Workflow|null>(null);
   const [reviewers,setReviewers]=useState<ReviewTracking>({version:0,reviewers:[],history:[]});
   const [decisions, setDecisions] = useState<FactDecision[]>([]);
   const [saved, setSaved] = useState<SavedRequest | null>(null);
@@ -52,7 +54,7 @@ export default function AnalysisWorkspace() {
   const [draft, setDraft] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
   function clearResult() { setResult(null); setError(""); setSubject(""); setDraft(""); setCopyStatus(""); }
-  type Detail = { reviewer_tracking: ReviewTracking; review_analysis: { run_id: string; result: Result } | null; decisions: FactDecision[]; request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
+  type Detail = { workflow: Workflow; reviewer_tracking: ReviewTracking; review_analysis: { run_id: string; result: Result } | null; decisions: FactDecision[]; request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
   async function command(payload: Record<string, unknown>) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 70000);
@@ -77,7 +79,7 @@ export default function AnalysisWorkspace() {
     return () => { mounted = false; };
   }, []);
   function showSaved(data: Detail) {
-    setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
+    setWorkflow(data.workflow); setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
     setRecordingOverride(true); setRecording(recordings.find(r => r.id === data.request.recording_id) || null); setAnalyses(data.analyses);
     if (data.active_analysis?.result?.ok) {
       const active = { ...data.active_analysis.result, catalog_review: data.catalog_review };
@@ -111,7 +113,7 @@ export default function AnalysisWorkspace() {
   }
   function newRequest() {
     setCatalogOpen(false); setRecordingOverride(false); setAllowUnresolved(false); retryCommands.current.clear();
-    setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
+    setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
   }
   async function copyDraft() {
     try { await navigator.clipboard.writeText(`Subject: ${subject}\n\n${draft}`); setCopyStatus("Draft copied. Nothing was sent."); }
@@ -155,6 +157,14 @@ export default function AnalysisWorkspace() {
       <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1>{saved ? 'Request workspace' : 'Start with the client’s email.'}</h1><p>See the recording, resolve the gaps and prepare your next email.</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
       <div aria-live="polite">{busy ? <p className="busy-notice">Working on the request. Saved facts and history are preserved…</p> : notice ? <p className="notice">{notice}</p> : null}</div>
       {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p></div> : null}
+      {saved && workflow ? <section className="workflow-status" aria-label="Request status and next action"><div><p className="eyebrow">CURRENT STATUS</p><h2>{workflow.status}</h2><p>{workflow.next_action}</p></div><div><details><summary>Readiness checks ({workflow.reasons.length})</summary>{workflow.reasons.map((reason,i)=><p key={i}>{reason}</p>)}<p>Readiness refers to internal review only. Publishing verification and the licensing process remain separate.</p></details>
+        {workflow.completion?.needs_reconfirmation ? <p className="stale-banner">Previous completion is outdated after a request or reviewer change.</p> : null}
+        {workflow.completed ? <p>Recorded by {workflow.completion?.completed_by} at {workflow.completion?.completed_at}. This is not rights clearance.</p> : <button type="button" className="primary-button" disabled={busy||!workflow.can_complete} onClick={()=>{void perform(async()=>{
+          const data:Detail=await command(keyed({action:'complete_review',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version}));
+          setWorkflow(data.workflow);setNotice('Internal review completion recorded. No licence or rights clearance was granted.');
+        });}}>Mark internal review complete</button>}
+        {workflow.history.length ? <details><summary>Completion history ({workflow.history.length})</summary>{workflow.history.map((event,i)=><p key={i}>Revision {event.request_revision} · {event.completed_by} · {event.completed_at}</p>)}</details> : null}
+      </div></section> : null}
       <div className="intake-grid">
         <section className="result-panel analysis-input" aria-labelledby="analyze-heading">
           <p className="eyebrow">CLIENT CONVERSATION</p><h2 id="analyze-heading">{saved ? 'Email conversation' : 'Paste the request'}</h2>
@@ -201,7 +211,7 @@ export default function AnalysisWorkspace() {
         let success=false;
         await perform(async () => {
           const data: Detail = await command(keyed({action:'reviewer',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version,...input}));
-          setReviewers(data.reviewer_tracking); success=true; setNotice('Reviewer record saved. No message was sent.');
+          setWorkflow(data.workflow); setReviewers(data.reviewer_tracking); success=true; setNotice('Reviewer record saved. No message was sent.');
         });
         return success;
       }} /> : null}

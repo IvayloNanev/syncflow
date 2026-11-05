@@ -2152,3 +2152,8 @@ h2 {
 .reviewer-card { margin-top: 20px; padding: 20px; border: 1px solid #dce1d6; border-radius: 10px; }
 .reviewer-card h3 small { display: block; margin-top: 6px; font-weight: 400; }
 .reviewer-card > small { display: block; margin-top: 12px; overflow-wrap: anywhere; }
+.workflow-status { padding: 24px; background: #eef3e6; border: 1px solid #d0ddbe; border-radius: 14px; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 24px; margin: 20px 0; }
+.workflow-status h2 { font-size: 23px; margin: 8px 0; }
+.workflow-status p { font-size: 13px; line-height: 1.6; }
+.workflow-status summary { cursor: pointer; font-size: 13px; margin-bottom: 12px; }
+@media (max-width: 700px) { .workflow-status { grid-template-columns: minmax(0,1fr); } }

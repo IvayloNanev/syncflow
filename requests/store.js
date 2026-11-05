@@ -1,3 +1,4 @@
+import { requestReadiness } from './readiness.js';
 import { resolveRecording } from '../catalog/review.js';
 import { DatabaseSync } from 'node:sqlite';
 import { randomUUID, createHash } from 'node:crypto';
@@ -36,6 +37,7 @@ export function openRequestStore(path = ':memory:') {
     CREATE TABLE IF NOT EXISTS review_heads (request_id TEXT PRIMARY KEY REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id)) STRICT;
     CREATE TABLE IF NOT EXISTS fact_decisions (request_id TEXT NOT NULL REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id), proposal_id TEXT NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,run_id,proposal_id)) STRICT;`);
   db.exec('CREATE TABLE IF NOT EXISTS reviewer_tracking (request_id TEXT PRIMARY KEY REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL) STRICT');
+  db.exec('CREATE TABLE IF NOT EXISTS review_completions (request_id TEXT NOT NULL REFERENCES requests(id), sequence INTEGER PRIMARY KEY AUTOINCREMENT, body TEXT NOT NULL) STRICT');
   db.exec('INSERT OR IGNORE INTO review_heads SELECT request_id,run_id FROM active_analyses');
   const owned = (actor, id) => {
     identity(actor);
@@ -279,6 +281,25 @@ export function openRequestStore(path = ':memory:') {
         reviewer.recorded_by=actor_id;reviewer.recorded_at=new Date().toISOString();
         state.history.push({...reviewer,operation:input.operation});
         db.prepare('INSERT INTO reviewer_tracking VALUES (?,?,?) ON CONFLICT(request_id) DO UPDATE SET version=excluded.version,body=excluded.body').run(request.id,(row?.version ?? 0)+1,JSON.stringify(state));
+        return request;
+      });
+    },
+    workflow(actor,id) {
+      const request=owned(actor,id);
+      const history=db.prepare('SELECT body FROM review_completions WHERE request_id=? ORDER BY sequence').all(id).map(row=>JSON.parse(row.body));
+      return {...requestReadiness({request,analysis:this.activeAnalysis(actor,id),tracking:this.reviewers(actor,id),completion:history.at(-1) || null}),history};
+    },
+    completeReview(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','expected_review_version','idempotency_key'])) fail('INVALID_INPUT');
+      command(input);
+      const {actor_id,request_id,expected_revision,expected_review_version}=input;
+      if(!Number.isInteger(expected_revision)||!Number.isInteger(expected_review_version)) fail('INVALID_REVISION');
+      return execute(input,`complete-review:${request_id}`,{request_id,expected_revision,expected_review_version},()=>{
+        const request=owned(actor_id,request_id);
+        if(request.revision!==expected_revision) fail('REVISION_CONFLICT');
+        if(this.reviewers(actor_id,request_id).version!==expected_review_version) fail('REVIEW_CONFLICT');
+        if(!this.workflow(actor_id,request_id).can_complete) fail('REVIEW_NOT_READY');
+        db.prepare('INSERT INTO review_completions (request_id,body) VALUES (?,?)').run(request_id,JSON.stringify({request_revision:expected_revision,review_version:expected_review_version,completed_by:actor_id,completed_at:new Date().toISOString()}));
         return request;
       });
     },
