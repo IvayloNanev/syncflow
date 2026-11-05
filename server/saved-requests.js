@@ -9,7 +9,7 @@ import { createClaudeProvider } from '../agents/intake/providers/claude.js';
 import { createFollowUpClaudeProvider } from '../agents/follow-up/providers/claude.js';
 
 // Single local operator only. This is NOT an authenticated shared workspace.
-const actor = 'local-coordinator';
+const localActor = 'local-coordinator';
 function localStore() {
   const dir = join(process.cwd(), '.syncflow-data');
   mkdirSync(dir, { recursive: true, mode: 0o700 });
@@ -30,7 +30,7 @@ const allowed = {
   decide: ['action','request_id','expected_revision','idempotency_key','run_id','proposal_id','decision'],
   analyze: ['action', 'request_id', 'expected_revision', 'idempotency_key'],
 };
-function detail(store, id) {
+export function requestDetail(store, id, actor = localActor) {
   const request = store.get(actor, id);
   request.agent_fields=effectiveFields(request,store.activeAnalysis(actor,id),store.decisions(actor,id)).filter(f=>f.origin==="agent");
   return { request, recording_changes:store.history(actor,id).filter(event=>event.action==='recording_corrected'), handoff: store.handoff(actor,id), workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
@@ -50,14 +50,14 @@ const safeErrors = {
   INVALID_RECORDING: [400, 'Choose a valid catalog recording.'],
   INVALID_TIMEZONE: [400, 'Choose a valid timezone.'],
 };
-export function createSavedRequestsHandler({ enabled = () => process.env.NODE_ENV === 'development',
+export function createSavedRequestsHandler({ actor = localActor, trustedOrigin = /** @type {string|null} */ (null), enabled = () => process.env.NODE_ENV === 'development',
   openStore = localStore, customerSubmission = false, providers = () => ({ intakeProvider: createClaudeProvider(), followUpProvider: createFollowUpClaudeProvider() }) } = {}) {
   let analyzing = false;
   const json = (status, body) => Response.json(body, { status, headers: { 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' } });
   return async function POST(req) {
     if (!enabled()) return json(503, { error: { code: 'LOCAL_DEVELOPMENT_ONLY', message: 'Saved requests are available on the local development server only.' } });
     const url = new URL(req.url); const authority = req.headers.get('host') || url.host;
-    if (!['127.0.0.1', 'localhost'].includes(url.hostname) || !/^(127\.0\.0\.1|localhost)(:\d{1,5})?$/.test(authority)
+    if (trustedOrigin ? req.headers.get('origin') !== trustedOrigin : !['127.0.0.1', 'localhost'].includes(url.hostname) || !/^(127\.0\.0\.1|localhost)(:\d{1,5})?$/.test(authority)
       || (req.headers.get('origin') && req.headers.get('origin') !== `http://${authority}`))
       return json(403, { error: { code: 'ORIGIN_REJECTED', message: 'Use the same local address as the app.' } });
     if (req.headers.get('content-type')?.split(';')[0].trim() !== 'application/json')
@@ -81,7 +81,7 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
         return json(400, { error: { code: 'INVALID_INPUT', message: 'Use a supported request command and fields.' } });
       // Prevent duplicate live runs in this process while allowing replies to invalidate an in-flight snapshot.
       if (input.action === 'analyze' && analyzing) return json(429, { error: { code: 'BUSY', message: 'An analysis is running. Wait, then reopen this request before retrying.' } });
-      store = openStore();
+      store = await openStore();
       if (input.action === 'list') {
         const requests = store.list(actor).map(item => {
           const r = store.get(actor, item.id);
@@ -90,35 +90,35 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
         }).sort((a, b) => b.updated_at.localeCompare(a.updated_at));
         return json(200, { requests });
       }
-      if (input.action === 'get') return json(200, detail(store, input.request_id));
+      if (input.action === 'get') return json(200, requestDetail(store, input.request_id, actor));
       const { action, ...fields } = input;
       if (action === 'create') {
         const result = store.create({ ...fields, actor_id: actor });
-        return json(result.replayed ? 200 : 201, customerSubmission ? { request_id: result.request.id, status: "submitted", replayed: result.replayed } : { ...detail(store, result.request.id), replayed: result.replayed });
+        return json(result.replayed ? 200 : 201, customerSubmission ? { request_id: result.request.id, status: "submitted", replayed: result.replayed } : { ...requestDetail(store, result.request.id, actor), replayed: result.replayed });
       }
       if (action === 'reply') {
         const result = store.appendReply({ ...fields, actor_id: actor });
-        return json(200, { ...detail(store, result.request.id), replayed: result.replayed });
+        return json(200, { ...requestDetail(store, result.request.id, actor), replayed: result.replayed });
       }
       if (action === 'change_recording') {
         const result=store.changeRecording({...fields,actor_id:actor});
-        return json(200,{...detail(store,result.request.id),replayed:result.replayed});
+        return json(200,{...requestDetail(store, result.request.id, actor),replayed:result.replayed});
       }
       if (action === 'save_handoff') {
         const result=store.saveHandoff({...fields,actor_id:actor});
-        return json(200,{...detail(store,result.request.id),replayed:result.replayed});
+        return json(200,{...requestDetail(store, result.request.id, actor),replayed:result.replayed});
       }
       if (action === 'complete_review') {
         const result=store.completeReview({...fields,actor_id:actor});
-        return json(200,{...detail(store,result.request.id),replayed:result.replayed});
+        return json(200,{...requestDetail(store, result.request.id, actor),replayed:result.replayed});
       }
       if (action === 'reviewer') {
         const result = store.recordReview({...fields,actor_id:actor});
-        return json(200,{...detail(store,result.request.id),replayed:result.replayed});
+        return json(200,{...requestDetail(store, result.request.id, actor),replayed:result.replayed});
       }
       if (action === 'decide') {
         const result = store.decideProposal({ ...fields, actor_id: actor });
-        return json(200, { ...detail(store, result.request.id), replayed:result.replayed });
+        return json(200, { ...requestDetail(store, result.request.id, actor), replayed:result.replayed });
       }
       analyzing = true;
       try {
@@ -128,7 +128,7 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
           id: 'server:claude', mode: 'live', async generate(args) { configured ??= providers(); return configured[key].generate(args); },
         };
         const outcome = await analyzeSavedRequest(store, { ...fields, actor_id: actor }, lazy);
-        return json(200, { ...detail(store, input.request_id), analysis_status: outcome.analysis.status, replayed: outcome.replayed });
+        return json(200, { ...requestDetail(store, input.request_id, actor), analysis_status: outcome.analysis.status, replayed: outcome.replayed });
       } finally { analyzing = false; }
     } catch (error) {
       const [status, message] = safeErrors[error.code] || (error.code?.startsWith('INVALID_') ? [400, 'Invalid request details.'] : [500, 'Unable to complete the request. Your saved history is retained; reopen before retrying.']);

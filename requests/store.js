@@ -28,7 +28,7 @@ const command = input => {
 /** Trusted server/CLI boundary only: actor_id must come from authenticated caller context.
  * No HTTP/auth or arbitrary updates. Explicit coordinator decisions are revision-bound commands. Analysis artifacts stay separate from confirmed facts.
  */
-export function openRequestStore(path = ':memory:') {
+export function openRequestStore(path = ':memory:', { ownerId = null, initialState = null, createId = null } = {}) {
   const db = new DatabaseSync(path, { timeout: 1000 });
   db.exec(`PRAGMA foreign_keys=ON;
     CREATE TABLE IF NOT EXISTS requests (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, revision INTEGER NOT NULL, body TEXT NOT NULL) STRICT;
@@ -42,10 +42,25 @@ export function openRequestStore(path = ':memory:') {
   db.exec('CREATE TABLE IF NOT EXISTS review_completions (request_id TEXT NOT NULL REFERENCES requests(id), sequence INTEGER PRIMARY KEY AUTOINCREMENT, body TEXT NOT NULL) STRICT');
   db.exec('CREATE TABLE IF NOT EXISTS handoff_versions (request_id TEXT NOT NULL REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,version)) STRICT');
   db.exec('INSERT OR IGNORE INTO review_heads SELECT request_id,run_id FROM active_analyses');
+  // Trusted persistence adapter only. Explicit table/column allowlist; never HTTP input.
+  const tables = ['requests','events','commands','analysis_runs','active_analyses','review_heads','fact_decisions','reviewer_tracking','review_completions','handoff_versions'];
+  if (initialState) {
+    if (initialState.schema_version !== 1) fail('INVALID_SNAPSHOT');
+    db.exec('BEGIN');
+    try {
+      for (const table of tables) {
+        const columns = db.prepare(`PRAGMA table_info(${table})`).all().map(c => c.name);
+        for (const row of initialState.tables[table] || []) {
+          db.prepare(`INSERT INTO ${table} (${columns.join(',')}) VALUES (${columns.map(()=>'?').join(',')})`).run(...columns.map(c => row[c] ?? null));
+        }
+      }
+      db.exec('COMMIT');
+    } catch (error) { db.exec('ROLLBACK'); db.close(); throw error; }
+  }
   const owned = (actor, id) => {
     identity(actor);
     if (!text(id, 200)) fail('INVALID_REQUEST_ID');
-    const row = db.prepare('SELECT body FROM requests WHERE id=? AND owner_id=?').get(id, actor);
+    const row = db.prepare('SELECT body FROM requests WHERE id=? AND owner_id=?').get(id, ownerId ?? actor);
     if (!row) fail('NOT_FOUND');
     return JSON.parse(row.body);
   };
@@ -80,7 +95,7 @@ export function openRequestStore(path = ':memory:') {
       try { recording = resolveRecording(input.recording_id); } catch { fail('INVALID_RECORDING'); }
       return execute(input, 'create', { email: input.email, timezone: input.timezone, ...(recording ? { recording_id: recording.id } : {}) }, () => {
         const now = new Date().toISOString(); const messageId = randomUUID();
-        const request = { id: randomUUID(), owner_id: input.actor_id, revision: 0, created_at: now, updated_at: now,
+        const request = { id: createId ?? randomUUID(), owner_id: ownerId ?? input.actor_id, revision: 0, created_at: now, updated_at: now,
           recording_id: recording?.id ?? null, coordinator_timezone: input.timezone, messages: [{ message_id: messageId, kind: 'initial', text: input.email,
             supplied_message_date: null, received_at: now, added_by: input.actor_id }], confirmed_fields: [], unresolved_issues: [] };
         db.prepare('INSERT INTO requests VALUES (?,?,?,?)').run(request.id, request.owner_id, request.revision, JSON.stringify(request));
@@ -99,7 +114,7 @@ export function openRequestStore(path = ':memory:') {
         const previous=request.recording_id??null;
         if(previous===(recording?.id??null))fail('INVALID_RECORDING_CHANGE');
         request.recording_id=recording?.id??null;request.revision++;request.updated_at=new Date().toISOString();
-        const update=db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?').run(request.revision,JSON.stringify(request),request.id,input.actor_id,input.expected_revision);
+        const update=db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?').run(request.revision,JSON.stringify(request),request.id,ownerId ?? input.actor_id,input.expected_revision);
         if(update.changes!==1)fail('REVISION_CONFLICT');
         db.prepare('DELETE FROM active_analyses WHERE request_id=?').run(request.id);
         db.prepare("UPDATE analysis_runs SET status='stale' WHERE request_id=? AND status='completed'").run(request.id);
@@ -111,7 +126,7 @@ export function openRequestStore(path = ':memory:') {
     get(actor, id) { return owned(actor, id); },
     list(actor) {
       identity(actor);
-      return db.prepare('SELECT body FROM requests WHERE owner_id=? ORDER BY rowid').all(actor).map(row => {
+      return db.prepare('SELECT body FROM requests WHERE owner_id=? ORDER BY rowid').all(ownerId ?? actor).map(row => {
         const r = JSON.parse(row.body); return { id: r.id, revision: r.revision, created_at: r.created_at, updated_at: r.updated_at, message_count: r.messages.length };
       });
     },
@@ -130,7 +145,7 @@ export function openRequestStore(path = ':memory:') {
         request.messages.push({ message_id: messageId, kind: 'reply', text: input.text,
           supplied_message_date: input.supplied_message_date ?? null, received_at: now, added_by: input.actor_id });
         request.revision++; request.updated_at = now;
-        const result = db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?').run(request.revision, JSON.stringify(request), request.id, input.actor_id, input.expected_revision);
+        const result = db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?').run(request.revision, JSON.stringify(request), request.id, ownerId ?? input.actor_id, input.expected_revision);
         if (result.changes !== 1) fail('REVISION_CONFLICT');
         db.prepare('DELETE FROM active_analyses WHERE request_id=?').run(request.id);
         db.prepare("UPDATE analysis_runs SET status='stale' WHERE request_id=? AND status='completed'").run(request.id);
@@ -183,7 +198,7 @@ export function openRequestStore(path = ':memory:') {
           decision:input.decision, previous_value:previous, proposed_value:proposal.proposed_value, evidence:proposal.evidence,
           decided_by:input.actor_id, decided_at:at, based_on_revision:input.expected_revision, resulting_revision:request.revision };
         const changed = db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?')
-          .run(request.revision,JSON.stringify(request),request.id,input.actor_id,input.expected_revision);
+          .run(request.revision,JSON.stringify(request),request.id,ownerId ?? input.actor_id,input.expected_revision);
         if (changed.changes !== 1) fail('REVISION_CONFLICT');
         db.prepare('INSERT INTO fact_decisions VALUES (?,?,?,?)').run(request.id,input.run_id,input.proposal_id,JSON.stringify(decision));
         db.prepare('DELETE FROM active_analyses WHERE request_id=?').run(request.id);
@@ -354,6 +369,7 @@ export function openRequestStore(path = ':memory:') {
         return request;
       });
     },
+    exportState() { return {schema_version:1,tables:Object.fromEntries(tables.map(table=>[table,db.prepare(`SELECT * FROM ${table}`).all()]))}; },
     close() { db.close(); },
   };
 }
