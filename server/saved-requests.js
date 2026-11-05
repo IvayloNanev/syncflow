@@ -31,7 +31,7 @@ const allowed = {
 function detail(store, id) {
   const request = store.get(actor, id);
   return { request, handoff: store.handoff(actor,id), workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
-    analyses: store.analyses(actor, id).map(({ run_id, base_revision, status, created_at, context, result }) => ({ run_id, base_revision, status, created_at, message_count: context.messages.length, draft: ['completed', 'stale', 'superseded'].includes(status) && result?.ok ? result.stages?.follow_up?.output ?? null : null })),
+    analyses: store.analyses(actor, id).map(({ run_id, base_revision, status, created_at, context, result }) => ({ run_id, base_revision, status, created_at, message_count: context.messages.length, failure: result?.ok===false ? result : null, draft: ['completed', 'stale', 'superseded'].includes(status) && result?.ok ? result.stages?.follow_up?.output ?? null : null })),
     catalog_review: reviewRecording(request.recording_id) };
 }
 const safeErrors = {

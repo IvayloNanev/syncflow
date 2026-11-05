@@ -192,3 +192,7 @@ See [product acceptance — Nov 5](docs/acceptance/2026-11-05-product-acceptance
 ### Quality follow-up
 
 [Territory conflict and rejection follow-up](docs/acceptance/2026-11-05-quality-follow-up.md): explicit contradictory territory statements now have a deterministic blocking check, and Intake handles explicit correction supersession more clearly. Four new confirmation workflows passed 12 checks; 185 regressions pass. The old validation failure did not reproduce in three diagnostic calls; safe diagnostic categories were added, but its cause remains unresolved. Original failed acceptance results and earlier failed targeted assertions remain preserved; global accuracy and human-study targets are not yet re-established.
+
+### Analysis failure recovery
+
+Failed attempts now keep fixed reason codes and safe validation categories in saved analysis history. The workspace shows what failed, a read-only status check, and an explicit new-attempt action; checking or reopening does not call the model. A failed attempt never replaces an earlier validated result. Long-running attempts require a successful status check and at least 90 seconds since recorded start before a new-attempt action appears. Duplicate retries remain idempotent and there are no automatic model retries. Source messages, confirmed facts, handoffs and reviewer records are retained. This improves diagnosability; it does not establish that every model response will validate or resolve the historical unexplained rejection.

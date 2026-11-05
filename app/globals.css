@@ -2175,3 +2175,8 @@ h2 {
 .dashboard-table .status-pill { white-space: normal; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); }
 @media (max-width: 600px) { .dashboard-metrics { gap: 8px; } .dashboard-metrics > div { padding: 12px; } }
+.analysis-recovery { margin: 20px 0; padding: 24px; border: 1px solid #e4cda6; border-radius: 12px; background: #fff7e9; }
+.analysis-recovery h2 { font-size: 21px; }
+.analysis-recovery p { font-size: 13px; line-height: 1.6; }
+.analysis-recovery button { margin-right: 12px; margin-bottom: 12px; }
+.analysis-recovery summary { cursor: pointer; font-size: 12px; }

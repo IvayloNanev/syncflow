@@ -6,7 +6,7 @@ import type { ConfirmedFact } from "./fact-review";
 export type SavedRequest = { confirmed_fields: ConfirmedFact[]; id: string; revision: number; recording_id: string | null; coordinator_timezone: string;
   messages: { message_id: string; kind: string; text: string; received_at: string }[] };
 export type RequestSummary = { project?:string|null; contact?:string|null; track?:string|null; deadline?:{date:string|null;time:string|null;timezone:string|null;supplied_text:string|null}|null;status?:string;responsible?:string;blocker?:string;next_action?:string; id: string; revision: number; message_count: number; preview: string; recording_id: string | null };
-export type AnalysisSummary = { run_id: string; base_revision: number; status: string; message_count?: number; draft?: {subject: string; body: string} | null };
+export type AnalysisSummary = { run_id: string; base_revision: number; status: string; created_at?:string;failure?:{failed_stage:string;error:{code:string;message:string;validation_codes?:string[]}}|null; message_count?: number; draft?: {subject: string; body: string} | null };
 export default function SavedRequests({ requests, saved, analyses, busy, reply, onReply, onAppend, onOpen, onRefresh, onNew, variant = "navigation", response, activeRunId, onRecheck }:
   { requests: RequestSummary[]; saved: SavedRequest | null; analyses: AnalysisSummary[]; busy: boolean; reply: string;
     onReply: (value: string) => void; onAppend: () => void; onOpen: (id: string) => void; onRefresh: () => void; onNew: () => void;

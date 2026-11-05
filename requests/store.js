@@ -1,3 +1,4 @@
+import { safeAnalysisFailure } from './analysis-failure.js';
 import { requestReadiness } from './readiness.js';
 import { resolveRecording } from '../catalog/review.js';
 import { DatabaseSync } from 'node:sqlite';
@@ -229,8 +230,7 @@ export function openRequestStore(path = ':memory:') {
           try { result=structuredClone(input.result); validateSuccessfulAnalysis(result,context); } catch { fail('INVALID_ANALYSIS'); }
         } else if (input.result?.ok===false) {
           // Persist only a safe failure label, never arbitrary provider errors or unvalidated payloads.
-          result={ok:false,failed_stage:['intake','review','follow_up'].includes(input.result.failed_stage)?input.result.failed_stage:'intake',
-            error:{code:'ANALYSIS_FAILED',message:'Analysis failed. Review the request or explicitly retry with a new command key.'}};
+          result=safeAnalysisFailure(input.result);
         } else fail('INVALID_ANALYSIS');
         const digest=hash(result);
         if (row.status!=='running') {

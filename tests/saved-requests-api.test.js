@@ -127,3 +127,19 @@ test('handoff save API restores edited text and rejects conflicting writes witho
   assert.equal((await call({action:'get',request_id:r.id})).handoff.latest.text,command.text);
   assert.equal(calls(),0);
 });
+
+test('failed analysis API returns safe durable recovery details and read-only status checks never retry',async t=>{
+  let calls=0;
+  const {call}=setup(t,{providers:()=>({intakeProvider:{id:'invalid-test',mode:'mock',generate:async()=>{calls++;return {secret:'PRIVATE_CANARY'};}},followUpProvider:createFollowUpMockProvider()})});
+  const {request:r}=await call(create);
+  const command={action:'analyze',request_id:r.id,expected_revision:0,idempotency_key:'recovery-attempt'};
+  const failed=await call(command);assert.equal(failed.analysis_status,'failed');
+  const latest=failed.analyses.at(-1);
+  assert.equal(latest.failure.error.code,'INVALID_OUTPUT');
+  assert.deepEqual(latest.failure.error.validation_codes,['SCHEMA_MISMATCH']);
+  assert.ok(!JSON.stringify(failed).includes('PRIVATE_CANARY'));
+  const checked=await call({action:'get',request_id:r.id});
+  assert.equal(checked.analyses.at(-1).failure.error.code,'INVALID_OUTPUT');
+  assert.equal((await call(command)).replayed,true);assert.equal(calls,1);
+  assert.equal(checked.request.messages[0].text,create.email);assert.equal(checked.request.revision,0);
+});

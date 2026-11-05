@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { previewEmail } from "../catalog/email-preview.js";
+import AnalysisRecovery from "./analysis-recovery";
 import RequestDashboard from "./request-dashboard";
 import ReviewerTracking, {type ReviewTracking} from "./reviewer-tracking";
 import InternalHandoff, {type HandoffState} from "./internal-handoff";
@@ -101,8 +102,8 @@ export default function AnalysisWorkspace() {
     const data: Detail = await command(keyed(payload)); showSaved(data); await refresh();
     setNotice("Request saved. Facts remain unconfirmed."); return data.request;
   }
-  async function analyze(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function analyze(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
     await perform(async () => {
       if (!saved && !effectiveRecording && !allowUnresolved) { setError("The recording is unresolved. Choose a recording or acknowledge the identity gap before analyzing."); return; }
       const record = saved || await save(); clearResult();
@@ -163,7 +164,7 @@ export default function AnalysisWorkspace() {
 
       <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1>{saved ? 'Request workspace' : 'Start with the client’s email.'}</h1><p>See the recording, resolve the gaps and prepare your next email.</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
       <div aria-live="polite">{busy ? <p className="busy-notice">Working on the request. Saved facts and history are preserved…</p> : notice ? <p className="notice">{notice}</p> : null}</div>
-      {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p></div> : null}
+      {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p>{saved ? <button className="secondary-button" disabled={busy} onClick={()=>{void perform(async()=>{const data:Detail=await command({action:"get",request_id:saved.id});showSaved(data);setNotice("Saved request checked. Review its latest status before retrying.");});}}>Check saved request</button> : null}</div> : null}
       {saved && workflow ? <section className="workflow-status" aria-label="Request status and next action"><div><p className="eyebrow">CURRENT STATUS</p><h2>{workflow.status}</h2><p>{workflow.next_action}</p></div><div><details><summary>Readiness checks ({workflow.reasons.length})</summary>{workflow.reasons.map((reason,i)=><p key={i}>{reason}</p>)}<p>Readiness refers to internal review only. Publishing verification and the licensing process remain separate.</p></details>
         {workflow.completion?.needs_reconfirmation ? <p className="stale-banner">Previous completion is outdated after a request or reviewer change.</p> : null}
         {workflow.completed ? <p>Recorded by {workflow.completion?.completed_by} at {workflow.completion?.completed_at}. This is not rights clearance.</p> : <button type="button" className="primary-button" disabled={busy||!workflow.can_complete} onClick={()=>{void perform(async()=>{
@@ -172,6 +173,7 @@ export default function AnalysisWorkspace() {
         });}}>Mark internal review complete</button>}
         {workflow.history.length ? <details><summary>Completion history ({workflow.history.length})</summary>{workflow.history.map((event,i)=><p key={i}>Revision {event.request_revision} · {event.completed_by} · {event.completed_at}</p>)}</details> : null}
       </div></section> : null}
+      {saved ? <AnalysisRecovery latest={analyses.at(-1)} busy={busy} hasCurrentResult={!!result} onCheck={async()=>{let success=false;await perform(async()=>{const data:Detail=await command({action:'get',request_id:saved.id});showSaved(data);success=true;setNotice('Saved analysis status refreshed. No new agent call was made.');});return success;}} onRetry={()=>{retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision}));void analyze();}} /> : null}
       <div className="intake-grid">
         <section className="result-panel analysis-input" aria-labelledby="analyze-heading">
           <p className="eyebrow">CLIENT CONVERSATION</p><h2 id="analyze-heading">{saved ? 'Email conversation' : 'Paste the request'}</h2>
@@ -182,7 +184,6 @@ export default function AnalysisWorkspace() {
             {!saved && email.trim() && !effectiveRecording ? <div className="identity-warning"><p>No exact recording selected. Analysis can clarify the request, but this identity gap will remain locked on the saved record.</p><label><input type="checkbox" checked={allowUnresolved} disabled={busy} onChange={e => setAllowUnresolved(e.target.checked)} /> Continue with unresolved recording identity</label></div> : null}
             <div className="form-footer"><small>Uses Claude API credits. Use fictional data.<br />Nothing is sent to the client.</small></div>
           </form>
-          {saved && analyses.some(a => a.status === 'running') ? <button className="text-button" disabled={busy} onClick={() => { retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision})); setNotice('New run enabled. Click Draft a response to retry; this uses additional API credits.'); }}>Enable a new analysis attempt</button> : null}
           {saved ? <SavedRequests {...navigationProps} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} response={<div className="inline-next-action">        <section className="result-panel draft-panel" aria-labelledby="next-action-heading"><p className="eyebrow">NEXT ACTION</p><h2 id="next-action-heading">{stale ? 'Refresh the analysis' : result?.stages?.follow_up?.skipped ? 'Review facts and internal checks' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2>
           {result && !result.stages?.follow_up?.skipped ? <><p className="panel-note">Questions for the client only. Internal checks remain in the summary above. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {setDraft(e.target.value);setCopyStatus('');}} /><button type="button" className="primary-button" disabled={busy} onClick={copyDraft}>Copy draft</button><p role="status">{copyStatus}</p></> : <p>{stale ? 'Use Draft a response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Confirm the supplied facts and complete the internal checks; this does not approve a licence.' : 'Use Draft a response to generate the checklist and any necessary email.'}</p>}
         </section>
