@@ -156,3 +156,7 @@ Every saved decision advances the request revision and makes previous analysis/d
 ## Current acceptance results
 
 See the [November 5 prototype acceptance report](docs/acceptance-report-2026-11-05.md): 160 automated tests plus a fresh live-browser save/analyze/Accept/Reject/reply/reopen flow passed. The report maps the ten PRD cases to their browser or automated evidence and includes new audit-failure rollback checks. Human time savings, full model-quality targets and production/shared access are not established by these tests.
+
+### Instant intake preview
+
+Paste an email to see a provisional catalog match and likely missing details immediately; click **Analyze & draft next email** to run the agents and open the follow-up draft automatically. The immediate preview uses conservative local pattern checks, not an agent call, and may miss paraphrases or nuanced contradictions. It auto-selects only one unambiguous catalog candidate; otherwise use the catalog options to clarify. Agent proposals still require human confirmation, and copying a draft does not send it.

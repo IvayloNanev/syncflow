@@ -36,3 +36,9 @@ The Request screen now keeps the email beside a fixed 12-field record matching t
 Empty boxes are visible before analysis, show Reading email while processing, and become Unknown—ask client only after a current successful analysis. Rejected proposals do not populate the record. Old proposals after a decision remain labeled as previous analysis, and replies remove obsolete proposals. Confirmation still uses the existing Review screen; no automatic fact confirmation, invented values or new model calls on typing.
 
 Validation: live fictional Trailbound email filled all 12 fields with evidence and flagged the absent deadline time/timezone. Lint and production build passed; all 160 regression tests passed (HTTP tests require a local listener outside the restricted sandbox).
+
+## Simplified paste → preview → Analyze → draft flow
+
+Pasting an email immediately runs conservative local catalog matching and presence checks beside the email. A single exact catalog candidate is selected automatically for saving; ambiguous versions, conflicting IDs and multiple recordings remain unresolved and offer catalog browsing. The preview is explicitly provisional: its pattern checks are not semantic extraction and can miss paraphrases, conflicts or incomplete dates. No provider call runs on each keystroke. Analyze runs the existing validated agent workflow, then automatically opens the editable follow-up email. Detailed extracted fields remain available under a disclosure and human fact decisions remain in Review.
+
+Live verification: an Alex Demo email instantly matched TRACK-0002 and listed project, platforms, music length and response deadline as likely missing. One Analyze click saved that recording, extracted eight proposals and automatically opened a real agent-generated email asking those four questions. No message was sent. Added regression cases for exact match, missing version, conflicting ID/version, multiple IDs, invalid IDs and empty/adversarial text.
