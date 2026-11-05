@@ -1,5 +1,8 @@
 # Local saved-request foundation
 
+> Current integration: the local browser now saves/reopens requests and analyses through `/api/requests` and the RequestStore adapter. See [saved browser requests](saved-browser-requests.md). Earlier unsaved/unconnected limitations below describe the original deliverable. Prisma integration, authentication and human confirmation remain unfinished.
+
+
 Implemented: a storage module for create/get/list, append-only replies, audit history and projecting a saved revision into the existing agent context. SQLite persistence uses Node's built-in node:sqlite API; use Node 24+ (the existing CI already uses Node 24). No extra dependency is installed. API reference: https://nodejs.org/api/sqlite.html.
 
 `pnpm requests:demo` creates a private temporary fictional database, saves an initial email and reply, closes/reopens it, reports two messages/two audit events, then deletes only that temporary demo directory. It makes no model calls or network requests.

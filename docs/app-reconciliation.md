@@ -1,5 +1,7 @@
 # Reconcile developer application and main agent work
 
+> Updated decision: the local browser now uses RequestStore as its sole writer in `.syncflow-data/browser-requests.sqlite`. This is a development-only single-operator integration, not the Prisma migration proposed below. Prisma remains a separate unused scaffold. See README “Saved browser requests” and docs/saved-browser-requests.md for current behavior. The remainder is the historical reconciliation report.
+
 The reconciliation branch merges developer's Next.js/Prisma foundation with main's latest agent, evaluation and local request-store work. It preserves both histories. It does not change main/developer until the PR is merged, and does not migrate either database or wire the sample screen to agents.
 
 ## Present state
