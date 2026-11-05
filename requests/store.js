@@ -23,7 +23,7 @@ const command = input => {
 };
 
 /** Trusted server/CLI boundary only: actor_id must come from authenticated caller context.
- * No HTTP/auth, arbitrary updates, confirmation or decisions. Analysis artifacts stay separate from confirmed facts.
+ * No HTTP/auth or arbitrary updates. Explicit coordinator decisions are revision-bound commands. Analysis artifacts stay separate from confirmed facts.
  */
 export function openRequestStore(path = ':memory:') {
   const db = new DatabaseSync(path, { timeout: 1000 });
@@ -32,7 +32,10 @@ export function openRequestStore(path = ':memory:') {
     CREATE TABLE IF NOT EXISTS events (request_id TEXT NOT NULL REFERENCES requests(id), revision INTEGER NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id, revision)) STRICT;
     CREATE TABLE IF NOT EXISTS commands (owner_id TEXT NOT NULL, scope TEXT NOT NULL, command_key TEXT NOT NULL, payload_hash TEXT NOT NULL, response TEXT NOT NULL, PRIMARY KEY(owner_id, scope, command_key)) STRICT;
     CREATE TABLE IF NOT EXISTS analysis_runs (sequence INTEGER PRIMARY KEY AUTOINCREMENT, run_id TEXT NOT NULL UNIQUE, request_id TEXT NOT NULL REFERENCES requests(id), command_key TEXT NOT NULL, base_revision INTEGER NOT NULL, context TEXT NOT NULL, status TEXT NOT NULL, result TEXT, result_hash TEXT, created_at TEXT NOT NULL, finished_at TEXT, UNIQUE(request_id,command_key)) STRICT;
-    CREATE TABLE IF NOT EXISTS active_analyses (request_id TEXT PRIMARY KEY REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id)) STRICT;`);
+    CREATE TABLE IF NOT EXISTS active_analyses (request_id TEXT PRIMARY KEY REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id)) STRICT;
+    CREATE TABLE IF NOT EXISTS review_heads (request_id TEXT PRIMARY KEY REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id)) STRICT;
+    CREATE TABLE IF NOT EXISTS fact_decisions (request_id TEXT NOT NULL REFERENCES requests(id), run_id TEXT NOT NULL REFERENCES analysis_runs(run_id), proposal_id TEXT NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,run_id,proposal_id)) STRICT;`);
+  db.exec('INSERT OR IGNORE INTO review_heads SELECT request_id,run_id FROM active_analyses');
   const owned = (actor, id) => {
     identity(actor);
     if (!text(id, 200)) fail('INVALID_REQUEST_ID');
@@ -59,8 +62,8 @@ export function openRequestStore(path = ':memory:') {
     db.prepare('INSERT INTO commands VALUES (?,?,?,?,?)').run(input.actor_id, scope, input.idempotency_key, digest, JSON.stringify(request));
     return { replayed: false, request };
   });
-  const event = (request, actor, action, messageId) => db.prepare('INSERT INTO events VALUES (?,?,?)').run(request.id, request.revision,
-    JSON.stringify({ request_id: request.id, revision: request.revision, actor_id: actor, action, message_id: messageId, at: request.updated_at }));
+  const event = (request, actor, action, messageId, details = {}) => db.prepare('INSERT INTO events VALUES (?,?,?)').run(request.id, request.revision,
+    JSON.stringify({ request_id: request.id, revision: request.revision, actor_id: actor, action, message_id: messageId, ...details, at: request.updated_at }));
   return {
     create(input) {
       if (!keys(input, ['actor_id', 'idempotency_key', 'email', 'timezone', 'recording_id'])) fail('INVALID_INPUT');
@@ -105,7 +108,62 @@ export function openRequestStore(path = ':memory:') {
         if (result.changes !== 1) fail('REVISION_CONFLICT');
         db.prepare('DELETE FROM active_analyses WHERE request_id=?').run(request.id);
         db.prepare("UPDATE analysis_runs SET status='stale' WHERE request_id=? AND status='completed'").run(request.id);
+        db.prepare('DELETE FROM review_heads WHERE request_id=?').run(request.id);
         event(request, input.actor_id, 'reply_appended', messageId);
+        return request;
+      });
+    },
+    decisions(actor, id) {
+      owned(actor, id);
+      return db.prepare('SELECT body FROM fact_decisions WHERE request_id=? ORDER BY rowid').all(id).map(row => JSON.parse(row.body));
+    },
+    reviewAnalysis(actor, id) {
+      owned(actor, id);
+      const row = db.prepare('SELECT run_id FROM review_heads WHERE request_id=?').get(id);
+      return row ? this.analysis(actor, id, row.run_id) : null;
+    },
+    decideProposal(input) {
+      if (!keys(input, ['actor_id','request_id','expected_revision','idempotency_key','run_id','proposal_id','decision'])) fail('INVALID_INPUT');
+      command(input);
+      if (!Number.isSafeInteger(input.expected_revision) || input.expected_revision < 0 || !text(input.run_id,200)
+          || !text(input.proposal_id,200) || !['accept','reject'].includes(input.decision)) fail('INVALID_INPUT');
+      owned(input.actor_id, input.request_id);
+      const payload = { expected_revision:input.expected_revision, run_id:input.run_id, proposal_id:input.proposal_id, decision:input.decision };
+      return execute(input, `decide:${input.request_id}`, payload, () => {
+        const request = owned(input.actor_id,input.request_id);
+        if (request.revision !== input.expected_revision || request.revision >= Number.MAX_SAFE_INTEGER) fail('REVISION_CONFLICT');
+        const head = this.reviewAnalysis(input.actor_id,request.id);
+        if (!head || head.run_id !== input.run_id || !head.result?.ok) fail('STALE_PROPOSAL');
+        if (db.prepare('SELECT 1 FROM fact_decisions WHERE request_id=? AND run_id=? AND proposal_id=?').get(request.id,input.run_id,input.proposal_id)) fail('DECISION_EXISTS');
+        const proposal = head.result.stages.intake.output.proposed_changes.find(p => p.proposal_id === input.proposal_id);
+        if (!proposal) fail('INVALID_PROPOSAL');
+        const old = request.confirmed_fields.find(f => f.field_key === proposal.field_key);
+        const previous = old?.state === 'confirmed' ? old.value : null;
+        if (hash(previous) !== hash(proposal.previous_value)) fail('STALE_PROPOSAL');
+        const at = new Date().toISOString();
+        if (input.decision === 'accept') {
+          const confirmed = { field_key:proposal.field_key, state:'confirmed', value:structuredClone(proposal.proposed_value),
+            evidence:structuredClone(proposal.evidence), confirmed_by:input.actor_id, confirmed_at:at, not_applicable_reason:null };
+          request.confirmed_fields = [...request.confirmed_fields.filter(f => f.field_key !== proposal.field_key), confirmed];
+        }
+        request.revision++; request.updated_at = at;
+        // Revalidate the complete updated record context, including exact evidence and human attribution.
+        try {
+          validateContract('context', { ...head.context, base_record_version:request.revision,
+            messages:request.messages.map(({message_id,kind,text,supplied_message_date}) => ({message_id,kind,text,supplied_message_date})),
+            confirmed_fields:request.confirmed_fields, unresolved_issues:request.unresolved_issues });
+        } catch { fail('INVALID_CONFIRMATION'); }
+        const decision = { request_id:request.id, run_id:input.run_id, proposal_id:input.proposal_id, field_key:proposal.field_key,
+          decision:input.decision, previous_value:previous, proposed_value:proposal.proposed_value, evidence:proposal.evidence,
+          decided_by:input.actor_id, decided_at:at, based_on_revision:input.expected_revision, resulting_revision:request.revision };
+        const changed = db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?')
+          .run(request.revision,JSON.stringify(request),request.id,input.actor_id,input.expected_revision);
+        if (changed.changes !== 1) fail('REVISION_CONFLICT');
+        db.prepare('INSERT INTO fact_decisions VALUES (?,?,?,?)').run(request.id,input.run_id,input.proposal_id,JSON.stringify(decision));
+        db.prepare('DELETE FROM active_analyses WHERE request_id=?').run(request.id);
+        db.prepare("UPDATE analysis_runs SET status='stale' WHERE request_id=? AND status='completed'").run(request.id);
+        // Keep this review head for remaining undecided fields only. Replies/new completed runs replace it.
+        event(request,input.actor_id,'proposal_decided',null,{run_id:input.run_id,proposal_id:input.proposal_id,decision:input.decision});
         return request;
       });
     },
@@ -179,7 +237,10 @@ export function openRequestStore(path = ':memory:') {
         const status=request.revision!==row.base_revision?'stale':row.sequence!==newest?'superseded':result.ok?'completed':'failed';
         db.prepare('UPDATE analysis_runs SET status=?,result=?,result_hash=?,finished_at=? WHERE run_id=?')
           .run(status,JSON.stringify(result),digest,new Date().toISOString(),row.run_id);
-        if(status==='completed')db.prepare('INSERT INTO active_analyses VALUES (?,?) ON CONFLICT(request_id) DO UPDATE SET run_id=excluded.run_id').run(request.id,row.run_id);
+        if(status==='completed') {
+          db.prepare('INSERT INTO active_analyses VALUES (?,?) ON CONFLICT(request_id) DO UPDATE SET run_id=excluded.run_id').run(request.id,row.run_id);
+          db.prepare('INSERT INTO review_heads VALUES (?,?) ON CONFLICT(request_id) DO UPDATE SET run_id=excluded.run_id').run(request.id,row.run_id);
+        }
         return this.analysis(input.actor_id,request.id,row.run_id);
       });
     },

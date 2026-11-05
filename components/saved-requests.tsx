@@ -1,6 +1,8 @@
 "use client";
 
-export type SavedRequest = { id: string; revision: number; recording_id: string | null; coordinator_timezone: string;
+import type { ConfirmedFact } from "./fact-review";
+
+export type SavedRequest = { confirmed_fields: ConfirmedFact[]; id: string; revision: number; recording_id: string | null; coordinator_timezone: string;
   messages: { message_id: string; kind: string; text: string; received_at: string }[] };
 export type RequestSummary = { id: string; revision: number; message_count: number; preview: string; recording_id: string | null };
 export type AnalysisSummary = { run_id: string; base_revision: number; status: string };
