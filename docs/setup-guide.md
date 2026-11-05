@@ -34,6 +34,7 @@ With `pnpm dev` running, http://127.0.0.1:3000/api/health returns `{"status":"ok
 - Without a Supabase URL, the local writer is `requests/store.js` at `.syncflow-data/browser-requests.sqlite`; it initializes itself.
 - With Supabase configured, web requests use hosted PostgreSQL request aggregates and authenticated workspace membership. Apply `db/shared-schema.sql` and `db/shared-analysis-lease.sql` once to a new project using the migration tools; both are already applied to the connected SyncFlow project. Do not reapply them as a reset. Local records remain untouched and are not uploaded automatically.
 - Create and verify an Auth account at `/login`; a trusted administrator must assign it to a workspace before it can see requests. Self-signup grants no team access. See the [shared-backend section](../README.md#authenticated-shared-workspace-current-web-backend).
+- Confirmation emails link back to `<app origin>/auth/callback`, for example `http://127.0.0.1:3000/auth/callback`. An administrator must allow that URL under Supabase Auth redirect URLs, or the link falls back to the project's Site URL.
 - `prisma/` and `pnpm db:migrate` belong to an unused scaffold. Do not point it at the browser database or add a second writer.
 - **Reset the synthetic dataset:** stop `pnpm dev`, then run `pnpm data:reset`. It lists the files, asks you to type `reset`, and deletes only the request database and its SQLite sidecar files. This cannot be undone.
 
