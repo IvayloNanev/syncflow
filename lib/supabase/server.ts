@@ -17,5 +17,5 @@ export async function workspaceSession(){
  if(memberError)throw new Error('Workspace lookup failed');
  // Never infer access from editable profile/JWT metadata. Initial release supports
  // exactly one assigned workspace; ambiguous memberships require explicit selection.
- return {user,workspaceId:members?.length===1?members[0].workspace_id:null};
+ return {user,workspaceId:members?.length===1?members[0].workspace_id:null,membershipCount:members?.length??0};
 }
