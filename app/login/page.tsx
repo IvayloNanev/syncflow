@@ -1,5 +1,3 @@
-import {workspaceSession} from '../../lib/supabase/server';
-import AccountMenu from '../../components/account-menu';
 import AuthSubmit from '../../components/auth-submit';
 import Link from 'next/link';
 import {NEW_PASSWORD_MIN,noticeFor} from '../../lib/auth-messages.js';
@@ -56,12 +54,10 @@ export default async function Login({searchParams}:{searchParams:Promise<{messag
  const {message,mode}=await searchParams;
  const notice=noticeFor(message);
  const view=notice?.view??(mode==='signup'?'signup':'signin');
- const session=message==='membership'?await workspaceSession():null;
  return <main className="workspace-theme auth-page"><section className="auth-card">
   <Link href="/" className="auth-brand">syncflow.</Link>
   <p className="eyebrow">YOUR MUSIC LICENSING WORKSPACE</p>
   {notice&&<p role={notice.tone==='error'?'alert':'status'} className={`auth-notice auth-notice-${notice.tone}`}>{notice.text}</p>}
-  {session&&<AccountMenu email={session.user.email}/>}
   {view==='signup'?<SignUp/>:view==='verify'?<Verify/>:<SignIn/>}
  </section></main>;
 }

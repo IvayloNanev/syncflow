@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  NEW_PASSWORD_MIN, NOTICES, noticeFor, resendErrorNotice, resendInputNotice,
+  NEW_PASSWORD_MIN, NOTICES, noAccessCopy, noticeFor, resendErrorNotice, resendInputNotice,
   signInErrorNotice, signInInputNotice, signUpErrorNotice, signUpInputNotice,
 } from '../lib/auth-messages.js';
 
@@ -66,9 +66,19 @@ test('every routed notice exists and opens a real view', () => {
     ...['invalid_credentials', 'email_not_confirmed', 'over_request_rate_limit', 'other'].map((code) => signInErrorNotice({ code })),
     ...['email_exists', 'over_request_rate_limit', 'weak_password', 'email_address_invalid', 'signup_disabled', 'email_address_not_authorized', 'other'].map((code) => signUpErrorNotice({ code })),
     ...['email_exists', 'over_request_rate_limit', 'email_address_invalid', 'other'].map((code) => resendErrorNotice({ code })),
-    'check-email', 'resent', 'link-failed', 'membership',
+    'check-email', 'resent', 'link-failed',
   ];
   for (const message of routed) assert.ok(noticeFor(message), `${message} has no notice`);
+});
+
+test('no-access copy explains the account state and the next step', () => {
+  const none = noAccessCopy(0);
+  assert.match(none.explanation, /isn’t part of a workspace/);
+  assert.match(none.nextStep, /workspace owner/);
+  const several = noAccessCopy(2);
+  assert.match(several.explanation, /more than one workspace/);
+  assert.doesNotMatch(several.explanation, /isn’t part of a workspace/);
+  assert.match(several.nextStep, /workspace owner/);
 });
 
 test('unknown or inherited message values show nothing', () => {
