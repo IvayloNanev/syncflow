@@ -160,3 +160,7 @@ See the [November 5 prototype acceptance report](docs/acceptance-report-2026-11-
 ### Instant intake preview
 
 Paste an email to see a provisional catalog match and likely missing details immediately; click **Analyze & draft next email** to run the agents and open the follow-up draft automatically. The immediate preview uses conservative local pattern checks, not an agent call, and may miss paraphrases or nuanced contradictions. It auto-selects only one unambiguous catalog candidate; otherwise use the catalog options to clarify. Agent proposals still require human confirmation, and copying a draft does not send it.
+
+### Unified request workspace (UX audit correction)
+
+The numbered stage tabs have been replaced by one workspace: conversation and draft on the left, one recording card plus client questions/internal checks on the right, and expandable fact confirmation below. After analysis, current validated results replace provisional hints; replies and decisions mark outputs stale until refreshed. An unresolved recording requires acknowledgement before saving; recovery copies the original email into a new request and preserves the old history. No clearance, internal-review approval or sending is automated. A practitioner usability check is still needed.

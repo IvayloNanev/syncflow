@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { previewEmail } from "../catalog/email-preview.js";
-import RequestFields from "./request-fields";
 import FactReview, { type FactDecision, type FactProposal } from "./fact-review";
 import SavedRequests, { type SavedRequest, type RequestSummary, type AnalysisSummary } from "./saved-requests";
 import { recordings } from "../catalog/recordings.js";
@@ -26,7 +25,9 @@ const example = "Hi, this is Jordan Pike. We’d like to use Northern Lights by 
 const label = (key: string) => key.replaceAll("_", " ");
 
 export default function AnalysisWorkspace() {
-  const [step, setStep] = useState("brief");
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [recordingOverride, setRecordingOverride] = useState(false);
+  const [allowUnresolved, setAllowUnresolved] = useState(false);
   const [reviewRun, setReviewRun] = useState<{ run_id: string; result: Result } | null>(null);
   const [decisions, setDecisions] = useState<FactDecision[]>([]);
   const [saved, setSaved] = useState<SavedRequest | null>(null);
@@ -72,7 +73,7 @@ export default function AnalysisWorkspace() {
   }, []);
   function showSaved(data: Detail) {
     clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
-    setRecording(recordings.find(r => r.id === data.request.recording_id) || null); setAnalyses(data.analyses);
+    setRecordingOverride(true); setRecording(recordings.find(r => r.id === data.request.recording_id) || null); setAnalyses(data.analyses);
     if (data.active_analysis?.result?.ok) {
       const active = { ...data.active_analysis.result, catalog_review: data.catalog_review };
       setResult(active); setSubject(active.stages?.follow_up?.output?.subject || ""); setDraft(active.stages?.follow_up?.output?.body || "");
@@ -93,93 +94,100 @@ export default function AnalysisWorkspace() {
   async function analyze(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     await perform(async () => {
+      if (!saved && !effectiveRecording && !allowUnresolved) { setError("The recording is unresolved. Choose a recording or acknowledge the identity gap before analyzing."); return; }
       const record = saved || await save(); clearResult();
       const payload = { action: "analyze", request_id: record.id, expected_revision: record.revision };
       const data: Detail = await command(keyed(payload)); showSaved(data);
-      if (data.analysis_status === "completed") { setStep("draft"); retryCommands.current.delete(JSON.stringify(payload)); setNotice("Analysis saved for this revision. All extracted facts remain proposals."); }
+      if (data.analysis_status === "completed") { retryCommands.current.delete(JSON.stringify(payload)); setNotice("Analysis saved for this revision. All extracted facts remain proposals."); }
       else if (data.analysis_status === "running") setNotice("This run is still pending. Reopen the request to check it. Use Retry analysis with a new run only if you explicitly want another attempt.");
       else { retryCommands.current.delete(JSON.stringify(payload)); setNotice(`Analysis is ${data.analysis_status}. History is preserved. Review the saved request before explicitly retrying.`); }
       await refresh();
     });
   }
   function newRequest() {
-    setStep("brief"); retryCommands.current.clear();
+    setCatalogOpen(false); setRecordingOverride(false); setAllowUnresolved(false); retryCommands.current.clear();
     setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
   }
   async function copyDraft() {
     try { await navigator.clipboard.writeText(`Subject: ${subject}\n\n${draft}`); setCopyStatus("Draft copied. Nothing was sent."); }
     catch { setCopyStatus("Clipboard unavailable. Select and copy the draft manually."); }
   }
-  const preview = previewEmail(email);
-  const effectiveRecording = recording || (!saved ? preview.match : null);
+  const preview = previewEmail(saved ? saved.messages.map(m => m.text).join("\n") : email);
+  const effectiveRecording = recordingOverride || saved ? recording : preview.match;
   const proposals = reviewRun?.result.stages?.intake?.output?.proposed_changes || [];
   const issues = result?.stages?.review?.output?.issues || [];
   const confirmedCount = (saved?.confirmed_fields || []).filter(f => f.state === "confirmed").length;
   const pendingCount = proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)).length;
   const navigationProps = { requests, saved, analyses, busy, reply, onReply: setReply,
     onRefresh: () => { void perform(refresh); }, onNew: newRequest,
-    onOpen: (id: string) => { void perform(async () => { const data = await command({ action: "get", request_id: id }); showSaved(data); setReply(""); setStep("brief"); setNotice("Saved request reopened."); }); },
+    onOpen: (id: string) => { void perform(async () => { const data = await command({ action: "get", request_id: id }); showSaved(data); setReply(""); setNotice("Saved request reopened."); }); },
     onAppend: () => { void perform(async () => {
       if (!saved) return;
       const data = await command(keyed({ action: "reply", request_id: saved.id, expected_revision: saved.revision, text: reply }));
       showSaved(data); setReply(""); await refresh(); setNotice("Reply saved. Earlier analysis is outdated; analyze the new revision.");
     }); }
   };
-  const tabs = [{ id: "brief", name: "Request", number: "01" }, { id: "recording", name: "Recording", number: "02" },
-    { id: "review", name: "Review", number: "03" }, { id: "draft", name: "Follow-up", number: "04" }];
+  const stale = !!saved && analyses.length > 0 && !result;
+  const blockers = result?.catalog_review?.blockers || [];
+  const clientQuestions = issues.filter(i => !result?.coordinator_review_issue_ids?.includes(i.issue_id));
+  function editEmail(value: string) {
+    setEmail(value); setRecording(null); setRecordingOverride(false); setAllowUnresolved(false); clearResult();
+  }
+  function recoverIdentity() {
+    const original = email;
+    newRequest(); setEmail(original); setCatalogOpen(true);
+    setNotice("Original email copied into a new unsaved request. The previous request and its history remain saved.");
+  }
   return <div className="app-shell">
     <a className="skip-link" href="#main-workspace">Skip to workspace</a>
     <aside className="app-sidebar" aria-label="Request navigation">
-      <a className="brand" href="#main-workspace" aria-label="SyncFlow workspace"><span className="brand-mark" aria-hidden="true"><i /><i /><i /><i /></span>syncflow<span className="brand-period">.</span></a>
+      <a className="brand" href="#main-workspace">syncflow<span className="brand-period">.</span></a>
       <p className="sidebar-caption">MUSIC LICENSING WORKSPACE</p>
       <SavedRequests {...navigationProps} />
-      <div className="sidebar-bottom"><div className="local-indicator"><span aria-hidden="true" />Local workspace</div><small>Saved on this computer<br />Agents propose. You decide.</small><div className="operator"><span className="operator-avatar" aria-hidden="true">CO</span><span>Coordinator<small>Single operator · Prototype</small></span></div></div>
+      <div className="sidebar-bottom"><small>Saved on this computer · Single operator<br />Fictional catalog · Nothing sends automatically</small></div>
     </aside>
-    <main className="main-workspace" id="main-workspace">
-      <header className="workspace-topbar"><div className="breadcrumb">Workspace <span aria-hidden="true">/</span> <strong>{saved ? `Request ${saved.id.slice(0, 8)}` : 'New request'}</strong></div><span className="topbar-note">Sync & visual media</span></header>
-      <div className="workspace-body">
-        <div className="workspace-title"><div><p className="eyebrow">FROM CLIENT EMAIL TO CLEAR NEXT STEPS</p><h1>{saved ? 'Request workspace' : 'Let’s get the details right.'}</h1><p>{saved ? 'Keep the conversation, recording and reviewed facts together.' : 'Paste an email. See the song and gaps. Analyze to draft your next email.'}</p></div><span className={saved ? 'status-pill saved-status' : 'status-pill'}>{saved ? `Saved · revision ${saved.revision}` : 'New · unsaved'}</span></div>
-        <div className="request-context"><div className="record-art" aria-hidden="true"><span /></div><div><span className="eyebrow">{effectiveRecording ? 'MATCHED RECORDING' : 'RECORDING'}</span><strong>{effectiveRecording ? effectiveRecording.title : 'No recording selected yet'}</strong><small>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : saved ? 'Identity unresolved. Start a new request to select a recording.' : 'Match the client’s song to the right artist and version.'}</small></div><button type="button" className="text-button" disabled={busy} onClick={() => setStep("recording")}>{effectiveRecording ? 'View recording' : saved ? 'View identity gap' : 'Find recording'} <span aria-hidden="true">↗</span></button></div>
-        <nav className="stage-nav" aria-label="Request stages">{tabs.map(tab => <button key={tab.id} type="button" disabled={busy} aria-current={step === tab.id ? "step" : undefined} onClick={() => setStep(tab.id)}><span className="stage-number">{tab.number}</span>{tab.name}{tab.id === 'review' && pendingCount > 0 ? <span className="tab-count">{pendingCount}</span> : null}</button>)}</nav>
-        <div className="workspace-feedback" aria-live="polite">{busy ? <p className="busy-notice"><span className="loading-dot" />Working on your request. Intake → Review → Follow-up can take up to a minute.</p> : notice ? <p className="notice"><span aria-hidden="true">✓</span>{notice}</p> : null}</div>
-        {error ? <div role="alert" className="analysis-error"><strong>We couldn’t finish that action</strong><p>{error}</p><small>Your text is retained. Reopen the saved request before retrying an interrupted command.</small></div> : null}
-        <div className="stage-content" id={`stage-${step}`}>
-          <section hidden={step !== 'brief'} aria-labelledby="analyze-heading">
-            <div className="content-columns"><div className="primary-column">
-              <section className="result-panel analysis-input" id="analyze"><div className="section-heading"><div><p className="eyebrow">01 / THE CLIENT BRIEF</p><h2 id="analyze-heading">{saved ? 'Original request' : 'What’s the client asking for?'}</h2></div>{saved ? <span className="count">Read only</span> : null}</div>
-                <p className="panel-note">{saved ? 'The original email is preserved. Add new information as a reply below.' : 'Paste their email. We’ll pull out the details and highlight what still needs an answer.'}</p>
-                <form onSubmit={analyze} aria-busy={busy}><label htmlFor="client-email">Client email</label><textarea id="client-email" rows={9} maxLength={20000} value={email} disabled={busy || !!saved} required placeholder="Hi, we’d like to use a song in our upcoming campaign…" onChange={e => { setEmail(e.target.value); setRecording(null); clearResult(); }} />
-                  <div className="email-meta"><span>{email.length.toLocaleString()} / 20,000 characters</span>{!saved ? <button className="text-button" type="button" disabled={busy} onClick={() => { setEmail(example); setRecording(null); clearResult(); }}>Try an example</button> : null}</div>
-                  <details className="settings-disclosure"><summary>Request settings <span>{timezone}</span></summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => { setTimezone(e.target.value); clearResult(); }} aria-describedby="timezone-help" /><small id="timezone-help">Use an IANA timezone, such as America/New_York. Client deadlines are never inferred from it.</small></details>
-                  <div className="form-footer"><small>Analysis uses Claude API credits.<br />Nothing is sent to the client.</small><div className="button-group">{!saved ? <button className="secondary-button" type="button" disabled={busy || !email.trim()} onClick={() => { void perform(async () => { await save(); }); }}>Save request</button> : null}<button className="primary-button" type="submit" disabled={busy || !email.trim()}>{busy ? 'Working…' : saved ? 'Analyze & draft next email →' : 'Analyze & draft next email →'}</button></div></div>
-                  <small className="privacy-note">The email is sent to Claude for analysis. Use fictional data in this prototype.</small>
-                </form>
-                {saved && analyses.some(a => a.status === "running") ? <button className="text-button" type="button" disabled={busy} onClick={() => { retryCommands.current.delete(JSON.stringify({ action: "analyze", request_id: saved.id, expected_revision: saved.revision })); setNotice("A new run is enabled. Select Analyze saved revision to retry explicitly; this may use additional API credits."); }}>Retry analysis with a new run</button> : null}
-              </section>
-              
-            </div><aside className="request-fields-column"><section className="result-panel instant-preview" aria-labelledby="instant-preview-heading"><p className="eyebrow">STEP 1 / INSTANT EMAIL PREVIEW</p><h2 id="instant-preview-heading">Song & missing details</h2><p className="panel-note">Updates as you paste. Quick local checks — the agent verifies these when you click Analyze.</p>{!email.trim() ? <p>Paste an email to see the matching song and likely gaps here.</p> : <><div className="preview-recording"><strong>{effectiveRecording ? effectiveRecording.title : preview.candidates.length ? 'Choose the exact recording' : 'No unique catalog match'}</strong><p>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : preview.candidates.length ? `${preview.candidates.length} possible recordings. Artist or version needs clarification.` : 'The title, artist or version may be missing, conflicting or outside this catalog.'}</p><button className="text-button" type="button" disabled={busy} onClick={() => setStep('recording')}>{effectiveRecording ? 'Change / inspect recording' : 'Browse catalog options'} →</button></div><h3>Likely missing or needs clarification</h3>{preview.missing.filter(item => item !== 'Exact catalog recording' || !effectiveRecording).length ? <ul>{preview.missing.filter(item => item !== 'Exact catalog recording' || !effectiveRecording).map(item => <li key={item}>{item}</li>)}</ul> : <p>No obvious gaps detected by the quick check. Analyze to check ambiguity, dates and conflicts.</p>}<p className="panel-note">A catalog match is not rights clearance. These hints do not confirm any facts.</p></>}</section><details className="extracted-details"><summary>Detailed agent-filled record{reviewRun ? ' · available' : ' · after analysis'}</summary><RequestFields confirmed={saved?.confirmed_fields || []} proposals={proposals} decisions={decisions} runId={reviewRun?.run_id || null} busy={busy} analyzed={!!reviewRun} stale={!result && !!reviewRun} issues={issues} onReview={() => setStep('review')} /></details></aside></div>{saved ? <div className="result-panel conversation-card"><SavedRequests {...navigationProps} variant="conversation" /></div> : null}
-          </section>
-          <section hidden={step !== 'recording'} aria-label="Recording catalog"><RecordingPicker selected={effectiveRecording} disabled={busy || !!saved} onSelect={r => { setRecording(r); clearResult(); }} onScenario={text => { setEmail(text); clearResult(); }} /><div className="stage-footer"><span>One recording per request. Create separate requests for multiple songs.</span><button type="button" className="primary-button" onClick={() => setStep('brief')}>Back to request →</button></div></section>
-          <section hidden={step !== 'review'} aria-label="Fact and issue review">
-            {!saved ? <div className="empty-state"><span className="empty-symbol" aria-hidden="true">◎</span><h2>Start with the client’s request.</h2><p>Save and analyze an email to see proposed facts, source evidence and missing details.</p><button className="primary-button" type="button" onClick={() => setStep('brief')}>Go to request →</button></div> : <>
-              <div className="review-overview"><div><span>{confirmedCount}</span><small>Confirmed facts</small></div><div><span>{pendingCount}</span><small>Proposals to review</small></div><div><span>{result ? issues.length : '—'}</span><small>Client questions</small></div><div><span>{result ? result.catalog_review?.blockers.length ?? 0 : '—'}</span><small>Catalog blockers</small></div></div>
-              {!result && analyses.length > 0 ? <div className="stale-banner"><strong>The checklist and draft need a fresh analysis.</strong><p>Replies or review decisions changed this request. Confirmed facts are preserved.</p><button type="button" className="text-button" onClick={() => setStep('brief')}>Return to request to analyze →</button></div> : null}
-              <FactReview confirmed={saved.confirmed_fields || []} proposals={proposals} runId={reviewRun?.run_id || null} decisions={decisions} busy={busy} onDecide={(proposal, decision) => { void perform(async () => {
-                if (!reviewRun) return;
-                const data = await command(keyed({ action: 'decide', request_id: saved.id, expected_revision: saved.revision, run_id: reviewRun.run_id, proposal_id: proposal.proposal_id, decision }));
-                showSaved(data); await refresh(); setNotice(`${decision === 'accept' ? 'Accepted' : 'Rejected'} ${label(proposal.field_key)}. Decision saved. Review remaining proposals or analyze again to refresh the checklist.`);
-              }); }} />
-              {result ? <div className="blocker-columns"><article className="result-panel issues-panel"><p className="eyebrow">CLIENT DETAILS / REVIEW CHECK</p><h3>Questions to resolve <span className="count">{issues.length}</span></h3><p className="panel-note">Missing or conflicting information from the conversation.</p>{issues.length ? issues.map(i => <div className="issue" key={i.issue_id}><span className="issue-kind">{label(i.type)} · {i.severity}</span><h4>{i.field_keys.map(label).join(', ')}</h4><p>{i.question}</p></div>) : <p className="empty-inline">No checklist issues found. Human review is still required.</p>}{result.coordinator_review_issue_ids?.length ? <p className="analysis-error">{result.coordinator_review_issue_ids.length} answered issues await coordinator confirmation.</p> : null}</article>
-              <article className="result-panel"><p className="eyebrow">INTERNAL / CATALOG CHECK</p><h3>Recording blockers <span className="count">{result.catalog_review?.blockers.length ?? 0}</span></h3><p className="panel-note">Internal tasks, separate from questions for the client. Catalog data never proves clearance.</p>{result.catalog_review?.blockers.length ? result.catalog_review.blockers.map(b => <div className="issue" key={b.code}><span className="issue-kind">Coordinator action</span><h4>{label(b.code.toLowerCase())}</h4><p>{b.question}</p></div>) : <p className="empty-inline">No catalog blockers reported. This is not rights approval.</p>}</article></div> : null}
-              <div className="stage-footer"><span>Confirm the evidence before moving a request forward.</span><button type="button" className="primary-button" onClick={() => setStep('draft')}>View follow-up draft →</button></div>
-            </>}
-          </section>
-          <section hidden={step !== 'draft'} aria-label="Client follow-up draft">
-            {result ? <div className="content-columns"><article className="result-panel draft-panel"><div className="section-heading"><div><p className="eyebrow">STEP 2 / GENERATED NEXT STEP</p><h2>Your next-step email is ready.</h2></div><span className="count">Draft only</span></div>{result.stages?.follow_up?.skipped ? <div className="empty-state compact"><h3>No clarification draft needed.</h3><p>Review the proposed facts before proceeding.</p></div> : <><p className="panel-note">Review and edit these questions, then copy them into your email.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} onChange={e => { setSubject(e.target.value); setCopyStatus(''); }} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={16} value={draft} onChange={e => { setDraft(e.target.value); setCopyStatus(''); }} /><div className="form-footer"><small>Edits stay in this browser view.<br />Copy before leaving or refreshing.</small><button className="primary-button" type="button" onClick={copyDraft}>Copy draft <span aria-hidden="true">↗</span></button></div><p role="status" className="copy-status">{copyStatus}</p></>}</article><aside className="guidance-column"><div className="guidance-card"><span className="guidance-icon" aria-hidden="true">↗</span><h3>A draft, with you<br />in the loop.</h3><p>These questions come from missing or conflicting client details. Internal catalog tasks stay in the Review stage.</p><p>Nothing sends automatically. Check the wording and send it from your own email.</p></div><div className="quiet-note"><strong>When the client replies</strong><p>Go back to Request and append their reply. Analyze the new revision to update the checklist.</p><button type="button" className="text-button" onClick={() => setStep('brief')}>Go to conversation →</button></div></aside></div> : <div className="empty-state"><span className="empty-symbol" aria-hidden="true">↗</span><h2>{saved ? 'A fresh draft starts with analysis.' : 'Your next email starts here.'}</h2><p>{saved ? 'Analyze the current saved revision to generate questions from the latest information.' : 'Save and analyze the client’s email first. Your clarification draft will appear here.'}</p><button type="button" className="primary-button" onClick={() => setStep('brief')}>Go to request →</button></div>}
-          </section>
-        </div>
-        <footer className="workspace-footer"><span>SyncFlow / Coordinator workspace</span><span>Fictional catalog · Local prototype</span></footer>
+    <main className="main-workspace" id="main-workspace"><div className="workspace-body">
+      <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1>{saved ? 'Request workspace' : 'Start with the client’s email.'}</h1><p>See the recording, resolve the gaps and prepare your next email.</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
+      <div aria-live="polite">{busy ? <p className="busy-notice">Working on the request. Saved facts and history are preserved…</p> : notice ? <p className="notice">{notice}</p> : null}</div>
+      {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p></div> : null}
+      <div className="intake-grid">
+        <section className="result-panel analysis-input" aria-labelledby="analyze-heading">
+          <p className="eyebrow">CLIENT CONVERSATION</p><h2 id="analyze-heading">{saved ? 'Original email' : 'Paste the request'}</h2>
+          <form onSubmit={analyze} aria-busy={busy}>
+            <label htmlFor="client-email">Client email</label><textarea id="client-email" rows={12} maxLength={20000} value={email} disabled={busy || !!saved} required onChange={e => editEmail(e.target.value)} placeholder="Paste the client’s email here…" />
+            {!saved ? <button type="button" className="text-button" disabled={busy} onClick={() => editEmail(example)}>Try an example</button> : <p className="panel-note">Original email preserved. Add replies below.</p>}
+            <details className="settings-disclosure"><summary>Request settings</summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => {setTimezone(e.target.value); clearResult();}} /></details>
+            {!saved && email.trim() && !effectiveRecording ? <div className="identity-warning"><p>No exact recording selected. Analysis can clarify the request, but this identity gap will remain locked on the saved record.</p><label><input type="checkbox" checked={allowUnresolved} disabled={busy} onChange={e => setAllowUnresolved(e.target.checked)} /> Continue with unresolved recording identity</label></div> : null}
+            <div className="form-footer"><small>Uses Claude API credits. Use fictional data.<br />Nothing is sent to the client.</small><button type="submit" className="primary-button" disabled={busy || !email.trim()}>{busy ? 'Analyzing…' : stale ? 'Refresh analysis & draft' : 'Analyze request'}</button></div>
+          </form>
+          {saved && analyses.some(a => a.status === 'running') ? <button className="text-button" disabled={busy} onClick={() => { retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision})); setNotice('New run enabled. Click Analyze request to retry; this uses additional API credits.'); }}>Enable a new analysis attempt</button> : null}
+          {saved ? <div className="inline-next-action">        <section className="result-panel draft-panel" aria-labelledby="next-action-heading"><p className="eyebrow">NEXT ACTION</p><h2 id="next-action-heading">{stale ? 'Refresh the analysis' : result?.stages?.follow_up?.skipped ? 'Review facts and internal checks' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2>
+          {result && !result.stages?.follow_up?.skipped ? <><p className="panel-note">Questions for the client only. Internal checks remain in the summary above. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {setDraft(e.target.value);setCopyStatus('');}} /><button type="button" className="primary-button" disabled={busy} onClick={copyDraft}>Copy draft</button><p role="status">{copyStatus}</p></> : <p>{stale ? 'Use Refresh analysis & draft above. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Confirm the supplied facts and complete the internal checks; this does not approve a licence.' : 'Use Analyze request above to generate the checklist and any necessary email.'}</p>}
+        </section>
+</div> : null}
+        </section>
+        <aside className="result-panel request-summary" aria-labelledby="summary-heading">
+          <p className="eyebrow">REQUEST SUMMARY</p><h2 id="summary-heading">What needs attention?</h2>
+          <div className="preview-recording"><small>{saved ? 'SAVED RECORDING' : recordingOverride ? 'YOUR SELECTION' : 'PROVISIONAL CATALOG MATCH'}</small><h3>{effectiveRecording?.title || 'Recording unresolved'}</h3><p>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : preview.candidates.length ? 'Several recordings may match. Confirm the artist and exact version.' : 'Paste a title, artist and version, or inspect the catalog.'}</p><button type="button" className="text-button" disabled={busy} onClick={() => setCatalogOpen(!catalogOpen)} aria-expanded={catalogOpen}>{catalogOpen ? 'Close catalog' : 'Inspect / change recording'}</button>{saved && !effectiveRecording ? <button type="button" className="text-button" disabled={busy} onClick={recoverIdentity}>Copy original email to resolve identity in a new request</button> : null}</div>
+          {stale ? <div className="stale-banner"><strong>Analysis and draft need refreshing.</strong><p>The conversation or confirmed facts changed. Previous questions are hidden until you analyze again.</p></div> : result ? <>
+            <h3>{clientQuestions.length} client questions</h3>{clientQuestions.length ? <ul>{clientQuestions.map(i => <li key={i.issue_id}>{i.question}</li>)}</ul> : <p>No client clarification needed. Human and internal checks may remain.</p>}
+            <h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported. This is not clearance.</p>}
+            <p className="review-count">{pendingCount} facts awaiting confirmation · {confirmedCount} confirmed</p>
+            {result.coordinator_review_issue_ids?.length ? <p>Some supplied answers need your confirmation; do not ask the client again.</p> : null}
+          </> : <><h3>Likely missing details</h3>{!email.trim() ? <p>Paste an email to see a catalog match and likely gaps immediately.</p> : <><p className="panel-note">Quick checks across the saved conversation. Analyze verifies meaning and conflicts.</p><ul>{preview.missing.filter(i => i !== 'Exact catalog recording' || !effectiveRecording).map(i => <li key={i}>{i}</li>)}</ul>{!preview.missing.length ? <p>No obvious gaps detected. Analyze to verify.</p> : null}</>}</>}
+          <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
+        </aside>
       </div>
-    </main>
+      <div hidden={!catalogOpen} className="inline-catalog"><RecordingPicker selected={effectiveRecording} disabled={busy || !!saved} onSelect={r => {setRecordingOverride(true); setRecording(r); clearResult();}} onScenario={editEmail} /></div>
+      {saved ? <div className="outcome-grid">
+        <details className="fact-disclosure"><summary>{pendingCount} facts awaiting confirmation · Review evidence</summary><p className="panel-note">Decisions save immediately and make the draft outdated. Finish reviewing, then use Refresh analysis & draft once.</p><FactReview confirmed={saved.confirmed_fields || []} proposals={proposals} runId={reviewRun?.run_id || null} decisions={decisions} busy={busy} onDecide={(proposal, decision) => {void perform(async () => {
+          if (!reviewRun) return;
+          const data = await command(keyed({action:'decide',request_id:saved.id,expected_revision:saved.revision,run_id:reviewRun.run_id,proposal_id:proposal.proposal_id,decision}));
+          showSaved(data); await refresh(); setNotice(`${decision === 'accept' ? 'Accepted' : 'Rejected'} ${label(proposal.field_key)}. Finish reviewing, then refresh the analysis and draft.`);
+        });}} /></details>
+      </div> : null}
+      {saved ? <details className="conversation-disclosure" open><summary>Conversation & replies · {saved.messages.length} messages</summary><SavedRequests {...navigationProps} variant="conversation" /></details> : null}
+      <footer className="workspace-footer">Local prototype · Intake and coordination support · No automatic sending or rights approval</footer>
+    </div></main>
   </div>;
 }
