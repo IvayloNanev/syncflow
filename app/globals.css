@@ -328,3 +328,6 @@ blockquote { border-left: 3px solid var(--violet-soft); margin: 10px 0 0; paddin
 .catalog-selection dd { margin: 0 0 10px; overflow-wrap: anywhere; }
 .catalog-selection dt { font-weight: 700; }
 @media (max-width: 640px) { .catalog-controls { grid-template-columns: 1fr; } .catalog-list li { align-items: flex-start; flex-direction: column; } }
+.saved-panel { margin-bottom: 24px; }
+.message-body { white-space: pre-wrap; overflow-wrap: anywhere; }
+.saved-panel details { margin: 14px 0; }

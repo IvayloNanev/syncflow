@@ -20,11 +20,10 @@ The coordinator app uses Next.js App Router, TypeScript, Prisma 7, and a local S
 pnpm install --frozen-lockfile
 # Only if .env does not exist: copy .env.example to .env; preserve existing credentials.
 pnpm db:generate
-pnpm db:migrate
 pnpm dev
 ```
 
-Open `http://localhost:3000`. The sample requests in the initial workspace are fictional. No email is sent by the app.
+Open `http://127.0.0.1:3000`. The browser request database is initialized automatically in .syncflow-data/; Prisma migration is not required for this flow. Sample data is fictional. No email is sent by the app.
 
 ## User stories
 
@@ -45,7 +44,7 @@ These are prototype decisions to validate with a coordinator, not confirmed Warn
 - **Multi-recording requests flagged:** an email covering several recordings is flagged for coordinator review and splitting into separate requests. The agent must not silently select one recording or combine their terms.
 - **Saving does not confirm agent facts:** storing an email or an analysis preserves the record only. Extracted details remain proposals until the coordinator explicitly confirms them.
 
-The browser currently analyzes unsaved emails. Saved requests and revision checks exist in the separate local SQLite adapter; connecting the browser to Prisma-backed saving and coordinator confirmation is still pending.
+The local browser now saves requests and analysis through the tested SQLite adapter in .syncflow-data/browser-requests.sqlite. This is a single-operator development workspace on this computer, not shared authenticated storage. Prisma integration and coordinator fact confirmation remain pending.
 
 ## Agent pipeline and shared contracts
 
@@ -110,30 +109,40 @@ The [20-case live evaluation report](docs/live-evaluation-report.md) records con
 
 ## Agreed expansion (planned)
 
-Saved requests/reply history, a third AI agent for internal summaries of confirmed facts, and manual revision-bound approval tracking are described in the [expanded-scope design](docs/expanded-scope.md). The local saved-request foundation is implemented below; browser persistence, the summary agent and approval tracking remain planned. Invoice/payment tracking stays a stretch goal.
+Saved requests/reply history, a third AI agent for internal summaries of confirmed facts, and manual revision-bound approval tracking are described in the [expanded-scope design](docs/expanded-scope.md). The local saved-request foundation is implemented below; shared persistence, the summary agent and approval tracking remain planned; the local browser persistence described below is implemented. Invoice/payment tracking stays a stretch goal.
 
 ## Local saved-request foundation
 
-Run `pnpm requests:demo` to see a fictional email/reply persist across a database close/reopen. The [SQLite request store](docs/request-store.md) supports revisions, idempotent commands and audit history. It is not connected to the HTTP API or UI and does not implement login/shared storage. Node 24+ is required.
+Run `pnpm requests:demo` to see a fictional email/reply persist across a database close/reopen. The [SQLite request store](docs/request-store.md) supports revisions, idempotent commands and audit history. It is connected to the local browser through /api/requests and does not implement login/shared storage. Node 24+ is required.
 
-Run `pnpm requests:analysis:demo` to persist/reopen a mock analysis against a saved revision and see a reply invalidate it. See [saved analysis](docs/saved-analysis.md): results stay proposals, and HTTP/login/confirmation integration remains unfinished.
+Run `pnpm requests:analysis:demo` to persist/reopen a mock analysis against a saved revision and see a reply invalidate it. See [saved analysis](docs/saved-analysis.md): results stay proposals; the local browser integration is implemented below, while login and confirmation remain unfinished.
 
 ## Branch reconciliation
 
-The Next.js/Prisma application foundation from `developer` is combined with the latest agent and local request-store work. The connected home screen analyzes unsaved emails; Prisma-backed saving is not wired to it yet. Prisma's application schema and `requests/store.js` are separate local SQLite mappings; do not point them at the same database or assume data is synchronized. See [integration reconciliation](docs/app-reconciliation.md) before wiring storage or agent routes.
+The Next.js/Prisma application foundation from `developer` is combined with the latest agent and local request-store work. The connected home screen saves through the existing raw SQLite adapter; Prisma-backed saving remains a scaffold. The local browser has exactly one request writer. Prisma's application schema and `requests/store.js` are separate local SQLite mappings; do not point them at the same database or assume data is synchronized. See [integration reconciliation](docs/app-reconciliation.md) before wiring storage or agent routes.
 
 ## Connected browser demo
 
-`pnpm dev` opens the local coordinator screen at http://127.0.0.1:3000. Paste a fictional email to see live proposed facts/source quotes, issues and an editable draft. It uses the existing server-only Claude credentials. Requests are unsaved; confirmation, login and saved-request integration remain unfinished. See [browser flow and verification](docs/browser-analysis.md).
+`pnpm dev` opens the local coordinator screen at http://127.0.0.1:3000. Paste a fictional email to see live proposed facts/source quotes, issues and an editable draft. It uses the existing server-only Claude credentials. Requests and analyses persist locally; confirmation and login remain unfinished. See [browser flow and verification](docs/browser-analysis.md).
 
 ## Fictional recording catalog
 
 The browser now includes 1,000 deterministic synthetic recordings from `catalog/recordings.js`, with title/artist/ID search, version filtering, pagination and explicit coordinator selection. Ten selectable client scenarios in `catalog/scenarios.js` cover ambiguous titles, alternate versions, missing matches, incomplete metadata and multiple recordings. Their expected candidate IDs are tested; they are not live model accuracy scores.
 
-All artists, labels and metadata are fictional; contacts use example.com. No audio files, commercial catalog integrations or verified rights are included. Metadata gaps and conflicts are deliberate test cases. Selecting a recording identifies it only in the unsaved browser view. Catalog metadata stays separate from email evidence. The server resolves the selected ID and returns a separate catalog-review block of coordinator tasks; these tasks are not inserted into client clarification drafts. Editing the email clears selection and prior results. Multiple recordings require separate requests; automated splitting, catalog-aware AI reasoning and browser save/reopen remain future work. The local saved-request adapter accepts and preserves a validated recording_id, independently of the browser.
+All artists, labels and metadata are fictional; contacts use example.com. No audio files, commercial catalog integrations or verified rights are included. Metadata gaps and conflicts are deliberate test cases. Selecting a recording associates it with a request when saved. Catalog metadata stays separate from email evidence. The server resolves the selected ID and returns a separate catalog-review block of coordinator tasks; these tasks are not inserted into client clarification drafts. Editing the email clears selection and prior results. Multiple recordings require separate requests; automated splitting and catalog-aware AI reasoning remain future work; local browser save/reopen is implemented below. The local saved-request adapter accepts and preserves a validated recording_id, independently of the browser.
 
 ## Catalog review handoff
 
 Email analysis accepts an optional recording_id, resolved against server-owned synthetic metadata. The response includes catalog_review with the selected recording and coordinator-only blockers for publishing verification, missing master contacts, absent assets and metadata conflicts. No selection yields an identity blocker. These checks are deterministic; neither AI agent is granted authority to confirm catalog facts or rights. Catalog blockers are displayed separately from email checklist issues and the client draft. The API rejects unknown IDs and client-supplied catalog objects before model calls.
 
-Local RequestStore.create accepts recording_id and includes it in idempotency checks. Saved records retain it across replies and reopening; analyzeSavedRequest returns a separate catalog review. Existing records without an ID remain unresolved. The browser sends the selection for unsaved analysis but still has no saved-request UI or Prisma persistence connection. A changed recording requested in a reply requires coordinator handling; selection is never silently changed by an agent.
+Local RequestStore.create accepts recording_id and includes it in idempotency checks. Saved records retain it across replies and reopening; analyzeSavedRequest returns a separate catalog review. Existing records without an ID remain unresolved. The browser saves the selection with its request and analyzes the immutable saved revision. It uses the raw SQLite adapter, not Prisma. A changed recording requested in a reply requires coordinator handling; selection is never silently changed by an agent.
+
+## Saved browser requests (local development)
+
+Run `pnpm dev`, open http://127.0.0.1:3000, paste a fictional email, select a recording, and choose **Save request** or **Save & analyze**. Saved requests appear in Request history. Refresh the page and choose **Open request** to restore the original email, recording, timezone and current analysis. Append replies with **Save reply**, then analyze the new revision. The original message is read-only; changing recording identity requires a separate request in this version. Draft edits remain browser-only and are not persisted.
+
+The browser's only writer is the existing RequestStore adapter, in the ignored `.syncflow-data/browser-requests.sqlite` database (private directory/file modes). This deliberately replaces the earlier proposed Prisma-first integration for the local prototype: reuse the tested lifecycle rather than introduce a second writer. Prisma's schema/dev.db remain an unused application scaffold and are not synchronized. No existing database is migrated or overwritten. Copying a database to share it is not a multi-user system.
+
+The development-only POST `/api/requests` supports list/get/create/reply/analyze commands. Host/Origin checks restrict it to the same loopback app; production returns 503. The local operator identity is server-owned and cannot be supplied by a browser. There is no authentication: anyone with access to this local development app can read its local requests. Do not expose it through a tunnel or network listener. Shared partner access requires authentication and hosted storage first.
+
+Mutations use stable command keys across network retries. Replies require the current revision, append history atomically and invalidate previous active analysis. Analysis reads saved messages, runs outside database transactions, persists its immutable context/results and activates only if the source revision is still current. Saving never confirms proposed facts. Provider failures preserve messages and safe run status; explicit new-key retries create a new run. Interrupted running commands can remain pending after process failure; reopen first, then use **Retry analysis with a new run** if another paid attempt is intended. No automatic recovery, background queue, email sending, fact confirmation or approvals are implemented.
