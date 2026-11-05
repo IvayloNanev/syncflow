@@ -36,6 +36,17 @@ These stories are hypotheses derived from the job description and our proposed w
 4. As a licensing coordinator, I want to review proposed changes from replies so that confirmed information stays accurate as client plans change.
 5. As a licensing coordinator, I want review decisions and blockers visible so that I know who needs to act before a request can advance.
 
+## Working assumptions
+
+These are prototype decisions to validate with a coordinator, not confirmed Warner Music Group policy.
+
+- **One request per recording:** each saved request tracks one recording and its licensing details.
+- **Replies appended to history:** replies and corrections are added as new messages; the original email is retained rather than overwritten. Changes advance the request revision so older analysis cannot become the current result.
+- **Multi-recording requests flagged:** an email covering several recordings is flagged for coordinator review and splitting into separate requests. The agent must not silently select one recording or combine their terms.
+- **Saving does not confirm agent facts:** storing an email or an analysis preserves the record only. Extracted details remain proposals until the coordinator explicitly confirms them.
+
+The browser currently analyzes unsaved emails. Saved requests and revision checks exist in the separate local SQLite adapter; connecting the browser to Prisma-backed saving and coordinator confirmation is still pending.
+
 ## Agent pipeline and shared contracts
 
 The repository provides framework-neutral JSON Schemas, fictional development and evaluation fixtures, and a callable Intake → Review → Follow-up workflow with mock and optional Claude providers. Agents return proposals and drafts; the application owns persistence and coordinator confirmation.
@@ -99,7 +110,7 @@ The [20-case live evaluation report](docs/live-evaluation-report.md) records con
 
 ## Agreed expansion (planned)
 
-Saved requests/reply history, a third AI agent for internal summaries of confirmed facts, and manual revision-bound approval tracking are planned in the [expanded-scope design](docs/expanded-scope.md). These features are not implemented yet; invoice/payment tracking stays a stretch goal.
+Saved requests/reply history, a third AI agent for internal summaries of confirmed facts, and manual revision-bound approval tracking are described in the [expanded-scope design](docs/expanded-scope.md). The local saved-request foundation is implemented below; browser persistence, the summary agent and approval tracking remain planned. Invoice/payment tracking stays a stretch goal.
 
 ## Local saved-request foundation
 
@@ -109,4 +120,8 @@ Run `pnpm requests:analysis:demo` to persist/reopen a mock analysis against a sa
 
 ## Branch reconciliation
 
-The Next.js/Prisma application foundation from `developer` is combined with the latest agent and local request-store work. The home screen still uses fictional sample data. Prisma's application schema and `requests/store.js` are separate local SQLite mappings; do not point them at the same database or assume data is synchronized. See [integration reconciliation](docs/app-reconciliation.md) before wiring storage or agent routes.
+The Next.js/Prisma application foundation from `developer` is combined with the latest agent and local request-store work. The connected home screen analyzes unsaved emails; Prisma-backed saving is not wired to it yet. Prisma's application schema and `requests/store.js` are separate local SQLite mappings; do not point them at the same database or assume data is synchronized. See [integration reconciliation](docs/app-reconciliation.md) before wiring storage or agent routes.
+
+## Connected browser demo
+
+`pnpm dev` opens the local coordinator screen at http://127.0.0.1:3000. Paste a fictional email to see live proposed facts/source quotes, issues and an editable draft. It uses the existing server-only Claude credentials. Requests are unsaved; confirmation, login and saved-request integration remain unfinished. See [browser flow and verification](docs/browser-analysis.md).

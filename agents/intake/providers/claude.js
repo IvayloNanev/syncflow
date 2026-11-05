@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs';
+import shared from '../../../contracts/shared.schema.json' with { type: 'json' };
+import outputSchema from '../../../contracts/intake.schema.json' with { type: 'json' };
 
 export const INTAKE_PROMPT_VERSION = 'intake-v1';
 const prompt = readFileSync(new URL('../prompts/intake-v1.txt', import.meta.url), 'utf8');
-const readSchema = name => JSON.parse(readFileSync(new URL(`../../../contracts/${name}.schema.json`, import.meta.url), 'utf8'));
-const shared = readSchema('shared');
 // Inline our local shared refs for a self-contained client-tool schema.
 function inline(value) {
   if (Array.isArray(value)) return value.map(inline);
@@ -18,7 +18,7 @@ function inline(value) {
   }
   return Object.fromEntries(Object.entries(value).filter(([k]) => !['$schema', '$id', 'title'].includes(k)).map(([k,v])=>[k,inline(v)]));
 }
-const schema = inline(readSchema('intake'));
+const schema = inline(outputSchema);
 export class ClaudeProviderError extends Error {
   constructor(code) { super(code); this.code = code; }
 }
