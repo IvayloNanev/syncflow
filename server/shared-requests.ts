@@ -23,7 +23,7 @@ export async function sharedRequests(req:Request){
   let input;try{input=JSON.parse(raw);}catch{return json(400,{error:{message:'Invalid JSON.'}});}
   if(input?.action==='list'&&Object.keys(input).length===1)return json(200,{requests:await listSharedRequests(client,session.workspaceId)});
   const id=input?.action==='create'?creationId(session.workspaceId,session.user.id,input.idempotency_key):input?.request_id;
-  if(typeof id!=='string'||! /^[a-f0-9-]{36}$/i.test(id))return json(400,{error:{message:'Invalid request.'}});
+  if(typeof id!=='string'||! /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id))return json(400,{error:{message:'Invalid request.'}});
   store=await openSharedStore({client,workspaceId:session.workspaceId,actorId:session.user.id,id});
   if(input.action==='analyze'){
    const token=randomUUID();const {data,error}=await client.rpc('syncflow_acquire_analysis',{p_workspace:session.workspaceId,p_actor:session.user.id,p_token:token});
