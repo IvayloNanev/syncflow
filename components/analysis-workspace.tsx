@@ -34,6 +34,9 @@ const label = (key: string) => key.replaceAll("_", " ");
 export default function AnalysisWorkspace() {
   const [dashboardOpen,setDashboardOpen]=useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
+  const [recordingCandidate,setRecordingCandidate]=useState<Recording|null|undefined>(undefined);
+  const [recordingReason,setRecordingReason]=useState("");
+  const [recordingChanges,setRecordingChanges]=useState<{revision:number;previous_recording_id:string|null;recording_id:string|null;reason:string;actor_id:string;at:string}[]>([]);
   const [recordingOverride, setRecordingOverride] = useState(false);
   const [allowUnresolved, setAllowUnresolved] = useState(false);
   const [reviewRun, setReviewRun] = useState<{ run_id: string; result: Result } | null>(null);
@@ -58,7 +61,7 @@ export default function AnalysisWorkspace() {
   const [draft, setDraft] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
   function clearResult() { setResult(null); setError(""); setSubject(""); setDraft(""); setCopyStatus(""); }
-  type Detail = { handoff:HandoffState; workflow: Workflow; reviewer_tracking: ReviewTracking; review_analysis: { run_id: string; result: Result } | null; decisions: FactDecision[]; request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
+  type Detail = { recording_changes: typeof recordingChanges; handoff:HandoffState; workflow: Workflow; reviewer_tracking: ReviewTracking; review_analysis: { run_id: string; result: Result } | null; decisions: FactDecision[]; request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
   async function command(payload: Record<string, unknown>) {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 70000);
@@ -83,7 +86,7 @@ export default function AnalysisWorkspace() {
     return () => { mounted = false; };
   }, []);
   function showSaved(data: Detail) {
-    setHandoff(data.handoff); setWorkflow(data.workflow); setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
+    setRecordingCandidate(undefined);setRecordingReason("");setRecordingChanges(data.recording_changes||[]); setHandoff(data.handoff); setWorkflow(data.workflow); setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
     setRecordingOverride(true); setRecording(recordings.find(r => r.id === data.request.recording_id) || null); setAnalyses(data.analyses);
     if (data.active_analysis?.result?.ok) {
       const active = { ...data.active_analysis.result, catalog_review: data.catalog_review };
@@ -117,7 +120,7 @@ export default function AnalysisWorkspace() {
   }
   function newRequest() {
     setDashboardOpen(false); setCatalogOpen(false); setRecordingOverride(false); setAllowUnresolved(false); retryCommands.current.clear();
-    setHandoff(null); setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
+    setRecordingCandidate(undefined);setRecordingReason("");setRecordingChanges([]); setHandoff(null); setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
   }
   async function copyDraft() {
     try { await navigator.clipboard.writeText(`Subject: ${subject}\n\n${draft}`); setCopyStatus("Draft copied. Nothing was sent."); }
@@ -143,11 +146,6 @@ export default function AnalysisWorkspace() {
   const clientQuestions = issues.filter(i => !result?.coordinator_review_issue_ids?.includes(i.issue_id));
   function editEmail(value: string) {
     setEmail(value); setRecording(null); setRecordingOverride(false); setAllowUnresolved(false); clearResult();
-  }
-  function recoverIdentity() {
-    const original = email;
-    newRequest(); setEmail(original); setCatalogOpen(true);
-    setNotice("Original email copied into a new unsaved request. The previous request and its history remain saved.");
   }
   return <div className={`app-shell${!dashboardOpen && !saved && !email.trim() ? " email-only" : ""}`}>
     <a className="skip-link" href="#main-workspace">Skip to workspace</a>
@@ -181,7 +179,7 @@ export default function AnalysisWorkspace() {
             <div hidden={!!saved}><label htmlFor="client-email">Client email</label><textarea id="client-email" rows={12} maxLength={20000} value={email} disabled={busy || !!saved} required onChange={e => editEmail(e.target.value)} placeholder="Paste the client’s email here…" /></div>
             {!saved ? <button type="button" className="text-button" disabled={busy} onClick={() => editEmail(example)}>Try an example</button> : <p className="panel-note">Original email preserved. Add replies below.</p>}
             <details className="settings-disclosure"><summary>Request settings</summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => {setTimezone(e.target.value); clearResult();}} /></details>
-            {!saved && email.trim() && !effectiveRecording ? <div className="identity-warning"><p>No exact recording selected. Analysis can clarify the request, but this identity gap will remain locked on the saved record.</p><label><input type="checkbox" checked={allowUnresolved} disabled={busy} onChange={e => setAllowUnresolved(e.target.checked)} /> Continue with unresolved recording identity</label></div> : null}
+            {!saved && email.trim() && !effectiveRecording ? <div className="identity-warning"><p>No exact recording selected. Analysis can clarify the request, but you will need to resolve this identity gap before internal review.</p><label><input type="checkbox" checked={allowUnresolved} disabled={busy} onChange={e => setAllowUnresolved(e.target.checked)} /> Continue with unresolved recording identity</label></div> : null}
             <div className="form-footer"><small>Uses Claude API credits. Use fictional data.<br />Nothing is sent to the client.</small></div>
           </form>
           {saved ? <SavedRequests {...navigationProps} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} response={<div className="inline-next-action">        <section className="result-panel draft-panel" aria-labelledby="next-action-heading"><p className="eyebrow">NEXT ACTION</p><h2 id="next-action-heading">{stale ? 'Refresh the analysis' : result?.stages?.follow_up?.skipped ? 'Review facts and internal checks' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2>
@@ -198,7 +196,7 @@ export default function AnalysisWorkspace() {
         </section>
         <aside className="result-panel request-summary" aria-labelledby="summary-heading">
           <p className="eyebrow">REQUEST SUMMARY</p><h2 id="summary-heading">What needs attention?</h2>
-          <div className="preview-recording"><small>{saved ? 'SAVED RECORDING' : recordingOverride ? 'YOUR SELECTION' : 'PROVISIONAL CATALOG MATCH'}</small><h3>{effectiveRecording?.title || 'Recording unresolved'}</h3><p>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : preview.candidates.length ? 'Several recordings may match. Confirm the artist and exact version.' : 'Paste a title, artist and version, or inspect the catalog.'}</p><button type="button" className="text-button" disabled={busy} onClick={() => setCatalogOpen(!catalogOpen)} aria-expanded={catalogOpen}>{catalogOpen ? 'Close catalog' : 'Inspect / change recording'}</button>{saved && !effectiveRecording ? <button type="button" className="text-button" disabled={busy} onClick={recoverIdentity}>Copy original email to resolve identity in a new request</button> : null}</div>
+          <div className="preview-recording"><small>{saved ? 'SAVED RECORDING' : recordingOverride ? 'YOUR SELECTION' : 'PROVISIONAL CATALOG MATCH'}</small><h3>{effectiveRecording?.title || 'Recording unresolved'}</h3><p>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : preview.candidates.length ? 'Several recordings may match. Confirm the artist and exact version.' : 'Paste a title, artist and version, or inspect the catalog.'}</p><button type="button" className="text-button" disabled={busy} onClick={() => setCatalogOpen(!catalogOpen)} aria-expanded={catalogOpen}>{catalogOpen ? 'Close catalog' : 'Inspect / change recording'}</button></div>
           <RequestCoverage email={saved ? saved.messages.map(m => m.text).join("\n") : email} analyzed={!!result} stale={stale} proposals={result ? proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)) : []} confirmed={saved?.confirmed_fields || []} issues={clientQuestions} />
           <button type="submit" form="request-analysis-form" className="primary-button" disabled={busy || !email.trim()}>{busy ? "Drafting response…" : "Draft a response"}</button>
           {stale ? <p className="stale-banner">Analysis and draft are outdated. Refresh to verify the updated conversation.</p> : null}
@@ -206,7 +204,12 @@ export default function AnalysisWorkspace() {
           <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
         </aside>
       </div>
-      <div hidden={!catalogOpen} className="inline-catalog"><RecordingPicker selected={effectiveRecording} disabled={busy || !!saved} onSelect={r => {setRecordingOverride(true); setRecording(r); clearResult();}} onScenario={editEmail} /></div>
+      <div hidden={!catalogOpen} className="inline-catalog"><RecordingPicker selected={saved && recordingCandidate!==undefined ? recordingCandidate : effectiveRecording} disabled={busy} allowScenarios={!saved} onSelect={r => {if(saved)setRecordingCandidate(r);else {setRecordingOverride(true);setRecording(r);clearResult();}}} onScenario={editEmail} />
+        {saved && recordingCandidate!==undefined ? <form className="recording-correction" onSubmit={e=>{e.preventDefault();void perform(async()=>{
+          const data:Detail=await command(keyed({action:'change_recording',request_id:saved.id,expected_revision:saved.revision,recording_id:recordingCandidate?.id??null,reason:recordingReason}));
+          showSaved(data);await refresh();setNotice('Recording correction saved. Conversation and confirmed client facts were preserved. Recheck the request and reconfirm prior reviews.');
+        });}}><h3>Review the recording correction</h3><p>Saved: {saved.recording_id||'Unresolved'} → Proposed: {recordingCandidate?.id||'Unresolved'}</p><p>This changes the request revision, invalidates its analysis and handoff, and requires prior reviewer decisions to be reconfirmed. Confirmed client facts are preserved; check that the recording matches them.</p><label htmlFor="recording-reason">Reason for correction</label><textarea id="recording-reason" rows={3} required maxLength={2000} disabled={busy} value={recordingReason} onChange={e=>setRecordingReason(e.target.value)} /><button className="primary-button" disabled={busy||!recordingReason.trim()||(recordingCandidate?.id??null)===(saved.recording_id??null)}>Save recording correction</button><button className="secondary-button" type="button" disabled={busy} onClick={()=>{setRecordingCandidate(undefined);setRecordingReason('');}}>Cancel correction</button></form> : null}
+        {recordingChanges.length ? <details><summary>Recording correction history ({recordingChanges.length})</summary>{recordingChanges.map(change=><p key={change.revision}>{change.previous_recording_id||'Unresolved'} → {change.recording_id||'Unresolved'} · {change.reason} · {change.actor_id} · {change.at}</p>)}</details> : null}</div>
       {saved ? <div className="outcome-grid">
         <details className="fact-disclosure"><summary>{pendingCount} facts awaiting confirmation · Review evidence</summary><p className="panel-note">Decisions save immediately and make the draft outdated. Finish reviewing, then use Draft a response once.</p><FactReview confirmed={saved.confirmed_fields || []} proposals={proposals} runId={reviewRun?.run_id || null} decisions={decisions} busy={busy} onDecide={(proposal, decision) => {void perform(async () => {
           if (!reviewRun) return;

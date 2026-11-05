@@ -6,7 +6,7 @@ The existing intake, saved-request and fact-review behavior is retained while it
 
 - Persistent request sidebar: start a request, refresh/open saved requests and see the selected record.
 - Request: paste the initial email, save/analyze, inspect the preserved conversation and append replies.
-- Recording: search the fictional catalog, compare artist/version and select before saving. Saved recording identity stays locked; unresolved identity is visible.
+- Recording: search the fictional catalog, compare artist/version and select before saving. Saved recording identity can be corrected with a required reason and audit history; unresolved identity is visible.
 - Review: compare confirmed values with source-backed proposals, Accept/Reject, and distinguish client questions from internal catalog tasks.
 - Follow-up: edit/copy the current unsent clarification draft, with a clear empty/outdated state.
 

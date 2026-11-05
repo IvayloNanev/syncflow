@@ -143,3 +143,11 @@ test('failed analysis API returns safe durable recovery details and read-only st
   assert.equal((await call(command)).replayed,true);assert.equal(calls,1);
   assert.equal(checked.request.messages[0].text,create.email);assert.equal(checked.request.revision,0);
 });
+
+
+test('recording correction API preserves request identity and rejects injected confirmed values',async t=>{
+  const {call}=setup(t);const {request:r}=await call(create);
+  const command={action:'change_recording',request_id:r.id,expected_revision:0,recording_id:'TRACK-0001',reason:'Fictional recording correction',idempotency_key:'recording-correction'};
+  const changed=await call(command);assert.equal(changed.status,200);assert.equal(changed.request.id,r.id);assert.equal(changed.request.revision,1);assert.deepEqual(changed.request.messages,r.messages);assert.equal(changed.recording_changes[0].previous_recording_id,'TRACK-0002');
+  assert.equal((await call(command)).replayed,true);assert.equal((await call({...command,confirmed_fields:[]})).status,400);
+});

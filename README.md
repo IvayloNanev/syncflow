@@ -139,13 +139,17 @@ Local RequestStore.create accepts recording_id and includes it in idempotency ch
 
 ## Saved browser requests (local development)
 
-Run `pnpm dev`, open http://127.0.0.1:3000, paste a fictional email, select a recording, and choose **Save request** or **Save & analyze**. Saved requests appear in Request history. Refresh the page and choose **Open request** to restore the original email, recording, timezone and current analysis. Append replies with **Save reply**, then analyze the new revision. The original message is read-only; changing recording identity requires a separate request in this version. Draft edits remain browser-only and are not persisted.
+Run `pnpm dev`, open http://127.0.0.1:3000, paste a fictional email, select a recording, and choose **Save request** or **Save & analyze**. Saved requests appear in Request history. Refresh the page and choose **Open request** to restore the original email, recording, timezone and current analysis. Append replies with **Save reply**, then analyze the new revision. The original message is read-only. Saved recording identity can be corrected with a required reason and audit history; see [Recording corrections](docs/recording-correction.md). Follow-up drafts are unsent; saved internal handoff edits persist separately.
 
 The browser's only writer is the existing RequestStore adapter, in the ignored `.syncflow-data/browser-requests.sqlite` database (private directory/file modes). This deliberately replaces the earlier proposed Prisma-first integration for the local prototype: reuse the tested lifecycle rather than introduce a second writer. Prisma's schema/dev.db remain an unused application scaffold and are not synchronized. No existing database is migrated or overwritten. Copying a database to share it is not a multi-user system.
 
 The development-only POST `/api/requests` supports list/get/create/reply/analyze commands. Host/Origin checks restrict it to the same loopback app; production returns 503. The local operator identity is server-owned and cannot be supplied by a browser. There is no authentication: anyone with access to this local development app can read its local requests. Do not expose it through a tunnel or network listener. Shared partner access requires authentication and hosted storage first.
 
 Mutations use stable command keys across network retries. Replies require the current revision, append history atomically and invalidate previous active analysis. Analysis reads saved messages, runs outside database transactions, persists its immutable context/results and activates only if the source revision is still current. Saving never confirms proposed facts. Provider failures preserve messages and safe run status; explicit new-key retries create a new run. Interrupted running commands can remain pending after process failure; reopen first, then use **Retry analysis with a new run** if another paid attempt is intended. No automatic recovery, background queue, email sending or licensing approvals are implemented. Local fact confirmation is described below.
+
+## Saved recording corrections
+
+A coordinator can change or clear a saved recording without restarting the request. The correction preserves source messages and confirmed client facts, advances the revision, and invalidates dependent analysis, handoffs, reviewer decisions and completion. A reason is required and retained in audit history. Confirmed artist, title or version mismatches block internal-review readiness. Catalog metadata never becomes confirmed client evidence. See [behavior and validation](docs/recording-correction.md).
 
 ## Coordinator fact decisions
 

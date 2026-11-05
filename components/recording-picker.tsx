@@ -5,8 +5,8 @@ import { recordings, searchRecordings } from "../catalog/recordings.js";
 import { scenarios } from "../catalog/scenarios.js";
 
 export type Recording = (typeof recordings)[number];
-type Props = { selected: Recording | null; disabled: boolean; onSelect: (recording: Recording | null) => void; onScenario: (email: string) => void };
-export default function RecordingPicker({ selected, disabled, onSelect, onScenario }: Props) {
+type Props = { selected: Recording | null; disabled: boolean; allowScenarios?:boolean; onSelect: (recording: Recording | null) => void; onScenario: (email: string) => void };
+export default function RecordingPicker({ selected, disabled, onSelect, onScenario, allowScenarios=true }: Props) {
   const [query, setQuery] = useState("");
   const [version, setVersion] = useState("");
   const [page, setPage] = useState(0);
@@ -17,12 +17,12 @@ export default function RecordingPicker({ selected, disabled, onSelect, onScenar
     <p className="eyebrow">RECORDING LOOKUP · 1,000 FICTIONAL RECORDINGS</p>
     <h3 id="catalog-heading">Which recording does the client mean?</h3>
     <p>Search by title, artist or ID, then choose the exact version before saving. Fictional catalog metadata is separate from client facts.</p>
-    {disabled ? <p className="catalog-locked"><strong>Recording selection is locked for saved requests.</strong> The original selection is preserved. Start a new request to choose a different recording.</p> : null}
-    <details className="scenario-disclosure"><summary>Explore 10 fictional client scenarios</summary><label htmlFor="catalog-scenario">Load a sample brief</label>
+    {disabled ? <p className="catalog-locked"><strong>Recording selection is temporarily unavailable.</strong> Wait for the current action to finish.</p> : null}
+    {allowScenarios ? <details className="scenario-disclosure"><summary>Explore 10 fictional client scenarios</summary><label htmlFor="catalog-scenario">Load a sample brief</label>
     <select id="catalog-scenario" disabled={disabled} defaultValue="" onChange={e => {
       const scenario = scenarios.find(s => s.id === e.target.value);
       if (scenario) { setQuery(scenario.query); setVersion(""); setPage(0); onSelect(null); onScenario(scenario.email); }
-    }}><option value="" disabled>Choose one of 10 examples…</option>{scenarios.map(s => <option key={s.id} value={s.id}>{s.id} · {s.name}</option>)}</select></details>
+    }}><option value="" disabled>Choose one of 10 examples…</option>{scenarios.map(s => <option key={s.id} value={s.id}>{s.id} · {s.name}</option>)}</select></details> : null}
     <div className="catalog-controls"><div><label htmlFor="catalog-query">Search catalog</label><input id="catalog-query" value={query} disabled={disabled} placeholder="Northern Lights, Maya Rivers, TRACK-0001…" onChange={e => { setQuery(e.target.value); setPage(0); }} /></div>
       <div><label htmlFor="catalog-version">Version</label><select id="catalog-version" value={version} disabled={disabled} onChange={e => { setVersion(e.target.value); setPage(0); }}><option value="">All versions</option>{['Original','Instrumental','Live','Remix'].map(v => <option key={v}>{v}</option>)}</select></div></div>
     <p role="status">{matches.length} matching recordings. {matches.length > 1 ? 'Check artist and version before selecting.' : ''}</p>

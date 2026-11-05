@@ -87,6 +87,26 @@ export function openRequestStore(path = ':memory:') {
         return request;
       });
     },
+    changeRecording(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','recording_id','reason','idempotency_key'])) fail('INVALID_INPUT');
+      command(input);owned(input.actor_id,input.request_id);
+      if(!Object.hasOwn(input,'recording_id')||!Number.isSafeInteger(input.expected_revision)||input.expected_revision<0||!text(input.reason,2000)) fail('INVALID_RECORDING_CHANGE');
+      let recording;try{recording=resolveRecording(input.recording_id);}catch{fail('INVALID_RECORDING');}
+      return execute(input,`recording:${input.request_id}`,{expected_revision:input.expected_revision,recording_id:recording?.id??null,reason:input.reason},()=>{
+        const request=owned(input.actor_id,input.request_id);
+        if(request.revision!==input.expected_revision||request.revision>=Number.MAX_SAFE_INTEGER)fail('REVISION_CONFLICT');
+        const previous=request.recording_id??null;
+        if(previous===(recording?.id??null))fail('INVALID_RECORDING_CHANGE');
+        request.recording_id=recording?.id??null;request.revision++;request.updated_at=new Date().toISOString();
+        const update=db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?').run(request.revision,JSON.stringify(request),request.id,input.actor_id,input.expected_revision);
+        if(update.changes!==1)fail('REVISION_CONFLICT');
+        db.prepare('DELETE FROM active_analyses WHERE request_id=?').run(request.id);
+        db.prepare("UPDATE analysis_runs SET status='stale' WHERE request_id=? AND status='completed'").run(request.id);
+        db.prepare('DELETE FROM review_heads WHERE request_id=?').run(request.id);
+        event(request,input.actor_id,'recording_corrected',null,{previous_recording_id:previous,recording_id:request.recording_id,reason:input.reason.trim()});
+        return request;
+      });
+    },
     get(actor, id) { return owned(actor, id); },
     list(actor) {
       identity(actor);

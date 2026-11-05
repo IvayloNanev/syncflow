@@ -19,6 +19,7 @@ function localStore() {
   return store;
 }
 const allowed = {
+  change_recording: ['action','request_id','expected_revision','recording_id','reason','idempotency_key'],
   save_handoff: ['action','request_id','expected_revision','expected_handoff_version','source_token','text','idempotency_key'],
   complete_review: ['action','request_id','expected_revision','expected_review_version','idempotency_key'],
   reviewer: ['action','request_id','expected_revision','expected_review_version','idempotency_key','operation','reviewer_id','name','role','status','notes'],
@@ -30,7 +31,7 @@ const allowed = {
 };
 function detail(store, id) {
   const request = store.get(actor, id);
-  return { request, handoff: store.handoff(actor,id), workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
+  return { request, recording_changes:store.history(actor,id).filter(event=>event.action==='recording_corrected'), handoff: store.handoff(actor,id), workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
     analyses: store.analyses(actor, id).map(({ run_id, base_revision, status, created_at, context, result }) => ({ run_id, base_revision, status, created_at, message_count: context.messages.length, failure: result?.ok===false ? result : null, draft: ['completed', 'stale', 'superseded'].includes(status) && result?.ok ? result.stages?.follow_up?.output ?? null : null })),
     catalog_review: reviewRecording(request.recording_id) };
 }
@@ -95,6 +96,10 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
       if (action === 'reply') {
         const result = store.appendReply({ ...fields, actor_id: actor });
         return json(200, { ...detail(store, result.request.id), replayed: result.replayed });
+      }
+      if (action === 'change_recording') {
+        const result=store.changeRecording({...fields,actor_id:actor});
+        return json(200,{...detail(store,result.request.id),replayed:result.replayed});
       }
       if (action === 'save_handoff') {
         const result=store.saveHandoff({...fields,actor_id:actor});

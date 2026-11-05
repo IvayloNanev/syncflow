@@ -38,7 +38,10 @@ test('acceptance lifecycle: confirm, recheck, handoff save, reviewer completion,
   store.close();store=openRequestStore(path);
   assert.equal(store.workflow('A',r.id).completed,true);
   assert.match(store.handoff('A',r.id).latest.text,/Coordinator note/);
-  store.appendReply({actor_id:'A',request_id:r.id,expected_revision:current.revision,text:'Actually worldwide.',idempotency_key:'scope-change'});
+  store.changeRecording({actor_id:'A',request_id:r.id,expected_revision:current.revision,recording_id:'TRACK-0002',reason:'Fictional version correction',idempotency_key:'recording-change'});
+  assert.equal(store.workflow('A',r.id).completed,false);assert.equal(store.activeAnalysis('A',r.id),null);
+  assert.deepEqual(store.get('A',r.id).messages,current.messages);
+  store.appendReply({actor_id:'A',request_id:r.id,expected_revision:current.revision+1,text:'Actually worldwide.',idempotency_key:'scope-change'});
   assert.equal(store.workflow('A',r.id).completed,false);
   assert.equal(store.workflow('A',r.id).completion.needs_reconfirmation,true);
   assert.equal(store.reviewers('A',r.id).reviewers[0].needs_reconfirmation,true);

@@ -28,3 +28,9 @@ test('store blocks incomplete review completion, isolates owners and leaves audi
     assert.equal(store.get('A',r.id).revision,0);
   } finally {store.close();}
 });
+
+
+test('confirmed version mismatch blocks readiness even with every fact and reviewer approved',()=>{
+ const changed={...request,confirmed_fields:request.confirmed_fields.map(f=>({...f,...(f.field_key==='recording_version'?{value:'Original recording'}:{})}))};
+ assert.equal(check({request:changed}).status,'Recording mismatch');assert.equal(check({request:changed}).can_complete,false);
+});
