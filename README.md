@@ -176,3 +176,7 @@ Expand **Internal reviewers** to assign a named reviewer and record decisions re
 ### Status and readiness gates
 
 Saved requests now display server-derived status, next action and readiness blockers. Internal review completion requires an exact recording, all 12 prototype facts confirmed, a current successful analysis with zero checklist issues, at least one assigned reviewer, and current Approved decisions from every assigned reviewer. Completion is a manual, idempotent action recorded with actor, time, request revision and reviewer version. Later request/reviewer changes make earlier completion outdated. All 12 fields are required in this prototype; justified not-applicable exceptions are not implemented. Internal publishing checks and the separate licensing process remain outstanding even when internal review is complete.
+
+### Request dashboard
+
+Use **View all requests** to see server-derived status, confirmed client/project/song/deadline, responsible internal actor, blockers and next action. Search by client/project/song/source preview/ID, filter status, sort by confirmed calendar deadline or status, and open a saved request. Unconfirmed deadlines remain unknown; times and timezones are never inferred. Responsibility names outstanding internal reviewers only for review-stage work; otherwise the coordinator acts next. Dashboard counts reflect saved data, not cleared licences. Refresh retrieves current local state; this is not a multi-user realtime dashboard. Opening another view can discard browser-local handoff edits; copy them before leaving.

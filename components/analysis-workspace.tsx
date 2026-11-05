@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { previewEmail } from "../catalog/email-preview.js";
+import RequestDashboard from "./request-dashboard";
 import ReviewerTracking, {type ReviewTracking} from "./reviewer-tracking";
 import InternalHandoff from "./internal-handoff";
 import { reviewRecording } from "../catalog/review.js";
@@ -30,6 +31,7 @@ const example = "Hi, this is Jordan Pike. We’d like to use Northern Lights by 
 const label = (key: string) => key.replaceAll("_", " ");
 
 export default function AnalysisWorkspace() {
+  const [dashboardOpen,setDashboardOpen]=useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [recordingOverride, setRecordingOverride] = useState(false);
   const [allowUnresolved, setAllowUnresolved] = useState(false);
@@ -112,7 +114,7 @@ export default function AnalysisWorkspace() {
     });
   }
   function newRequest() {
-    setCatalogOpen(false); setRecordingOverride(false); setAllowUnresolved(false); retryCommands.current.clear();
+    setDashboardOpen(false); setCatalogOpen(false); setRecordingOverride(false); setAllowUnresolved(false); retryCommands.current.clear();
     setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
   }
   async function copyDraft() {
@@ -127,7 +129,7 @@ export default function AnalysisWorkspace() {
   const pendingCount = proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)).length;
   const navigationProps = { requests, saved, analyses, busy, reply, onReply: setReply,
     onRefresh: () => { void perform(refresh); }, onNew: newRequest,
-    onOpen: (id: string) => { void perform(async () => { const data = await command({ action: "get", request_id: id }); showSaved(data); setReply(""); setNotice("Saved request reopened."); }); },
+    onOpen: (id: string) => { setDashboardOpen(false); void perform(async () => { const data = await command({ action: "get", request_id: id }); showSaved(data); setReply(""); setNotice("Saved request reopened."); }); },
     onAppend: () => { void perform(async () => {
       if (!saved) return;
       const data = await command(keyed({ action: "reply", request_id: saved.id, expected_revision: saved.revision, text: reply }));
@@ -145,15 +147,19 @@ export default function AnalysisWorkspace() {
     newRequest(); setEmail(original); setCatalogOpen(true);
     setNotice("Original email copied into a new unsaved request. The previous request and its history remain saved.");
   }
-  return <div className={`app-shell${!saved && !email.trim() ? " email-only" : ""}`}>
+  return <div className={`app-shell${!dashboardOpen && !saved && !email.trim() ? " email-only" : ""}`}>
     <a className="skip-link" href="#main-workspace">Skip to workspace</a>
     <aside className="app-sidebar" aria-label="Request navigation">
       <a className="brand" href="#main-workspace">syncflow<span className="brand-period">.</span></a>
       <p className="sidebar-caption">MUSIC LICENSING WORKSPACE</p>
-      <SavedRequests {...navigationProps} />
+      <button className="new-request-button" disabled={busy} onClick={newRequest}>＋ New request</button><button type="button" className="dashboard-nav" disabled={busy} onClick={()=>{setDashboardOpen(true);void perform(refresh);}}>View all requests ({requests.length})</button>
       <div className="sidebar-bottom"><small>Saved on this computer · Single operator<br />Fictional catalog · Nothing sends automatically</small></div>
     </aside>
     <main className="main-workspace" id="main-workspace"><div className="workspace-body">
+      <button type="button" className="dashboard-entry text-button" disabled={busy} onClick={()=>{setDashboardOpen(!dashboardOpen);void perform(refresh);}}>{dashboardOpen ? 'Back to workspace' : 'View all requests'}</button>
+      {dashboardOpen && error ? <p role="alert" className="analysis-error">{error}</p> : null}
+      {dashboardOpen ? <RequestDashboard requests={requests} busy={busy} onOpen={navigationProps.onOpen} onNew={newRequest} onRefresh={navigationProps.onRefresh} /> : <>
+
       <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1>{saved ? 'Request workspace' : 'Start with the client’s email.'}</h1><p>See the recording, resolve the gaps and prepare your next email.</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
       <div aria-live="polite">{busy ? <p className="busy-notice">Working on the request. Saved facts and history are preserved…</p> : notice ? <p className="notice">{notice}</p> : null}</div>
       {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p></div> : null}
@@ -161,7 +167,7 @@ export default function AnalysisWorkspace() {
         {workflow.completion?.needs_reconfirmation ? <p className="stale-banner">Previous completion is outdated after a request or reviewer change.</p> : null}
         {workflow.completed ? <p>Recorded by {workflow.completion?.completed_by} at {workflow.completion?.completed_at}. This is not rights clearance.</p> : <button type="button" className="primary-button" disabled={busy||!workflow.can_complete} onClick={()=>{void perform(async()=>{
           const data:Detail=await command(keyed({action:'complete_review',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version}));
-          setWorkflow(data.workflow);setNotice('Internal review completion recorded. No licence or rights clearance was granted.');
+          setWorkflow(data.workflow);setNotice('Internal review completion recorded. No licence or rights clearance was granted.'); await refresh();
         });}}>Mark internal review complete</button>}
         {workflow.history.length ? <details><summary>Completion history ({workflow.history.length})</summary>{workflow.history.map((event,i)=><p key={i}>Revision {event.request_revision} · {event.completed_by} · {event.completed_at}</p>)}</details> : null}
       </div></section> : null}
@@ -211,10 +217,11 @@ export default function AnalysisWorkspace() {
         let success=false;
         await perform(async () => {
           const data: Detail = await command(keyed({action:'reviewer',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version,...input}));
-          setWorkflow(data.workflow); setReviewers(data.reviewer_tracking); success=true; setNotice('Reviewer record saved. No message was sent.');
+          setWorkflow(data.workflow); setReviewers(data.reviewer_tracking); success=true; setNotice('Reviewer record saved. No message was sent.'); await refresh();
         });
         return success;
       }} /> : null}
+      </>}
       <footer className="workspace-footer">Local prototype · Intake and coordination support · No automatic sending or rights approval</footer>
     </div></main>
   </div>;

@@ -2157,3 +2157,21 @@ h2 {
 .workflow-status p { font-size: 13px; line-height: 1.6; }
 .workflow-status summary { cursor: pointer; font-size: 13px; margin-bottom: 12px; }
 @media (max-width: 700px) { .workflow-status { grid-template-columns: minmax(0,1fr); } }
+.dashboard-nav { margin-top: 14px; padding: 12px; background: transparent; color: #e5eddc; border: 1px solid #52624e; border-radius: 8px; width: 100%; }
+.dashboard-entry { display: block; margin: 0 0 24px auto; }
+.dashboard-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin: 24px 0; }
+.dashboard-metrics > div { background: #eef3e6; border: 1px solid #d4dfc5; border-radius: 12px; padding: 20px; }
+.dashboard-metrics strong { font-size: 28px; display: block; }
+.dashboard-metrics span { font-size: 12px; }
+.dashboard-filters { display: flex; align-items: end; gap: 16px; flex-wrap: wrap; }
+.dashboard-filters > div:first-child { flex: 1; min-width: 190px; }
+.dashboard-filters input,.dashboard-filters select { margin-bottom: 0; }
+.dashboard-table-wrap { overflow-x: auto; border: 1px solid #dce1d6; border-radius: 12px; background: white; margin: 18px 0; }
+.dashboard-table { border-collapse: collapse; width: 100%; min-width: 1050px; font-size: 12px; }
+.dashboard-table th,.dashboard-table td { padding: 16px; border-bottom: 1px solid #e5e9df; text-align: left; vertical-align: top; min-width: 110px; }
+.dashboard-table th { background: #eef2e8; font-size: 11px; text-transform: uppercase; }
+.dashboard-table small { display: block; margin-top: 8px; }
+.dashboard-table summary { cursor: pointer; margin-top: 10px; font-size: 10px; }
+.dashboard-table .status-pill { white-space: normal; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); }
+@media (max-width: 600px) { .dashboard-metrics { gap: 8px; } .dashboard-metrics > div { padding: 12px; } }

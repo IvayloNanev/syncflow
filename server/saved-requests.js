@@ -1,3 +1,4 @@
+import { dashboardRequest } from '../requests/dashboard.js';
 import { mkdirSync, chmodSync } from 'node:fs';
 import { join } from 'node:path';
 import { openRequestStore } from '../requests/store.js';
@@ -78,7 +79,7 @@ export function createSavedRequestsHandler({ enabled = () => process.env.NODE_EN
       if (input.action === 'list') {
         const requests = store.list(actor).map(item => {
           const r = store.get(actor, item.id);
-          return { ...item, preview: r.messages[0].text.slice(0, 100), recording_id: r.recording_id ?? null };
+          return { ...item, ...dashboardRequest(r,store.workflow(actor,r.id),store.reviewers(actor,r.id)), preview: r.messages[0].text.slice(0, 100), recording_id: r.recording_id ?? null };
         }).sort((a, b) => b.updated_at.localeCompare(a.updated_at));
         return json(200, { requests });
       }
