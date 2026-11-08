@@ -7,6 +7,7 @@ import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from "rea
 import { previewEmail } from "../catalog/email-preview.js";
 import {readEditorBackup,writeEditorBackup,clearEditorBackup} from "./editor-backup";
 import { confirmDiscard, useUnsavedGuard } from "./use-unsaved-guard";
+import CoordinatorJourney from "./coordinator-journey";
 import AnalysisRecovery from "./analysis-recovery";
 import RequestDashboard from "./request-dashboard";
 import ReviewerTracking, {type ReviewTracking} from "./reviewer-tracking";
@@ -33,6 +34,9 @@ type Result = {
     follow_up?: { skipped?: boolean; output?: { subject: string; body: string } | null };
   };
 };
+const acknowledgementSubject = "Re: Your music licensing request";
+const recordingFollowUpBody = "Hi,\n\nThank you for sending your music request and usage details. Could you share a streaming link or audio reference for the exact recording you’d like to use? This will help us identify the requested version and check availability.\n\nWe’ll review the relevant rights information before confirming fees or permission to use the music.\n\nBest regards";
+const acknowledgementBody = "Hi,\n\nThank you for sending the details of your music request. We’ll check the exact recording and the relevant rights information before confirming availability, fees or permission to use the music.\n\nWe’ll get back to you once those checks are complete.\n\nBest regards";
 const example = "Hi, this is Jordan Pike. We’d like to use Northern Lights by Maya Rivers (original recording) in a Canadian online advertising campaign for six months. Our budget is CAD 5,000 for both rights. Please respond by November 6, 2026.";
 
 export default function AnalysisWorkspace({ mode = "coordinator", initialRequestId, shared = false }: {shared?:boolean;mode?: "coordinator" | "internal"; initialRequestId?: string}) {
@@ -43,7 +47,6 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const [recordingReason,setRecordingReason]=useState("");
   const [recordingChanges,setRecordingChanges]=useState<{revision:number;previous_recording_id:string|null;recording_id:string|null;reason:string;actor_id:string;at:string}[]>([]);
   const [recordingOverride, setRecordingOverride] = useState(false);
-  const [allowUnresolved, setAllowUnresolved] = useState(false);
   const [reviewRun, setReviewRun] = useState<{ run_id: string; result: Result } | null>(null);
   const [handoffDirty,setHandoffDirty]=useState(false);
   const [reviewerDirty,setReviewerDirty]=useState(false);
@@ -52,6 +55,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const [listState,setListState]=useState<"loading"|"ready"|"error">("loading");
   const [loadAttempt,setLoadAttempt]=useState(0);
   const headingRef=useRef<HTMLHeadingElement>(null);
+  const responseRef=useRef<HTMLElement>(null);
   const [handoff,setHandoff]=useState<HandoffState|null>(null);
   const [briefHistory,setBriefHistory]=useState<BriefApproval[]>([]);
   const [workflow,setWorkflow]=useState<Workflow|null>(null);
@@ -75,7 +79,8 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const [draft, setDraft] = useState("");
   const [recoveredDraft,setRecoveredDraft]=useState<{subject:string;body:string}|null>(null);
   const [copyStatus, setCopyStatus] = useState("");
-  const draftDirty = !!result && (subject !== (result.stages?.follow_up?.output?.subject || "") || draft !== (result.stages?.follow_up?.output?.body || ""));
+  const fallbackBody = saved&&!saved.recording_id ? recordingFollowUpBody : acknowledgementBody;
+  const draftDirty = !!result && (subject !== (result.stages?.follow_up?.output?.subject || acknowledgementSubject) || draft !== (result.stages?.follow_up?.output?.body || fallbackBody));
   const unsavedText = reviewerDirty || handoffDirty || draftDirty || !!reply.trim() || (!saved && !!email.trim());
   useUnsavedGuard(unsavedText);
   function requestUrl(id:string){return `/${mode === "internal" ? "internal" : "coordinator"}?request=${encodeURIComponent(id)}`;}
@@ -120,7 +125,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     setReply(typeof backup?.reply==="string"?backup.reply:"");
     if (data.active_analysis?.result?.ok) {
       const active = { ...data.active_analysis.result, catalog_review: data.catalog_review };
-      setResult(active); setSubject(active.stages?.follow_up?.output?.subject || ""); setDraft(active.stages?.follow_up?.output?.body || "");
+      setResult(active); setSubject(active.stages?.follow_up?.output?.subject || acknowledgementSubject); setDraft(active.stages?.follow_up?.output?.body || (!data.request.recording_id ? recordingFollowUpBody : acknowledgementBody));
       if(backup && backup.run === data.review_analysis?.run_id){if(typeof backup.subject==="string")setSubject(backup.subject);if(typeof backup.body==="string")setDraft(backup.body);}
     }
     if(backup?.body && (backup.run !== data.review_analysis?.run_id || !data.active_analysis?.result?.ok))setRecoveredDraft({subject:backup.subject||"",body:backup.body});
@@ -141,11 +146,10 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     event?.preventDefault();
     if(!confirmDiscard(draftDirty || !!reply.trim())) return;
     await perform(async () => {
-      if (!saved && !effectiveRecording && !allowUnresolved) { setError("The recording is unresolved. Choose a recording or acknowledge the identity gap before analyzing."); return; }
       const record = saved || await save(); clearResult();
       const payload = { action: "analyze", request_id: record.id, expected_revision: record.revision };
       const data: Detail = await command(keyed(payload)); showSaved(data);
-      if (data.analysis_status === "completed") { retryCommands.current.delete(JSON.stringify(payload)); setNotice("Analysis saved for this revision. Source-backed details populated automatically. Review exceptions; no per-field confirmation required."); }
+      if (data.analysis_status === "completed") { retryCommands.current.delete(JSON.stringify(payload)); setNotice("Your response draft is ready."); }
       else if (data.analysis_status === "running") setNotice("This run is still pending. Reopen the request to check it. Use Retry analysis with a new run only if you explicitly want another attempt.");
       else { retryCommands.current.delete(JSON.stringify(payload)); setNotice(`Analysis is ${data.analysis_status}. History is preserved. Review the saved request before explicitly retrying.`); }
       await refresh();
@@ -155,7 +159,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     if(!confirmDiscard(unsavedText))return;
     window.history.replaceState(null,"",`/${mode === "internal" ? "internal" : "coordinator"}`);
     clearEditorBackup("new");
-    setDashboardOpen(false); setCatalogOpen(false); setRecordingOverride(false); setAllowUnresolved(false); retryCommands.current.clear();
+    setDashboardOpen(false); setCatalogOpen(false); setRecordingOverride(false); retryCommands.current.clear();
     setRecordingCandidate(undefined);setRecordingReason("");setRecordingChanges([]); setHandoffDirty(false); setReviewerDirty(false);setRequestLoadFailed(false);setLoadingRequest(false);setHandoff(null); setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
   }
   async function copyDraft() {
@@ -164,6 +168,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   }
   const preview = previewEmail(saved ? saved.messages.map(m => m.text).join("\n") : email);
   const effectiveRecording = recordingOverride || saved ? recording : preview.match;
+  useEffect(()=>{if(mode==='coordinator'&&result&&!busy){responseRef.current?.scrollIntoView({block:'start'});responseRef.current?.focus({preventScroll:true});}},[result,busy,mode]);
   const proposals = reviewRun?.result.stages?.intake?.output?.proposed_changes || [];
   const issues = result?.stages?.review?.output?.issues || [];
   const pendingCount = proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)).length;
@@ -185,9 +190,14 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const clientQuestions = issues.filter(i => !result?.coordinator_review_issue_ids?.includes(i.issue_id));
   function editEmail(value: string) {
     writeEditorBackup("new",{email:value});
-    setEmail(value); setRecording(null); setRecordingOverride(false); setAllowUnresolved(false); clearResult();
+    setEmail(value); setRecording(null); setRecordingOverride(false); clearResult();
   }
-  const briefApprovalPanel = saved&&workflow?<section className="workflow-status coordinator-signoff" aria-label="Coordinator brief approval"><div><h2>{workflow.brief_approved?'Brief approved for internal review':'Coordinator brief review'}</h2><p>Review the recording and complete summary once. This approves the brief for internal review; it does not confirm each agent-extracted fact or grant music rights.</p>{workflow.brief_approval?<p>{workflow.brief_approval.outdated?'Previous approval is outdated. ':''}Approved by {workflow.brief_approval.approved_by} at {workflow.brief_approval.approved_at} · revision {workflow.brief_approval.request_revision}</p>:null}</div><div>{mode==='coordinator'&&!workflow.brief_approved?<><button className="primary-button" disabled={busy||!workflow.can_approve_brief||!reviewRun} onClick={()=>{if(!confirmDiscard(unsavedText))return;void perform(async()=>{const data:Detail=await command(keyed({action:'approve_brief',request_id:saved.id,expected_revision:saved.revision,analysis_run_id:reviewRun!.run_id}));showSaved(data);await refresh();setNotice('Coordinator approval saved for this request revision and analysis. No licence or rights clearance was granted.');});}}>Approve brief for internal review</button>{!workflow.can_approve_brief?<p>Resolve recording identity, missing details and checklist questions, then analyze successfully before approval.</p>:null}</>:!workflow.brief_approved?<Link className="secondary-button" href={`/coordinator?request=${encodeURIComponent(saved.id)}`}>Review and approve in Coordinator</Link>:<><p>Current sign-off recorded. Changes require fresh approval.</p>{mode==='coordinator'?<Link className="primary-button" href={`/internal?request=${encodeURIComponent(saved.id)}`}>Continue to internal review</Link>:null}</>}{briefHistory.length?<details><summary>Brief approval history ({briefHistory.length})</summary>{briefHistory.map(record=><p key={record.version}>Revision {record.request_revision} · analysis {record.analysis_run_id} · {record.approved_by} · {record.approved_at}</p>)}</details>:null}</div></section>:null;
+  const responseReadyNotice = !!result && !busy && (notice.startsWith('Analysis saved for this revision.') || notice==='Your response draft is ready.' || notice==='Reply checked. Checklist and next response updated.');
+  const responsePanel = result ? <section className="result-panel draft-panel live-response-panel" id="client-response" ref={responseRef} tabIndex={-1} aria-labelledby="next-action-heading"><p className="conversation-step response-step"><span aria-hidden="true">02</span> Your response</p><div className="response-heading"><h2 id="next-action-heading">{stale ? 'Analyze the updated request' : result?.stages?.follow_up?.skipped ? 'Your response draft' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2><button type="button" className="secondary-button" disabled={busy} onClick={()=>void analyze()}>{busy?"Drafting…":"Regenerate draft"}</button></div>
+          {responseReadyNotice?<p className="draft-ready-notice" role="status"><span aria-hidden="true">✓</span> Your response draft is ready. Review and copy it below.</p>:null}
+          {result ? <><p className="panel-note">{draftDirty ? "Edited draft · unsaved. Leaving or replacing this editor requires confirmation. " : result.stages?.follow_up?.skipped ? (!saved?.recording_id ? "Recording clarification template · " : "Acknowledgement template · ") : "AI-generated draft · "}Review the wording before sending. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {backupEditors({subject:e.target.value});setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {backupEditors({body:e.target.value});setDraft(e.target.value);setCopyStatus('');}} /><button type="button" className="primary-button" disabled={busy} onClick={copyDraft}>Copy draft</button><p role="status">{copyStatus}</p><div className="response-next-step"><h3>After you send this email</h3><p>Send the draft from your email app. When the client answers, paste their reply into this request and recheck it.</p></div></> : <p>{stale ? 'Use Draft response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Resolve exceptions and complete the internal checks; this does not approve a licence.' : 'Use Draft response to generate the checklist and any necessary email.'}</p>}
+        </section> : saved ? <button type="button" className="primary-button" disabled={busy} onClick={()=>void analyze()}>{busy?"Drafting response…":"Draft response"}</button> : null;
+  const briefApprovalPanel = saved&&workflow?<section id="coordinator-signoff" className="workflow-status coordinator-signoff" aria-label="Coordinator brief approval"><div><h2>{workflow.brief_approved?'Brief approved for internal review':'Coordinator brief review'}</h2><p>Review the recording and complete summary once. This approves the brief for internal review; it does not confirm each agent-extracted fact or grant music rights.</p>{workflow.brief_approval?<p>{workflow.brief_approval.outdated?'Previous approval is outdated. ':''}Approved by {workflow.brief_approval.approved_by} at {workflow.brief_approval.approved_at} · revision {workflow.brief_approval.request_revision}</p>:null}</div><div>{mode==='coordinator'&&!workflow.brief_approved?<><button className="primary-button" disabled={busy||!workflow.can_approve_brief||!reviewRun} onClick={()=>{if(!confirmDiscard(unsavedText))return;void perform(async()=>{const data:Detail=await command(keyed({action:'approve_brief',request_id:saved.id,expected_revision:saved.revision,analysis_run_id:reviewRun!.run_id}));showSaved(data);await refresh();setNotice('Coordinator approval saved for this request revision and analysis. No licence or rights clearance was granted.');});}}>Approve brief for internal review</button>{!workflow.can_approve_brief?<div><p>Before you can approve:</p><ul>{workflow.reasons.map((reason,i)=><li key={i}>{reason}</li>)}</ul></div>:null}</>:!workflow.brief_approved?<Link className="secondary-button" href={`/coordinator?request=${encodeURIComponent(saved.id)}`}>Review and approve in Coordinator</Link>:<><p>Current sign-off recorded. Changes require fresh approval.</p>{mode==='coordinator'?<Link className="primary-button" href={`/internal?request=${encodeURIComponent(saved.id)}`}>Continue to internal review</Link>:null}</>}{briefHistory.length?<details><summary>Brief approval history ({briefHistory.length})</summary>{briefHistory.map(record=><p key={record.version}>Revision {record.request_revision} · analysis {record.analysis_run_id} · {record.approved_by} · {record.approved_at}</p>)}</details>:null}</div></section>:null;
   return <div className="app-shell">
     <a className="skip-link" href="#main-workspace">Skip to workspace</a>
     <aside className="app-sidebar" aria-label="Request navigation">
@@ -198,13 +208,13 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     </aside>
     <main className="main-workspace" id="main-workspace"><div className="workspace-body">
       {dashboardOpen && saved ? <button type="button" className="dashboard-entry text-button" disabled={busy} onClick={()=>setDashboardOpen(false)}>Back to selected request</button> : null}
-      <div aria-live="polite">{notice?<p className="notice">{notice}</p>:null}</div>
+      <div aria-live="polite">{notice&&!responseReadyNotice?<p className="notice">{notice}</p>:null}</div>
       {listState==='error'?<div role="alert" className="analysis-error"><strong>Requests could not load</strong><p>Your saved requests have not been deleted. Check your connection and try again.</p><button className="secondary-button" disabled={busy} onClick={()=>{void perform(refresh);}}>Retry loading requests</button></div>:null}
       {dashboardOpen && error ? <p role="alert" className="analysis-error">{error}</p> : null}
       {loadingRequest?<section className="result-panel" role="status" aria-busy="true"><h1>Opening saved request…</h1><p>Loading the conversation, analysis and reviewer records.</p></section>:requestLoadFailed&&!dashboardOpen?<section className="result-panel" role="alert"><h1>Couldn’t open this request</h1><p>Check your connection or choose another saved request. Your existing work is unchanged.</p><button className="primary-button" onClick={()=>{setLoadingRequest(true);setLoadAttempt(n=>n+1);}}>Retry opening request</button><button className="secondary-button" onClick={()=>{setDashboardOpen(true);void perform(refresh);}}>View all requests</button></section>:dashboardOpen ? <RequestDashboard requests={requests} loadState={listState} busy={busy} onOpen={navigationProps.onOpen} onNew={mode === "internal" ? () => {router.push("/coordinator");} : newRequest} onRefresh={navigationProps.onRefresh} /> : <>
 
-      <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1 ref={headingRef} tabIndex={-1}>{saved ? `${mode === 'internal' ? 'Internal review' : 'Request'} · ${valueText(project||contact||recording?.title||saved.id.slice(0,8))}` : mode === 'internal' ? 'Internal handoffs & decisions' : 'Start with the client’s email.'}</h1><p>{mode === "internal" ? "Prepare the reviewer handoff and record decisions received from your team." : "Paste the email, check what’s missing, then prepare your reply."}</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
-      {mode === "coordinator" && !saved ? <section className="result-panel" aria-label="How your request moves forward"><h2>From client email to internal review</h2><p>Start a request below, or use View all requests to resume saved work.</p><ol><li><strong>Intake &amp; analysis:</strong> extract the brief and identify missing details.</li><li><strong>Follow-up:</strong> prepare a response when clarification is needed.</li><li><strong>Coordinator sign-off:</strong> review the complete brief before the internal handoff.</li><li><strong>Internal review:</strong> prepare the handoff and record reviewer decisions.</li></ol><Link className="secondary-button" href="/dashboard">Find a client or run the daily briefing</Link></section> : null}
+      <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1 ref={headingRef} tabIndex={-1}>{saved ? `${mode === 'internal' ? 'Internal review' : 'Request'} · ${valueText(project||contact||recording?.title||saved.id.slice(0,8))}` : mode === 'internal' ? 'Internal handoffs & decisions' : 'Start with the client’s email.'}</h1><p>{mode === "internal" ? "Prepare the reviewer handoff and record decisions received from your team." : "Paste the client’s email, draft a response, then review and copy it."}</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
+
       {mode === "internal" && saved ? <section className="selected-request-context" aria-label="Selected request"><strong>{valueText(project || 'Project missing')}</strong><span>{valueText(contact || 'Client missing')}</span><span>{recording ? `${recording.title} · ${recording.artist} · ${recording.version}` : 'Recording unresolved'}</span><small>{saved.agent_fields?.length?"Includes agent-extracted details · ":""}Revision {saved.revision} · {workflow?.status || 'Status loading'}</small></section> : null}
       <div aria-live="polite">{busy ? <p className="busy-notice">Working on the request. Saved facts and history are preserved…</p> : null}</div>
       {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p>{saved ? <button className="secondary-button" disabled={busy} onClick={()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return;void perform(async()=>{const data:Detail=await command({action:"get",request_id:saved.id});showSaved(data);setNotice("Saved request checked. Review its latest status before retrying.");});}}>Check saved request</button> : null}</div> : null}
@@ -217,19 +227,20 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       </div></section> : null}
       {mode === 'internal' ? briefApprovalPanel : null}
       {mode === "coordinator" ? <>
+
       {saved ? <AnalysisRecovery latest={analyses.at(-1)} busy={busy} hasCurrentResult={!!result} onCheck={async()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return false;let success=false;await perform(async()=>{const data:Detail=await command({action:'get',request_id:saved.id});showSaved(data);success=true;setNotice('Saved analysis status refreshed. No new agent call was made.');});return success;}} onRetry={()=>{retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision}));void analyze();}} /> : null}
       <div className="intake-grid live-intake-grid focused-intake-grid">
+        <div className="coordinator-email-column">
         <section id="client-brief" className="result-panel analysis-input" aria-labelledby="analyze-heading">
           <p className="eyebrow">CLIENT CONVERSATION</p><h2 id="analyze-heading">{saved ? 'Email conversation' : 'Paste the request'}</h2>
           <form id="request-analysis-form" onSubmit={analyze} aria-busy={busy}>
             <div hidden={!!saved}><label htmlFor="client-email">Client email</label><textarea id="client-email" rows={8} maxLength={20000} value={email} disabled={busy || !!saved} required onChange={e => editEmail(e.target.value)} placeholder="Paste the client’s email here…" /></div>
             {!saved ? <button type="button" className="text-button" disabled={busy} onClick={() => {if(confirmDiscard(!!email.trim()))editEmail(example);}}>Try an example</button> : <p className="panel-note">Original email preserved. Add replies below.</p>}
-            <div className="intake-submit"><button type="submit" form="request-analysis-form" className="primary-button" disabled={busy || !email.trim()}>{busy ? "Analyzing & drafting…" : "Analyze & draft response"}</button><small>Checks the brief and prepares a response. Nothing is sent.</small></div>
+            <div className="intake-submit" hidden={!!saved}><button type="submit" form="request-analysis-form" className="primary-button" disabled={busy || !email.trim()}>{busy ? "Drafting response…" : "Draft response"}</button><small>Checks the brief and prepares a response. Nothing is sent.</small></div>
             <details className="settings-disclosure"><summary>Request settings</summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => {setTimezone(e.target.value); clearResult();}} /></details>
-            {!saved && email.trim() && !effectiveRecording ? <div className="identity-warning"><p>No exact recording selected. Analysis can clarify the request, but you will need to resolve this identity gap before internal review.</p><label><input type="checkbox" checked={allowUnresolved} disabled={busy} onChange={e => setAllowUnresolved(e.target.checked)} /> Continue with unresolved recording identity</label></div> : null}
             <div className="form-footer"><small>Saved automatically when you analyze. Uses your Claude API account.</small></div>
           </form>
-          {saved ? <SavedRequests {...navigationProps} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} onRecheck={() => {if(!confirmDiscard(draftDirty))return;void perform(async () => {
+          {saved ? <SavedRequests {...navigationProps} response={responsePanel} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} onRecheck={() => {if(!confirmDiscard(draftDirty))return;void perform(async () => {
             const appended: Detail = await command(keyed({action:'reply',request_id:saved.id,expected_revision:saved.revision,text:reply}));
             backupEditors({reply:""});showSaved(appended); setReply(''); await refresh();
             const payload = {action:'analyze', request_id:saved.id,expected_revision:appended.request.revision};
@@ -238,8 +249,10 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
             setNotice(checked.analysis_status === 'completed' ? 'Reply checked. Checklist and next response updated.' : 'Reply saved. Analysis needs attention; retry drafting the response.');
           });}} /> : null}
         </section>
+
+        </div>
         <aside id="request-record" className="result-panel request-summary" aria-labelledby="summary-heading">
-          <p className="eyebrow">REQUEST SUMMARY</p><h2 id="summary-heading">What needs attention?</h2>
+          <p className="eyebrow">REQUEST SUMMARY</p><h2 id="summary-heading">Client details &amp; missing information</h2>
           <div className="preview-recording"><small>{saved ? 'SAVED RECORDING' : recordingOverride ? 'YOUR SELECTION' : 'PROVISIONAL CATALOG MATCH'}</small><h3>{effectiveRecording?.title || (!email.trim() && !saved ? 'Waiting for client email' : 'Recording unresolved')}</h3><p>{effectiveRecording ? `${effectiveRecording.artist} · ${effectiveRecording.version} · ${effectiveRecording.id}` : preview.candidates.length ? 'Several recordings may match. Confirm the artist and exact version.' : 'Paste a title, artist and version, or inspect the catalog.'}</p><button type="button" className="text-button" disabled={busy} onClick={() => setCatalogOpen(!catalogOpen)} aria-expanded={catalogOpen}>{catalogOpen ? 'Close catalog' : 'Inspect / change recording'}</button></div>
       <div hidden={!catalogOpen} className="inline-catalog"><RecordingPicker selected={saved && recordingCandidate!==undefined ? recordingCandidate : effectiveRecording} disabled={busy} allowScenarios={!saved} onSelect={r => {if(saved)setRecordingCandidate(r);else {setRecordingOverride(true);setRecording(r);clearResult();}}} onScenario={editEmail} />
         {saved && recordingCandidate!==undefined ? <form className="recording-correction" onSubmit={e=>{e.preventDefault();if(!confirmDiscard(draftDirty || !!reply.trim()))return;void perform(async()=>{
@@ -248,18 +261,17 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
         });}}><h3>Review the recording correction</h3><p>Saved: {saved.recording_id||'Unresolved'}; Proposed: {recordingCandidate?.id||'Unresolved'}</p><p>This changes the request revision, invalidates its analysis and handoff, and requires prior reviewer decisions to be reconfirmed. Confirmed client facts are preserved; check that the recording matches them.</p><label htmlFor="recording-reason">Reason for correction</label><textarea id="recording-reason" rows={3} required maxLength={2000} disabled={busy} value={recordingReason} onChange={e=>setRecordingReason(e.target.value)} /><button className="primary-button" disabled={busy||!recordingReason.trim()||(recordingCandidate?.id??null)===(saved.recording_id??null)}>Save recording correction</button><button className="secondary-button" type="button" disabled={busy} onClick={()=>{setRecordingCandidate(undefined);setRecordingReason('');}}>Cancel correction</button></form> : null}
         {recordingChanges.length ? <details><summary>Recording correction history ({recordingChanges.length})</summary>{recordingChanges.map(change=><p key={change.revision}>{change.previous_recording_id||'Unresolved'} to {change.recording_id||'Unresolved'} · {change.reason} · {change.actor_id} · {change.at}</p>)}</details> : null}</div>
           <div id="request-checklist"><RequestCoverage email={saved ? saved.messages.map(m => m.text).join("\n") : email} analyzed={!!result} stale={stale} proposals={result ? proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)) : []} confirmed={saved?.confirmed_fields || []} issues={clientQuestions} agentFields={saved?.agent_fields || []} /></div>
-          {stale ? <p className="stale-banner">Analysis and draft are outdated. Use Analyze & draft response to check the updated conversation.</p> : null}
+          {stale ? <p className="stale-banner">Analysis and draft are outdated. Use Draft response to check the updated conversation.</p> : null}
           {result ? <><h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}</> : null}
 
           {result && !result.stages?.follow_up?.skipped ? <a className="secondary-button response-jump" href="#client-response">Review response draft</a> : null}
           <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
         </aside>
-                {result ? <section className="result-panel draft-panel live-response-panel" id="client-response" aria-labelledby="next-action-heading"><p className="eyebrow">YOUR RESPONSE</p><h2 id="next-action-heading">{stale ? 'Analyze the updated request' : result?.stages?.follow_up?.skipped ? 'Review exceptions and internal checks' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2>
-          {result && !result.stages?.follow_up?.skipped ? <><p className="panel-note">{draftDirty ? "Edited draft · unsaved. Leaving or replacing this editor requires confirmation. " : "Generated draft · "}Questions for the client only. Internal checks remain in the summary above. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {backupEditors({subject:e.target.value});setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {backupEditors({body:e.target.value});setDraft(e.target.value);setCopyStatus('');}} /><button type="button" className="primary-button" disabled={busy} onClick={copyDraft}>Copy draft</button><p role="status">{copyStatus}</p><div className="response-next-step"><h3>After you send this email</h3><p>Send the draft from your email app. When the client answers, paste their reply into this request and recheck it.</p><a className="secondary-button" href="#client-reply">Add the client’s reply</a></div></> : <p>{stale ? 'Use Analyze & draft response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Resolve exceptions and complete the internal checks; this does not approve a licence.' : 'Use Analyze & draft response to generate the checklist and any necessary email.'}</p>}
-        </section> : null}
+
+
 
       </div>
-      {workflow && (workflow.can_approve_brief || workflow.brief_approved) ? briefApprovalPanel : null}
+      <details className="coordinator-details"><summary>View internal workflow</summary>      {mode === "coordinator" && !loadingRequest ? <CoordinatorJourney saved={!!saved} analyzed={!!result} approved={!!workflow?.brief_approved} canApprove={!!workflow?.can_approve_brief} completed={!!workflow?.completed} needsReply={!!result&&!result.stages?.follow_up?.skipped} requestId={saved?.id} nextAction={workflow?.next_action} busy={busy}/> : null}{workflow ? briefApprovalPanel : null}</details>
 
 
       </> : !saved ? <p>Select a saved request from View all requests to prepare a handoff and record reviewer decisions.</p> : <p>Request {saved.id} · {saved.messages.length} source messages · {saved.recording_id || "Recording unresolved"}. Source emails and music catalog are on the Coordinator page.</p>}
