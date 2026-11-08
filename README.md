@@ -328,4 +328,16 @@ Failed password-recovery resends preserve the browser's previous PKCE verifier a
 
 ### Fictional client-history workspace
 
-`SYNCFLOW_SEED_TEST_HISTORY=1 node scripts/seed-client-history.mjs` creates the explicitly labelled `SyncFlow Test · Fictional Clients` workspace with eight domain-validated cases, replies, saved fixture analyses, coordinator approvals and reviewer histories. It is idempotent and checks that the original workspace request versions remain unchanged. Fixture analyses use mock providers; no emails or model calls run. The selected workspace is an HttpOnly cookie preference validated against live database membership on every server request. The dashboard selector opens only a workspace the signed-in user belongs to. Switching workspaces resets the client dashboard state.
+`SYNCFLOW_SEED_TEST_HISTORY=1 node scripts/seed-client-history.mjs` creates the explicitly labelled `SyncFlow Test · Fictional Clients` workspace with eight domain-validated cases, replies, saved fixture analyses, coordinator approvals and reviewer histories. It is idempotent and checks that the original workspace request versions remain unchanged. Fixture analyses use mock providers; no emails or model calls run. The selected workspace is an HttpOnly cookie preference validated against live database membership on every server request. The remembered workspace is used only while the signed-in user remains a member. Switching workspaces resets the client dashboard state.
+
+### Coordinator and client history
+
+Ordinary sign-in opens Coordinator; explicit case destinations survive authentication. Clients (`/dashboard`) provides database-backed client files and a daily briefing. A client file includes all of that client's saved cases, including completed reviews, independently of the current directory filter. Workspace selection is remembered internally; the dashboard does not show a workspace selector.
+
+### Priority review
+
+The authenticated request-list response includes a read-only `priority-v1` ranking from persisted case summaries. Completed reviews are excluded. Ranking uses overdue/today/within-three-day response dates with a valid supplied timezone, then analysis, reviewer follow-up, coordinator sign-off and internal-review states; ties use deadline, oldest update and ID.
+
+**Analyze priorities** sends the selected workspace's saved case histories to the configured Claude provider (maximum 50 cases / 200,000 context characters). The report-only tool must cover every open case and provide exact source-message citations. Invalid reports and transient provider failures retry once; evidence validation remains strict. Case versions and workspace access are rechecked before a result is returned. The briefing shows client cards with reasons, next actions and links to the same request in Coordinator or Internal review. On failure, clearly labelled database statuses provide access to open cases. Changed summaries mark an existing briefing as stale.
+
+The agent never sends client messages, changes case decisions or grants rights. Coordinator sign-off remains required before the internal handoff. Local verification covered a real AI call against the eight-case test workspace without changing client messages or approvals.

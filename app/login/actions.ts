@@ -26,7 +26,7 @@ async function confirmationUrl(form:FormData,recovery=false,provider?:string){
 }
 
 export async function login(form:FormData){
- if(!sharedConfigured())redirect('/dashboard');
+ if(!sharedConfigured())redirect('/coordinator');
  const email=field(form,'email').trim(),password=field(form,'password');
  const invalid=signInInputNotice(email,password);if(invalid)show(invalid,form);
  const error=await authError(client=>client.auth.signInWithPassword({email,password}));

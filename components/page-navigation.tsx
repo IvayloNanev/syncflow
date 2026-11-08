@@ -7,9 +7,9 @@ type Page = "dashboard" | "home" | "coordinator" | "internal" | "team";
 function Links({current,requestId}:{current:Page;requestId?:string|null}) {
  const suffix=requestId?`?request=${encodeURIComponent(requestId)}`:"";
  return <nav className="page-navigation" aria-label="Main navigation">
- <Link href="/dashboard" aria-current={current==="dashboard"?"page":undefined}>Dashboard</Link>
  <Link href="/" aria-current={current==="home"?"page":undefined}>Home</Link>
  <Link href={`/coordinator${suffix}`} aria-current={current==="coordinator"?"page":undefined}>Coordinator</Link>
+ <Link href="/dashboard" aria-current={current==="dashboard"?"page":undefined}>Clients</Link>
  <Link href={`/internal${suffix}`} aria-current={current==="internal"?"page":undefined}>Internal review</Link>
  <Link href="/team" aria-current={current==="team"?"page":undefined}>Team</Link>
  </nav>;

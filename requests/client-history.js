@@ -11,3 +11,6 @@ export function clientGroups(requests){
  }
  return [...groups.values()].map(group=>({...group,requests:group.requests.toSorted((a,b)=>(b.updated_at||'').localeCompare(a.updated_at||''))})).sort((a,b)=>b.updated_at.localeCompare(a.updated_at));
 }
+
+// A selected file always contains the client's entire history, independent of list filters.
+export function clientFile(requests,key){return clientGroups(requests).find(group=>group.key===key)||null;}

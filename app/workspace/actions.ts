@@ -10,5 +10,5 @@ export async function switchWorkspace(form:FormData){
  const {data,error:membershipError}=await client.from('syncflow_members').select('workspace_id').eq('user_id',user.id).eq('workspace_id',id).maybeSingle();
  if(membershipError||!data)throw new Error('This workspace is not available to your account.');
  (await cookies()).set('syncflow-workspace',id,{httpOnly:true,sameSite:'lax',secure:process.env.NODE_ENV==='production',path:'/',maxAge:60*60*24*30});
- redirect('/dashboard');
+ redirect('/coordinator');
 }

@@ -11,7 +11,7 @@ export default async function Home() {
       <a className={styles.skip} href="#main">Skip to content</a>
       <header className={styles.header}>
         <Link className={styles.brand} href="/" aria-label="SyncFlow home">Sync<span>Flow</span></Link>
-        <Link className={styles.entry} href={user?"/dashboard":"/login"}>{user?"Open workspace":"Sign in"}</Link>
+        <Link className={styles.entry} href={user?"/coordinator":"/login"}>{user?"Open workspace":"Sign in"}</Link>
       </header>
       <main id="main" className={styles.hero}>
         <div className={styles.record} aria-hidden="true"><div /></div>
