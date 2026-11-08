@@ -19,7 +19,7 @@ export default function LandingStory() {
   }, [playing]);
 
   return <section className="landing-story" aria-labelledby="story-title" data-step={step}>
-    <div className="landing-story-toolbar"><div><p>THE WORKFLOW, IN MOTION</p><h2 id="story-title">Every detail has a source.</h2></div><button type="button" onClick={() => setPlaying(!playing)} aria-pressed={playing}>{playing ? "Ⅱ Pause walkthrough" : "▶ Play walkthrough"}</button></div>
+    <div className="landing-story-toolbar"><div><p>THE WORKFLOW, IN MOTION</p><h2 id="story-title">Every detail has a source.</h2></div><button type="button" onClick={() => setPlaying(!playing)} aria-pressed={playing}>{playing ? "Pause walkthrough" : "Play walkthrough"}</button></div>
     <p className="landing-story-caption">Illustrative example · fictional data · no live agent calls or saved changes</p>
     <div className="landing-story-chapters" aria-label="Walkthrough steps">{chapters.map((chapter,index) => <button key={chapter} type="button" aria-current={step === index ? "step" : undefined} onClick={() => {setStep(index);setPlaying(false);}}><span>0{index+1}</span>{chapter}</button>)}</div>
     <div className="landing-story-grid">
@@ -28,7 +28,7 @@ export default function LandingStory() {
       <div className="landing-story-output"><article className={`landing-story-card ${step===2?"is-active":""}`}><header><span>CHECKLIST REVIEW</span><span>CODE VALIDATES</span></header><div className="landing-story-body">{step>=2?<><p className="landing-story-question">! Project name missing</p><p className="landing-story-question">! Media, music length and deadline missing</p><p className="landing-story-question">! Budget rights scope needs clarification</p></>:<p className="landing-story-placeholder">Waiting for extracted details…</p>}</div></article>
       <article className={`landing-story-card landing-story-draft ${step===3?"is-active":""}`}><header><span>FOLLOW-UP DRAFT</span><span className="landing-story-tag">NOT SENT</span></header><div className="landing-story-body">{step>=3?<p>Thanks, Alex. Could you share the project name, media platforms, length of music needed and response deadline? Does the CAD $5,000 budget cover master rights only or both rights?</p>:<p className="landing-story-placeholder">Questions appear after the checklist review.</p>}</div></article></div>
     </div>
-    <div className={`landing-story-reply ${step===4?"is-visible":""}`}><span>REPLY / 02</span><p>{step===4?<>“Actually, worldwide; duration unchanged.” <strong>Propose a territory change. Keep six months. Reconfirm affected reviews.</strong></>:"A reply changes the request? Keep its history and review what changed."}</p><span aria-hidden="true">↗</span></div>
+    <div className={`landing-story-reply ${step===4?"is-visible":""}`}><span>REPLY / 02</span><p>{step===4?<>“Actually, worldwide; duration unchanged.” <strong>Propose a territory change. Keep six months. Reconfirm affected reviews.</strong></>:"A reply changes the request? Keep its history and review what changed."}</p></div>
     <p className="landing-story-status" aria-live="polite" aria-atomic="true">Step {step+1} of 5 · {chapters[step]} · Human confirmation required</p>
   </section>;
 }
