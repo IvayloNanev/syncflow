@@ -16,22 +16,22 @@ export default async function Home() {
     <div className="portal-shell project-landing project-electric">
       <a className="project-skip" href="#project-main">Skip to project overview</a>
       <header className="portal-nav">
-        <Link className="portal-brand" href="/" aria-label="SyncFlow home">Sync<span>Flow</span><sup>↗</sup></Link>
+        <Link className="portal-brand" href="/" aria-label="SyncFlow home">Sync<span>Flow</span></Link>
         <nav className="page-navigation" aria-label="Project navigation"><a href="#the-project">The project</a><a href="#how-it-works">How it works</a></nav>
-        <Link className="portal-primary landing-signin" href={user?"/dashboard":"/login"}>{user?"Open workspace":"Sign in"} <span aria-hidden="true">↗</span></Link>
+        <Link className="portal-primary landing-signin" href={user?"/dashboard":"/login"}>{user?"Open workspace":"Sign in"}</Link>
       </header>
       <main id="project-main">
         <section className="project-hero" aria-labelledby="project-title">
           <div className="project-hero-copy">
             <p className="portal-eyebrow"><span className="project-live-dot" aria-hidden="true" /> THE SYNC &amp; LICENSING WORKSPACE</p>
-            <h1 id="project-title">Sync<span>Flow</span><sup>↗</sup></h1>
+            <h1 id="project-title">Sync<span>Flow</span></h1>
             <p className="project-byline">A PROJECT BY IVAYLO NANEV &amp; MOSIAH JAMES</p>
           </div>
           <div className="project-hero-message">
             <span className="project-pill">LESS ADMIN. MORE MOMENTUM.</span>
             <h2>Great music.<br /><mark>Clear next steps.</mark></h2>
             <p className="project-lead">Turn a music-use request into an organized brief, the right questions and a conversation that keeps moving.</p>
-            <div className="landing-entry-actions"><Link className="portal-primary" href={user?"/dashboard":loginDestination('/dashboard')}>{user?"Open workspace":"Sign in to SyncFlow"} <span aria-hidden="true">↗</span></Link><a className="project-text-link" href="#how-it-works">See the flow <span aria-hidden="true">↓</span></a></div>
+            <div className="landing-entry-actions"><Link className="portal-primary" href={user?"/dashboard":loginDestination('/dashboard')}>{user?"Open workspace":"Sign in to SyncFlow"}</Link><a className="project-text-link" href="#how-it-works">See the flow</a></div>
           </div>
         </section>
 
@@ -48,13 +48,13 @@ export default async function Home() {
         <section className="project-spaces" aria-labelledby="spaces-title">
           <div className="project-section-heading"><p className="portal-eyebrow">TWO SIDES. ONE WORKFLOW.</p><h2 id="spaces-title">A place for each person.</h2></div>
           <div className="project-space-grid">
-            <article><span className="project-space-label">FOR COORDINATORS</span><h3>Start with the email.</h3><p>Paste the client email, inspect the music catalog, review missing details and prepare the client response.</p><Link className="project-text-link" href={user?"/coordinator":loginDestination("/coordinator")}>Open coordinator page <span aria-hidden="true">↗</span></Link></article>
-            <article><span className="project-space-label">FOR INTERNAL REVIEW</span><h3>Prepare the handoff.</h3><p>Prepare summaries for the label team and record reviewer decisions, notes and reconfirmations.</p><Link className="project-text-link" href={user?"/internal":loginDestination("/internal")}>Open internal review <span aria-hidden="true">↗</span></Link></article>
+            <article><span className="project-space-label">FOR COORDINATORS</span><h3>Start with the email.</h3><p>Paste the client email, inspect the music catalog, review missing details and prepare the client response.</p><Link className="project-text-link" href={user?"/coordinator":loginDestination("/coordinator")}>Open coordinator page</Link></article>
+            <article><span className="project-space-label">FOR INTERNAL REVIEW</span><h3>Prepare the handoff.</h3><p>Prepare summaries for the label team and record reviewer decisions, notes and reconfirmations.</p><Link className="project-text-link" href={user?"/internal":loginDestination("/internal")}>Open internal review</Link></article>
           </div>
         </section>
         <aside className="project-boundary"><strong>Assistance with the process. People own the decisions.</strong><p>SyncFlow supports intake, clarification and review. It does not grant music licenses, confirm rights clearance or automate contracts, invoices and payments.</p></aside>
       </main>
-      <footer className="project-footer"><Link className="portal-brand" href="/">Sync<span>Flow</span></Link><p>Music licensing workspace · Fictional recording catalog<br />Handoffs and decisions are recorded by the coordinator. Nothing sends automatically.</p><a href="#project-title">Back to top ↑</a></footer>
+      <footer className="project-footer"><Link className="portal-brand" href="/">Sync<span>Flow</span></Link><p>Music licensing workspace · Fictional recording catalog<br />Handoffs and decisions are recorded by the coordinator. Nothing sends automatically.</p><a href="#project-title">Back to top</a></footer>
     </div>
   );
 }

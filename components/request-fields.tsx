@@ -40,6 +40,6 @@ export default function RequestFields({ confirmed, proposals, decisions, runId, 
       {row.evidence.length ? <details><summary>Source evidence ({row.evidence.length})</summary>{row.evidence.map((e,i) => <blockquote key={i}>{e.exact_quote}<small>Message: {e.message_id}</small></blockquote>)}</details> : null}
     </article>)}</div>
     <p className="panel-note">Auto-filled values are proposals, not confirmed facts or rights clearance.</p>
-    <button className="primary-button" type="button" disabled={busy || !analyzed} onClick={onReview}>Review and confirm these fields →</button>
+    <button className="primary-button" type="button" disabled={busy || !analyzed} onClick={onReview}>Review and confirm these fields</button>
   </section>;
 }
