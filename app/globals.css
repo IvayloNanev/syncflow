@@ -2499,3 +2499,23 @@ h2 {
 .workspace-theme .client-history-card[aria-pressed=true]{border-color:#e4cd98;background:#d6b46618}.client-history-card strong{font-size:20px;overflow-wrap:anywhere}.client-history-card span,.client-history-card small{line-height:1.6;overflow-wrap:anywhere}
 .client-request-list,.history-message-list{list-style:none;padding:0}.history-actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:22px}.history-reader{scroll-margin-top:24px}.history-message-list>li{margin:20px 0;padding:20px;border:1px solid #ffffff25;border-radius:14px}.history-reader .message-body{white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:600px){.history-actions{align-items:stretch;flex-direction:column}.history-actions>a,.history-actions>button{width:100%;text-align:center}.client-dashboard .history-search input{width:100%;flex-basis:100%}}
+
+/* Coordinator: input and summary first; a response appears after analysis. */
+.workspace-theme .focused-intake-grid {grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;align-items:start}
+.workspace-theme .focused-intake-grid > .result-panel {padding:28px;min-width:0}
+.workspace-theme .focused-intake-grid .live-response-panel {grid-column:1/-1}
+.workspace-theme .focused-intake-grid .analysis-input textarea#client-email {min-height:240px;max-height:440px;resize:vertical}
+.workspace-theme .focused-intake-grid .preview-recording {padding:20px;margin:20px 0}
+.workspace-theme .focused-intake-grid .preview-recording h3 {font-size:24px;margin:8px 0}
+.workspace-theme .focused-intake-grid .preview-recording p {margin:8px 0 14px}
+.workspace-theme .intake-submit {display:grid;gap:10px;margin:20px 0}
+.workspace-theme .intake-submit .primary-button {width:100%;min-height:48px;margin:0}
+.workspace-theme .intake-submit small {font-size:13px;line-height:1.5;color:#b6b9aa}
+.workspace-theme .focused-intake-grid .settings-disclosure {margin:18px 0;padding:14px 0}
+.workspace-theme .focused-intake-grid .form-footer {margin-top:16px;padding-top:16px}
+.workspace-theme .focused-intake-grid .form-footer small {font-size:12px;line-height:1.6}
+.workspace-theme .focused-intake-grid .inline-catalog {margin:16px 0;padding:0;max-height:560px;overflow:auto;overscroll-behavior:contain}
+.workspace-theme .focused-intake-grid :is(input,textarea,button,a) {max-width:100%}
+.workspace-theme .coordinator-signoff {margin-top:24px}
+@media(max-width:1000px){.workspace-theme .focused-intake-grid{grid-template-columns:minmax(0,1fr)}.workspace-theme .focused-intake-grid>.result-panel{padding:22px}}
+@media(max-width:600px){.workspace-theme .focused-intake-grid>.result-panel{padding:18px}.workspace-theme .focused-intake-grid .preview-recording h3{font-size:21px}.workspace-theme .focused-intake-grid .analysis-input textarea#client-email{min-height:210px}}

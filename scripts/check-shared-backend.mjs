@@ -4,6 +4,7 @@ import 'dotenv/config';
 import {config} from 'dotenv';
 import assert from 'node:assert/strict';
 import {randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {createClient} from '@supabase/supabase-js';
 import {createServerClient} from '@supabase/ssr';
 import {openSharedStore,creationId} from '../requests/shared-store.js';
@@ -54,6 +55,28 @@ try{
   const stale=await post(users[1],{action:'reply',request_id:request.id,expected_revision:99,text:'Stale reply',idempotency_key:randomUUID()});assert.equal(stale.status,409);
   const reply=await post(users[1],{action:'reply',request_id:request.id,expected_revision:0,text:'Teammate reply',idempotency_key:randomUUID()});assert.equal(reply.status,200);assert.equal((await reply.json()).request.messages[1].added_by,users[1].id);
   const redirect=await fetch(`${app}/coordinator`,{redirect:'manual'});assert.equal(redirect.status,307);assert.ok(redirect.headers.get('location')?.includes('/login'));
+  // Complete fixture exercises real hosted storage/API gates without more model spend.
+  const fixture=JSON.parse(readFileSync(new URL('../fixtures/development/complete.json',import.meta.url),'utf8').replaceAll('Artist A','Maya Rivers').replaceAll('Track X','Northern Lights'));
+  const completeEmail=fixture.context.messages[0].text.replace('November 6, 2026.','November 6, 2026 at 17:00 America/Toronto.');
+  const deadline=fixture.intake.proposed_changes.find(p=>p.field_key==='response_deadline');
+  deadline.proposed_value={supplied_text:'November 6, 2026 at 17:00 America/Toronto',date:'2026-11-06',time:'17:00',timezone:'America/Toronto'};deadline.evidence[0].exact_quote=deadline.proposed_value.supplied_text;
+  const completeCreated=await post(users[0],{action:'create',email:completeEmail,timezone:'UTC',recording_id:'TRACK-0001',idempotency_key:randomUUID()});assert.equal(completeCreated.status,201);
+  const completeId=(await completeCreated.json()).request.id;
+  const completeStore=await openSharedStore({...opts,id:completeId});stores.push(completeStore);
+  await analyzeSavedRequest(completeStore,{actor_id:users[0].id,request_id:completeId,expected_revision:0,idempotency_key:randomUUID()},{intakeProvider:{id:'hosted-complete-mock',mode:'mock',generate:async({context})=>({...fixture.intake,run_id:context.run_id,base_record_version:context.base_record_version,proposed_changes:fixture.intake.proposed_changes.map(p=>({...p,evidence:p.evidence.map(e=>({...e,message_id:context.messages[0].message_id}))}))})},followUpProvider:createFollowUpMockProvider()});await completeStore.flush();
+  const command=async(user,fields)=>{const response=await post(user,{request_id:completeId,expected_revision:0,idempotency_key:randomUUID(),...fields});assert.equal(response.status,200,`Hosted lifecycle command ${fields.action}`);return response.json();};
+  // Reads use only their whitelisted fields.
+  const beforeResponse=await post(users[1],{action:'get',request_id:completeId});assert.equal(beforeResponse.status,200);const before=await beforeResponse.json();
+  assert.equal(before.workflow.status,'Needs coordinator review');
+  const blocked=await post(users[1],{action:'complete_review',request_id:completeId,expected_revision:0,expected_review_version:0,idempotency_key:randomUUID()});assert.equal(blocked.status,409);
+  const approved=await command(users[1],{action:'approve_brief',analysis_run_id:before.active_analysis.run_id});assert.equal(approved.workflow.brief_approval.approved_by,users[1].id);
+  const summary=await command(users[1],{action:'save_handoff',expected_handoff_version:0,source_token:approved.handoff.source_token,text:'Fictional hosted handoff. Separate rights clearance is required.'});assert.equal(summary.handoff.latest.outdated,false);
+  const assigned=await command(users[0],{action:'reviewer',expected_review_version:0,operation:'assign',name:'Fictional reviewer',role:'Director'});
+  await command(users[1],{action:'reviewer',expected_review_version:1,operation:'decision',reviewer_id:assigned.reviewer_tracking.reviewers[0].id,status:'Approved',notes:'Fictional internal decision, no rights grant.'});
+  const completed=await command(users[0],{action:'complete_review',expected_review_version:2});assert.equal(completed.workflow.completed,true);
+  const reopenedResponse=await post(users[1],{action:'get',request_id:completeId});const reopened=await reopenedResponse.json();assert.equal(reopened.workflow.completed,true);assert.equal(reopened.brief_approval_history.length,1);
+  const changed=await command(users[0],{action:'reply',text:'Fictional scope change: worldwide instead of Canada.'});assert.equal(changed.workflow.completed,false);assert.equal(changed.workflow.brief_approved,false);assert.equal(changed.handoff.latest.outdated,true);
+  console.log('PASS: hosted coordinator approval, attributed teammate review, handoff persistence, completion/reopen and scope-change invalidation.');
   console.log('PASS: signed-in API create/replay/reopen/team reply, stale rejection, cross-workspace denial, anonymous denial, origin protection and page redirect.');
  }
  console.log('PASS: hosted persistence/reopen, shared audit identity, persisted analysis, membership RLS, client write denial and distributed analysis reservation.');
