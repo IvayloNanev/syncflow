@@ -1,4 +1,5 @@
 import 'server-only';
+import {selectWorkspace} from '../workspace-selection.js';
 import {createServerClient} from '@supabase/ssr';
 import {createClient} from '@supabase/supabase-js';
 import {cookies} from 'next/headers';
@@ -15,7 +16,7 @@ export async function workspaceSession(){
  if(error||!user)return null;
  const {data:members,error:memberError}=await client.from('syncflow_members').select('workspace_id,role').eq('user_id',user.id);
  if(memberError)throw new Error('Workspace lookup failed');
- // Never infer access from editable profile/JWT metadata. Initial release supports
- // exactly one assigned workspace; ambiguous memberships require explicit selection.
- return {user,workspaceId:members?.length===1?members[0].workspace_id:null,role:members?.length===1?members[0].role:null,membershipCount:members?.length??0};
+ const preferred=(await cookies()).get('syncflow-workspace')?.value;
+ const selected=selectWorkspace(members||[],preferred);
+ return {user,workspaceId:selected?.workspace_id??null,role:selected?.role??null,membershipCount:members?.length??0};
 }

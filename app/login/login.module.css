@@ -1,0 +1,29 @@
+.page{color:#f5f2e9}
+.main{position:relative;flex:1;display:grid;place-items:center;padding:48px 24px;isolation:isolate}
+.home{font-size:13px;text-decoration:none;color:#c9cbbf;min-height:44px;display:inline-flex;align-items:center}.home:hover{color:#e4cd94}
+.record{width:min(65vw,850px);right:-25%;z-index:-1;opacity:.3;pointer-events:none}
+.card{position:relative;width:min(100%,460px);background:linear-gradient(145deg,#22271de8,#11160fee);backdrop-filter:blur(24px);border:1px solid #ddc18440;border-radius:24px;box-shadow:inset 0 1px 0 #ffffff0d,0 24px 80px #0004}
+.card h1{font-size:40px;font-weight:500;letter-spacing:-1.8px;margin:18px 0 12px}.card p{font-size:14px}
+.card .eyebrow{font-size:9px;letter-spacing:2px;line-height:1.6;color:#d3c39d;margin:0}
+.card form{gap:10px;margin-top:28px}.card label{font-size:13px;margin-top:8px;font-weight:500}.card input{min-height:48px;border-radius:10px;font-size:16px;background:#0c100db3}.card input:focus-visible{outline:2px solid #d8bb77;outline-offset:3px}
+.card button{margin-top:10px;min-height:48px;border-radius:30px;box-shadow:inset 0 1px 0 #fff8;font-size:14px}.card :global(.auth-switch){font-size:13px;margin-top:20px}.card :global(.auth-notice){font-size:13px;overflow-wrap:anywhere}
+@media(max-width:600px){.main{padding:32px 20px}.card{padding:28px 24px}.card h1{font-size:34px}.record{width:130vw;right:-90%}.home{font-size:12px}}
+
+/* One content edge and explicit spacing instead of inherited label margins. */
+.card{padding:36px;box-sizing:border-box;text-align:left}
+.card h1,.card p,.card form{max-width:100%;min-width:0}
+.card form{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin:28px 0 0;align-items:stretch}
+.card form label{display:block;margin:0;line-height:1.5}
+.card form input{display:block;width:100%;height:48px;min-height:48px;box-sizing:border-box;margin:0 0 12px;padding:12px 14px;line-height:1.5}
+.card form button{display:flex;align-items:center;justify-content:center;width:100%;height:48px;min-height:48px;box-sizing:border-box;margin:4px 0 0;padding:12px 20px;line-height:1.5;text-align:center}
+.card :global(.auth-switch){margin:18px 0 0;line-height:1.6}
+.card :global(.auth-help){margin:-4px 0 12px;line-height:1.5}
+@media(max-width:600px){.card{padding:28px 24px}}
+
+.card :global(.auth-notice){display:block;box-sizing:border-box;width:100%;margin:20px 0 24px;padding:14px 16px;font-size:13px;line-height:1.65;text-align:left;letter-spacing:0;white-space:normal;word-break:normal;overflow-wrap:break-word;text-wrap:pretty;border-radius:12px}
+.card :global(.auth-notice)+h1{margin-top:0}
+.card h1{max-width:100%;font-size:36px;line-height:1.15;letter-spacing:-1.2px;text-wrap:balance;margin:18px 0 14px}
+.card h1+p{margin:0;line-height:1.65;text-wrap:pretty}
+.card :global(.auth-switch){margin-top:22px}
+@media(max-width:600px){.card h1{font-size:30px;letter-spacing:-.8px}}
+.divider{display:flex;align-items:center;gap:14px;margin:22px 0 0;color:#9b9e8f;font-size:12px}.divider::before,.divider::after{content:"";flex:1;height:1px;background:#ffffff20}.card .googleForm{margin-top:14px}.card .googleForm button{background:#f5f3ed;color:#20231d;border:1px solid #fff6;box-shadow:none;margin:0}.card .googleForm button:hover{background:white}

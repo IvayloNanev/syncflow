@@ -12,7 +12,7 @@ const must=r=>{if(r.error)throw new Error(`Auth fixture failed (${r.error.code||
 const email=`syncflow-auth-check-${randomUUID()}@example.invalid`,password=`Check-${randomUUID()}-aA7!`,replacement=`Check-${randomUUID()}-aA7!`,workspace=randomUUID();
 let user,created=false;const jar=new Map();
 async function call(path,options={}){const response=await fetch(new URL(path,origin),{...options,redirect:'manual',headers:{cookie:[...jar].map(([k,v])=>`${k}=${v}`).join('; '),origin,...options.headers}});for(const cookie of response.headers.getSetCookie()){const pair=cookie.split(';')[0],at=pair.indexOf('=');jar.set(pair.slice(0,at),pair.slice(at+1));}return response;}
-async function submit(path,fields){const page=await call(path);const html=await page.text();const id=html.match(/name="(\$ACTION_ID_[^"]+)"/);assert.ok(id,'server action form exists');const form=new FormData();form.set(id[1],'');for(const [key,value] of Object.entries(fields))form.set(key,value);return call(path,{method:'POST',body:form});}
+async function submit(path,fields){const page=await call(path);const html=await page.text();const formHtml=[...html.matchAll(/<form\b[^>]*>[\s\S]*?<\/form>/g)].map(match=>match[0]).find(value=>Object.keys(fields).every(key=>new RegExp(`name="${key}"`).test(value)));const id=formHtml?.match(/name="(\$ACTION_ID_[^"]+)"/);assert.ok(id,'server action form exists');const form=new FormData();form.set(id[1],'');for(const [key,value] of Object.entries(fields))form.set(key,value);return call(path,{method:'POST',body:form});}
 try{
  user=must(await admin.auth.admin.createUser({email,password,email_confirm:true})).user;
  must(await admin.from('syncflow_workspaces').insert({id:workspace,name:`Disposable auth check ${workspace}`}));created=true;

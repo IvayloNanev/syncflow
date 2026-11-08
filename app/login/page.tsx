@@ -1,17 +1,23 @@
+import {googleAuthEnabled} from '../../lib/google-auth';
+import landing from "../landing.module.css";
+import styles from "./login.module.css";
 import {redirect} from 'next/navigation';
 import {sessionClient,sharedConfigured} from '../../lib/supabase/server';
 import {workspaceDestination,loginDestination} from '../../lib/auth-destination.js';
 import AuthSubmit from '../../components/auth-submit';
 import Link from 'next/link';
 import {NEW_PASSWORD_MIN,noticeFor} from '../../lib/auth-messages.js';
-import {login,resendConfirmation,signup,requestPasswordReset,updatePassword} from './actions';
+import {loginWithGoogle,login,resendConfirmation,signup,requestPasswordReset,updatePassword} from './actions';
 
 const EmailField=()=><><label htmlFor="email">Email</label><input id="email" name="email" type="email" autoComplete="email" maxLength={254} required/></>;
 
-function SignIn({next}:{next:string}){
+function GoogleEntry({next}:{next:string}){return <><form action={loginWithGoogle} className={styles.googleForm}><input type="hidden" name="next" value={next}/><AuthSubmit label="Continue with Google" pendingLabel="Connecting to Google…"/></form><div className={styles.divider}><span>or use email</span></div></>;}
+
+function SignIn({next,google}:{next:string;google:boolean}){
  return <>
   <h1>Sign in</h1>
   <p>Open your team’s licensing requests.</p>
+  {google&&<GoogleEntry next={next}/>}
   <form action={login}>
    <input type="hidden" name="next" value={next}/><EmailField/>
    <label htmlFor="password">Password</label>
@@ -23,10 +29,11 @@ function SignIn({next}:{next:string}){
  </>;
 }
 
-function SignUp({next}:{next:string}){
+function SignUp({next,google}:{next:string;google:boolean}){
  return <>
   <h1>Create your account</h1>
-  <p>Next you’ll confirm your email. A workspace owner then adds you to your team, and until then you won’t see any requests.</p>
+  <p>Use Google or create an account with email. You’ll need a workspace invitation to view requests.</p>
+  {google&&<GoogleEntry next={next}/>}
   <form action={signup}>
    <input type="hidden" name="next" value={next}/><EmailField/>
    <label htmlFor="password">Password</label>
@@ -58,19 +65,19 @@ function Recovery({next,reset}:{next:string;reset:boolean}){
  return <><h1>{reset?'Set a new password':'Reset your password'}</h1><p>{reset?'Choose a new password, then return to your request.':'We’ll email a reset link. Open it in this same browser.'}</p><form action={reset?updatePassword:requestPasswordReset}>
  <input type="hidden" name="next" value={next}/>
  {reset?<><label htmlFor="password">New password</label><input id="password" name="password" type="password" autoComplete="new-password" minLength={NEW_PASSWORD_MIN} maxLength={1024} required/><label htmlFor="confirm">Confirm new password</label><input id="confirm" name="confirm" type="password" autoComplete="new-password" minLength={NEW_PASSWORD_MIN} maxLength={1024} required/><p className="auth-help">At least {NEW_PASSWORD_MIN} characters.</p></>:<EmailField/>}
- <AuthSubmit label={reset?'Save password & continue':'Send reset link'} pendingLabel={reset?'Saving…':'Sending…'}/></form><p><Link href={loginDestination(next)}>Back to sign in</Link></p></>;
+ <AuthSubmit label={reset?'Save password & continue':'Send reset link'} pendingLabel={reset?'Saving…':'Sending…'}/></form><p className="auth-switch"><Link href={loginDestination(next)}>Back to sign in</Link></p></>;
 }
 
 export default async function Login({searchParams}:{searchParams:Promise<{message?:string;mode?:string;next?:string}>}){
  const {message,mode,next:destination}=await searchParams;
  const next=workspaceDestination(destination);
+ const google=await googleAuthEnabled();
  const notice=noticeFor(message);
  const view=notice?.view??(['signup','forgot','reset'].includes(mode||'')?mode:'signin');
  if(sharedConfigured()){const {data:{user}}=await (await sessionClient()).auth.getUser();if(view==='reset'&&!user)redirect(loginDestination(next,{message:'reset-link-failed'}));if(user&&view==='signin')redirect(next);}
- return <main className="workspace-theme auth-page"><section className="auth-card">
-  <Link href="/" className="auth-brand">syncflow.</Link>
-  <p className="eyebrow">YOUR MUSIC LICENSING WORKSPACE</p>
+ return <div className={`workspace-theme ${landing.page} ${styles.page}`}><header className={landing.header}><Link href="/" className={landing.brand} aria-label="SyncFlow home">Sync<span>Flow</span></Link><Link className={styles.home} href="/">Back to home</Link></header><main className={styles.main}><div className={`${landing.record} ${styles.record}`} aria-hidden="true"><div /></div><section className={`auth-card ${styles.card}`} aria-label="Account access">
+  <p className={styles.eyebrow}>YOUR MUSIC LICENSING WORKSPACE</p>
   {notice&&<p role={notice.tone==='error'?'alert':'status'} className={`auth-notice auth-notice-${notice.tone}`}>{notice.text}</p>}
-  {view==='signup'?<SignUp next={next}/>:view==='verify'?<Verify next={next}/>:view==='forgot'||view==='reset'?<Recovery next={next} reset={view==='reset'}/>:<SignIn next={next}/>}
- </section></main>;
+  {view==='signup'?<SignUp next={next} google={google}/>:view==='verify'?<Verify next={next}/>:view==='forgot'||view==='reset'?<Recovery next={next} reset={view==='reset'}/>:<SignIn next={next} google={google}/>}
+ </section></main><footer className={landing.footer}><span>Less admin. More momentum.</span><span>SyncFlow</span></footer></div>;
 }
