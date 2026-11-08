@@ -12,7 +12,7 @@ function display(value) {
 }
 // A deterministic internal report, not another model inference or an approval decision.
 /** @param {{request: import("../components/saved-requests").SavedRequest, questions?: {question: string}[], catalog?: {recording: {title: string, artist: string, version: string, id: string} | null, blockers: {question: string}[]}, analysisCurrent: boolean, pendingCount?: number}} input */
-export function buildHandoffSummary({request, questions = [], catalog, analysisCurrent}) {
+export function buildHandoffSummary({coordinatorApproved=false,request, questions = [], catalog, analysisCurrent}) {
   const confirmed = request.confirmed_fields.filter(f => f.state === 'confirmed');
   const extracted=analysisCurrent ? (request.agent_fields||[]) : [];
   const available=[...extracted,...confirmed.filter(f=>!extracted.some(e=>e.field_key===f.field_key))];
@@ -42,5 +42,6 @@ export function buildHandoffSummary({request, questions = [], catalog, analysisC
   lines.push('', 'NEXT INTERNAL ACTION', 'Resolve exceptions, verify recording identity and ownership, and resolve outstanding checks before progressing through the licensing process.',
     'Reviewer assignment and approval tracking are not recorded by this summary.', '',
     'Prepared for manual review and sharing. Nothing has been sent automatically.');
+  lines.push(coordinatorApproved?'Coordinator brief sign-off: current. Internal review only; no rights clearance.':'DRAFT BRIEF: Coordinator sign-off is required before internal review.');
   return lines.join('\n');
 }

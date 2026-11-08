@@ -41,9 +41,10 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
   db.exec('CREATE TABLE IF NOT EXISTS reviewer_tracking (request_id TEXT PRIMARY KEY REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL) STRICT');
   db.exec('CREATE TABLE IF NOT EXISTS review_completions (request_id TEXT NOT NULL REFERENCES requests(id), sequence INTEGER PRIMARY KEY AUTOINCREMENT, body TEXT NOT NULL) STRICT');
   db.exec('CREATE TABLE IF NOT EXISTS handoff_versions (request_id TEXT NOT NULL REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,version)) STRICT');
+  db.exec('CREATE TABLE IF NOT EXISTS brief_approvals (request_id TEXT NOT NULL REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,version)) STRICT');
   db.exec('INSERT OR IGNORE INTO review_heads SELECT request_id,run_id FROM active_analyses');
   // Trusted persistence adapter only. Explicit table/column allowlist; never HTTP input.
-  const tables = ['requests','events','commands','analysis_runs','active_analyses','review_heads','fact_decisions','reviewer_tracking','review_completions','handoff_versions'];
+  const tables = ['requests','events','commands','analysis_runs','active_analyses','review_heads','fact_decisions','reviewer_tracking','review_completions','handoff_versions','brief_approvals'];
   if (initialState) {
     if (initialState.schema_version !== 1) fail('INVALID_SNAPSHOT');
     db.exec('BEGIN');
@@ -326,10 +327,33 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
         return request;
       });
     },
+    briefApproval(actor,id) {
+      owned(actor,id);
+      const history=db.prepare('SELECT body FROM brief_approvals WHERE request_id=? ORDER BY version').all(id).map(row=>JSON.parse(row.body));
+      return {latest:history.at(-1)||null,history};
+    },
+    approveBrief(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','analysis_run_id','idempotency_key']))fail('INVALID_INPUT');
+      command(input);owned(input.actor_id,input.request_id);
+      if(!Number.isSafeInteger(input.expected_revision)||!text(input.analysis_run_id,200))fail('INVALID_INPUT');
+      const {actor_id,request_id,expected_revision,analysis_run_id}=input;
+      return execute(input,`approve-brief:${request_id}`,{request_id,expected_revision,analysis_run_id},()=>{
+        const request=owned(actor_id,request_id);
+        if(request.revision!==expected_revision)fail('REVISION_CONFLICT');
+        if(this.activeAnalysis(actor_id,request_id)?.run_id!==analysis_run_id||this.analyses(actor_id,request_id).at(-1)?.run_id!==analysis_run_id)fail('BRIEF_ANALYSIS_CONFLICT');
+        const workflow=this.workflow(actor_id,request_id);
+        if(workflow.brief_approved)return request;
+        if(!workflow.can_approve_brief)fail('BRIEF_NOT_READY');
+        const history=this.briefApproval(actor_id,request_id).history;
+        const record={version:history.length+1,request_revision:request.revision,analysis_run_id,approved_by:actor_id,approved_at:new Date().toISOString()};
+        db.prepare('INSERT INTO brief_approvals VALUES (?,?,?)').run(request_id,record.version,JSON.stringify(record));
+        return request;
+      });
+    },
     workflow(actor,id) {
       const request=owned(actor,id);
       const history=db.prepare('SELECT body FROM review_completions WHERE request_id=? ORDER BY sequence').all(id).map(row=>JSON.parse(row.body));
-      return {...requestReadiness({request,analysis:this.activeAnalysis(actor,id),tracking:this.reviewers(actor,id),decisions:this.decisions(actor,id),completion:history.at(-1) || null}),history};
+      return {...requestReadiness({request,analysis:this.activeAnalysis(actor,id),tracking:this.reviewers(actor,id),decisions:this.decisions(actor,id),briefApproval:this.briefApproval(actor,id).latest,latestAnalysis:this.analyses(actor,id).at(-1)||null,completion:history.at(-1) || null}),history};
     },
     completeReview(input) {
       if(!keys(input,['actor_id','request_id','expected_revision','expected_review_version','idempotency_key'])) fail('INVALID_INPUT');
@@ -341,13 +365,13 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
         if(request.revision!==expected_revision) fail('REVISION_CONFLICT');
         if(this.reviewers(actor_id,request_id).version!==expected_review_version) fail('REVIEW_CONFLICT');
         if(!this.workflow(actor_id,request_id).can_complete) fail('REVIEW_NOT_READY');
-        db.prepare('INSERT INTO review_completions (request_id,body) VALUES (?,?)').run(request_id,JSON.stringify({request_revision:expected_revision,review_version:expected_review_version,completed_by:actor_id,completed_at:new Date().toISOString()}));
+        db.prepare('INSERT INTO review_completions (request_id,body) VALUES (?,?)').run(request_id,JSON.stringify({brief_approval_version:this.briefApproval(actor_id,request_id).latest.version,request_revision:expected_revision,review_version:expected_review_version,completed_by:actor_id,completed_at:new Date().toISOString()}));
         return request;
       });
     },
     handoff(actor,id) {
       const request=owned(actor,id);
-      const source_token=hash({intake_policy:"exceptions-v1",revision:request.revision,analysis_run:this.activeAnalysis(actor,id)?.run_id ?? null,review_version:this.reviewers(actor,id).version});
+      const source_token=hash({intake_policy:"coordinator-signoff-v1",brief_approval:this.briefApproval(actor,id).latest?.version??0,revision:request.revision,analysis_run:this.activeAnalysis(actor,id)?.run_id ?? null,review_version:this.reviewers(actor,id).version});
       const versions=db.prepare('SELECT version,body FROM handoff_versions WHERE request_id=? ORDER BY version').all(id).map(row=>JSON.parse(row.body));
       const latest=versions.at(-1) || null;
       return {version:latest?.version ?? 0,source_token,latest:latest ? {...latest,outdated:latest.source_token!==source_token} : null,

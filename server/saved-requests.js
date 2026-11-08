@@ -20,6 +20,7 @@ function localStore() {
   return store;
 }
 const allowed = {
+  approve_brief:['action','request_id','expected_revision','analysis_run_id','idempotency_key'],
   change_recording: ['action','request_id','expected_revision','recording_id','reason','idempotency_key'],
   save_handoff: ['action','request_id','expected_revision','expected_handoff_version','source_token','text','idempotency_key'],
   complete_review: ['action','request_id','expected_revision','expected_review_version','idempotency_key'],
@@ -33,11 +34,13 @@ const allowed = {
 export function requestDetail(store, id, actor = localActor) {
   const request = store.get(actor, id);
   request.agent_fields=effectiveFields(request,store.activeAnalysis(actor,id),store.decisions(actor,id)).filter(f=>f.origin==="agent");
-  return { request, recording_changes:store.history(actor,id).filter(event=>event.action==='recording_corrected'), handoff: store.handoff(actor,id), workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
+  return { request, brief_approval_history:store.briefApproval(actor,id).history, recording_changes:store.history(actor,id).filter(event=>event.action==='recording_corrected'), handoff: store.handoff(actor,id), workflow: store.workflow(actor,id), reviewer_tracking: store.reviewers(actor,id), review_analysis: store.reviewAnalysis(actor,id), decisions: store.decisions(actor,id), active_analysis: store.activeAnalysis(actor, id),
     analyses: store.analyses(actor, id).map(({ run_id, base_revision, status, created_at, context, result }) => ({ run_id, base_revision, status, created_at, message_count: context.messages.length, failure: result?.ok===false ? result : null, draft: ['completed', 'stale', 'superseded'].includes(status) && result?.ok ? result.stages?.follow_up?.output ?? null : null })),
     catalog_review: reviewRecording(request.recording_id) };
 }
 const safeErrors = {
+  BRIEF_NOT_READY:[409,'Resolve missing details, recording identity and checklist issues before approving the brief.'],
+  BRIEF_ANALYSIS_CONFLICT:[409,'The analysis changed. Reopen the request and review its latest brief.'],
   HANDOFF_CONFLICT: [409, 'A newer summary was saved. Reopen the request before saving again.'],
   STALE_HANDOFF: [409, 'The request, analysis or reviewers changed. Regenerate the summary before saving.'],
   REVIEW_NOT_READY: [409, 'Internal review cannot be completed until current facts, checklist and required approvals are ready.'],
@@ -92,6 +95,7 @@ export function createSavedRequestsHandler({ actor = localActor, trustedOrigin =
       }
       if (input.action === 'get') return json(200, requestDetail(store, input.request_id, actor));
       const { action, ...fields } = input;
+      if(action==='approve_brief'){const result=store.approveBrief({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if (action === 'create') {
         const result = store.create({ ...fields, actor_id: actor });
         return json(result.replayed ? 200 : 201, customerSubmission ? { request_id: result.request.id, status: "submitted", replayed: result.replayed } : { ...requestDetail(store, result.request.id, actor), replayed: result.replayed });

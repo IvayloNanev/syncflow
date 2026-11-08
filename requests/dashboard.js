@@ -6,6 +6,7 @@ export function dashboardRequest(request, workflow, tracking) {
   const responsible=workflow.status==='Internal review pending' || ['Changes requested','Declined'].includes(workflow.status)
     ? waiting.map(r=>`${r.name} (${r.role})`).join(', ') || 'Coordinator' : 'Coordinator';
   return {
+    brief_policy:'coordinator-signoff-v1',
     agent_extracted:!!request.agent_fields?.length,
     project:typeof value('project')==='string'?value('project'):null,
     contact:typeof value('client_contact')==='string'?value('client_contact'):null,

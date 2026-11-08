@@ -1,0 +1,13 @@
+// Group display labels only. This is not a verified client/customer identity registry.
+export function clientGroups(requests){
+ const groups=new Map();
+ for(const request of requests){
+  const label=typeof request.contact==='string'?request.contact.trim():'';
+  const key=label?`client:${label.toLocaleLowerCase('en')}`:`unidentified:${request.id}`;
+  const group=groups.get(key)||{key,name:label||'Client not identified',identified:!!label,requests:[],message_count:0,updated_at:''};
+  group.requests.push(request);group.message_count+=request.message_count||0;
+  if((request.updated_at||'')>group.updated_at)group.updated_at=request.updated_at;
+  groups.set(key,group);
+ }
+ return [...groups.values()].map(group=>({...group,requests:group.requests.toSorted((a,b)=>(b.updated_at||'').localeCompare(a.updated_at||''))})).sort((a,b)=>b.updated_at.localeCompare(a.updated_at));
+}
