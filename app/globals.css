@@ -2519,3 +2519,15 @@ h2 {
 .workspace-theme .coordinator-signoff {margin-top:24px}
 @media(max-width:1000px){.workspace-theme .focused-intake-grid{grid-template-columns:minmax(0,1fr)}.workspace-theme .focused-intake-grid>.result-panel{padding:22px}}
 @media(max-width:600px){.workspace-theme .focused-intake-grid>.result-panel{padding:18px}.workspace-theme .focused-intake-grid .preview-recording h3{font-size:21px}.workspace-theme .focused-intake-grid .analysis-input textarea#client-email{min-height:210px}}
+
+/* Align hero columns and keep both entry actions on the same text baseline. */
+.project-electric .project-hero {align-items:start;text-align:left}
+.project-electric .project-hero-copy,.project-electric .project-hero-message {min-width:0}
+.project-electric .project-hero-copy>.portal-eyebrow {display:flex;align-items:center;min-height:28px;margin:0;line-height:1.5}
+.project-electric .project-hero-message>.project-pill {display:inline-flex;align-items:center;min-height:28px;box-sizing:border-box}
+.project-electric .project-hero h1 {margin-top:24px}
+.project-electric .project-hero-message h2 {margin-top:24px}
+.project-electric .landing-entry-actions {align-items:center}
+.project-electric .landing-entry-actions .portal-primary {display:inline-flex;align-items:center;justify-content:center;min-height:52px;margin:0;box-sizing:border-box;line-height:1.5}
+.project-electric .landing-entry-actions .project-text-link {display:inline-flex;align-items:center;min-height:52px;margin:0;padding:0;box-sizing:border-box;line-height:1.5}
+@media(max-width:700px){.project-electric .project-hero{gap:36px;padding:48px 0 40px}.project-electric .project-hero-copy>.portal-eyebrow{min-height:0}.project-electric .project-hero h1{margin-top:20px}}
