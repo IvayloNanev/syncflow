@@ -317,3 +317,15 @@ Release boundary: the core coordinator backend has live acceptance evidence. Gen
 The working intake uses two panels: the conversation and the request summary. Analyze sits directly below the email input. The response editor appears only after a successful analysis, with a summary link to reach it and an explicit next step for pasting the client's reply. The catalog opens beside the recording selection. Coordinator sign-off appears after the summary only when approval is available or already recorded; internal review retains all readiness checks. The gold/glass styling and clickable Provided/Missing/Needs clarification boxes remain.
 
 Browser checks covered blank intake, matching the example recording, filtering missing details, reopening a saved request, and inspecting the persisted draft/reply controls. No real client message, approval or reviewer decision was changed during this UI pass.
+
+### Google account entry
+
+`/login` and account creation show **Continue with Google** only when the configured Supabase project reports Google enabled in its public provider settings. Google OAuth uses the existing PKCE callback, preserves allowlisted workspace destinations, and routes cancellation/failure back to sign-in. Google identity does not create workspace membership: verified new users must accept an owner-issued invitation before accessing requests. The provider requests only email/profile identity, not Gmail or Drive access. The client secret belongs only in Supabase provider configuration, never in application source or public environment variables.
+
+The separate Google Cloud project is `syncflow-514119` (SyncFlow, under `pursuit.org`); callback: `https://ajpowkglgorjqjekmqla.supabase.co/auth/v1/callback`. Basic-identity Google sign-in was verified locally with an account outside the test-user list, including the no-workspace boundary. Google branding currently displays the Supabase project hostname; custom branding verification is separate. Email/password confirmation and recovery still depend on the existing limited email sender.
+
+Failed password-recovery resends preserve the browser's previous PKCE verifier and return intent so an earlier delivered link is not broken by a rejected request. Regression tests exercise the real Supabase SSR client with rejected and successful recovery responses.
+
+### Fictional client-history workspace
+
+`SYNCFLOW_SEED_TEST_HISTORY=1 node scripts/seed-client-history.mjs` creates the explicitly labelled `SyncFlow Test · Fictional Clients` workspace with eight domain-validated cases, replies, saved fixture analyses, coordinator approvals and reviewer histories. It is idempotent and checks that the original workspace request versions remain unchanged. Fixture analyses use mock providers; no emails or model calls run. The selected workspace is an HttpOnly cookie preference validated against live database membership on every server request. The dashboard selector opens only a workspace the signed-in user belongs to. Switching workspaces resets the client dashboard state.
