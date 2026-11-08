@@ -2531,3 +2531,22 @@ h2 {
 .project-electric .landing-entry-actions .portal-primary {display:inline-flex;align-items:center;justify-content:center;min-height:52px;margin:0;box-sizing:border-box;line-height:1.5}
 .project-electric .landing-entry-actions .project-text-link {display:inline-flex;align-items:center;min-height:52px;margin:0;padding:0;box-sizing:border-box;line-height:1.5}
 @media(max-width:700px){.project-electric .project-hero{gap:36px;padding:48px 0 40px}.project-electric .project-hero-copy>.portal-eyebrow{min-height:0}.project-electric .project-hero h1{margin-top:20px}}
+
+/* Programmatic focus announces a loaded request without outlining its heading. */
+.workspace-title h1[tabindex="-1"]:focus { outline: none; }
+
+/* Shared action shape across landing, authentication and workspace pages. */
+html body button,
+html body input[type="submit"],
+html body input[type="button"],
+html body a.primary-button,
+html body a.secondary-button,
+html body a.text-button,
+html body a[role="button"] {
+  border-radius: 9999px !important;
+}
+
+/* Clickable content cards retain card geometry; action buttons remain pills. */
+html body button.client-history-card {
+  border-radius: 20px !important;
+}

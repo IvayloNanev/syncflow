@@ -9,6 +9,6 @@ export async function manageInvitation(_previous:{message:string;ok:boolean},for
  try{await changeInvitation(action,{email:String(form.get('email')||''),invitationId:String(form.get('invitation_id')||'')});}
  catch(error){return {ok:false,message:error instanceof Error?error.message:'The invitation could not be updated.'};}
  revalidatePath('/team');revalidatePath('/no-access');revalidatePath('/invitations');
- if(action==='accept')redirect('/dashboard');
+ if(action==='accept')redirect('/coordinator');
  return {ok:true,message:action==='create'?'Invitation created or already pending. It expires after seven days. No email has been sent; share the invitation instructions below.':'Pending invitation revoked. Accepted memberships are unchanged.'};
 }
