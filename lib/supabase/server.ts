@@ -17,6 +17,12 @@ export async function workspaceSession(){
  const {data:members,error:memberError}=await client.from('syncflow_members').select('workspace_id,role').eq('user_id',user.id);
  if(memberError)throw new Error('Workspace lookup failed');
  const preferred=(await cookies()).get('syncflow-workspace')?.value;
- const selected=selectWorkspace(members||[],preferred);
+ let ordered=members||[];
+ if(ordered.length>1&&!ordered.some(member=>member.workspace_id===preferred)){
+  const {data:workspaces,error:workspaceError}=await client.from('syncflow_workspaces').select('id').order('created_at').order('id');
+  if(workspaceError)throw new Error('Workspace lookup failed');
+  ordered=(workspaces||[]).flatMap(workspace=>ordered.filter(member=>member.workspace_id===workspace.id));
+ }
+ const selected=selectWorkspace(ordered,preferred);
  return {user,workspaceId:selected?.workspace_id??null,role:selected?.role??null,membershipCount:members?.length??0};
 }
