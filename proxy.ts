@@ -12,4 +12,4 @@ export async function proxy(request:NextRequest){
  });
  await client.auth.getClaims();response.headers.set('Cache-Control','private, no-store');return response;
 }
-export const config={matcher:['/coordinator/:path*','/internal/:path*','/login','/no-access','/auth/:path*','/api/:path*']};
+export const config={matcher:['/','/dashboard','/coordinator/:path*','/internal/:path*','/login','/no-access','/team','/invitations','/auth/:path*','/api/:path*']};

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  NEW_PASSWORD_MIN, NOTICES, noAccessCopy, noticeFor, resendErrorNotice, resendInputNotice,
+  NEW_PASSWORD_MIN, NOTICES, passwordResetErrorNotice, noAccessCopy, noticeFor, resendErrorNotice, resendInputNotice,
   signInErrorNotice, signInInputNotice, signUpErrorNotice, signUpInputNotice,
 } from '../lib/auth-messages.js';
 
@@ -57,7 +57,7 @@ test('account creation routes each known Supabase failure', () => {
 
 test('every routed notice exists and opens a real view', () => {
   for (const notice of Object.values(NOTICES)) {
-    assert.ok(['signin', 'signup', 'verify'].includes(notice.view));
+    assert.ok(['signin', 'signup', 'verify', 'forgot', 'reset'].includes(notice.view));
     assert.ok(['error', 'info'].includes(notice.tone));
     assert.ok(notice.text.length > 0);
   }
@@ -85,4 +85,18 @@ test('unknown or inherited message values show nothing', () => {
   for (const message of ['nope', 'constructor', 'toString', '__proto__', undefined, ['signin-failed']]) {
     assert.equal(noticeFor(message), null);
   }
+});
+
+
+test('password recovery gives actionable, account-safe notices',()=>{
+ assert.equal(noticeFor('reset-sent').view,'forgot');
+ assert.match(noticeFor('reset-sent').text,/If this address has an account/);
+ assert.equal(noticeFor('reset-link-failed').view,'forgot');
+ assert.equal(noticeFor('reset-mismatch').view,'reset');
+});
+
+test('password reset failures distinguish password reuse, policy, throttling and sessions',()=>{
+ const cases={same_password:'reset-same-password',weak_password:'reset-weak',over_request_rate_limit:'reset-limit',over_email_send_rate_limit:'reset-limit',session_not_found:'reset-link-failed',session_expired:'reset-link-failed',reauthentication_needed:'reset-reauthenticate',reauthentication_not_valid:'reset-reauthenticate',unknown:'reset-failed'};
+ for(const [code,notice] of Object.entries(cases)){assert.equal(passwordResetErrorNotice({code,message:'private provider detail'}),notice);assert.ok(noticeFor(notice));assert.doesNotMatch(noticeFor(notice).text,/private provider detail/);}
+ assert.equal(passwordResetErrorNotice(null),'reset-failed');
 });

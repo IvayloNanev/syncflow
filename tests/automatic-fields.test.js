@@ -10,8 +10,9 @@ const tracking={version:0,reviewers:[]};
 test('complete current extraction needs no per-field confirmation but still requires human reviewers',()=>{
  const before=JSON.stringify(request);const fields=effectiveFields(request,analysis);
  assert.equal(fields.length,12);assert.ok(fields.every(f=>f.state==='agent_extracted'));
- const ready=requestReadiness({request,analysis,tracking});assert.equal(ready.intake_ready,true);assert.equal(ready.can_complete,false);assert.equal(ready.status,'Ready for internal review');
- assert.equal(requestReadiness({request,analysis,tracking:{version:1,reviewers:[{status:'Approved',needs_reconfirmation:false}]}}).can_complete,true);
+ const ready=requestReadiness({request,analysis,tracking});assert.equal(ready.intake_ready,true);assert.equal(ready.can_complete,false);assert.equal(ready.status,'Needs coordinator review');assert.equal(ready.can_approve_brief,true);
+ assert.equal(requestReadiness({request,analysis,tracking:{version:1,reviewers:[{status:'Approved',needs_reconfirmation:false}]}}).can_complete,false);
+ assert.equal(requestReadiness({request,analysis,briefApproval:{version:1,request_revision:0,analysis_run_id:'run'},tracking:{version:1,reviewers:[{status:'Approved',needs_reconfirmation:false}]}}).can_complete,true);
  assert.equal(JSON.stringify(request),before);
 });
 test('stale failed blocked rejected and evidence-free extraction cannot fill missing details',()=>{
@@ -44,8 +45,12 @@ test('saved automatic intake completes internal review without field decisions a
  await analyze('first');assert.equal(store.workflow('A',r.id).intake_ready,true);assert.equal(store.get('A',r.id).confirmed_fields.length,0);assert.equal(store.decisions('A',r.id).length,0);
  store.recordReview({actor_id:'A',request_id:r.id,expected_revision:0,expected_review_version:0,operation:'assign',name:'Morgan',role:'Director',idempotency_key:'assign'});
  const reviewer=store.reviewers('A',r.id).reviewers[0];store.recordReview({actor_id:'A',request_id:r.id,expected_revision:0,expected_review_version:1,operation:'decision',reviewer_id:reviewer.id,status:'Approved',notes:'Reviewed automatic source-backed summary',idempotency_key:'approve'});
+ assert.equal(store.workflow('A',r.id).can_complete,false);
+ store.approveBrief({actor_id:'A',request_id:r.id,expected_revision:0,analysis_run_id:store.activeAnalysis('A',r.id).run_id,idempotency_key:'brief-first'});
  assert.equal(store.workflow('A',r.id).can_complete,true);
  await analyze('same');assert.equal(store.reviewers('A',r.id).reviewers[0].needs_reconfirmation,false);
+ assert.equal(store.workflow('A',r.id).brief_approved,false);
+ store.approveBrief({actor_id:'A',request_id:r.id,expected_revision:0,analysis_run_id:store.activeAnalysis('A',r.id).run_id,idempotency_key:'brief-same'});
  store.completeReview({actor_id:'A',request_id:r.id,expected_revision:0,expected_review_version:2,idempotency_key:'complete'});assert.equal(store.workflow('A',r.id).completed,true);
  omitProject=true;await analyze('changed');assert.equal(store.reviewers('A',r.id).reviewers[0].needs_reconfirmation,true);assert.equal(store.workflow('A',r.id).completed,false);
  }finally{store.close();}

@@ -25,6 +25,8 @@ test('acceptance lifecycle: confirm, recheck, handoff save, reviewer completion,
   for(const p of run.analysis.result.stages.intake.output.proposed_changes) store.decideProposal({actor_id:'A',request_id:r.id,expected_revision:store.get('A',r.id).revision,run_id:run.analysis.run_id,proposal_id:p.proposal_id,decision:'accept',idempotency_key:`accept-${p.proposal_id}`});
   const current=store.get('A',r.id);
   await analyzeSavedRequest(store,{actor_id:'A',request_id:r.id,expected_revision:current.revision,idempotency_key:'recheck'},providers);
+  assert.equal(store.workflow('A',r.id).status,'Needs coordinator review');
+  store.approveBrief({actor_id:'A',request_id:r.id,expected_revision:current.revision,analysis_run_id:store.activeAnalysis('A',r.id).run_id,idempotency_key:'brief'});
   assert.equal(store.workflow('A',r.id).status,'Ready for internal review');
   const text=buildHandoffSummary({request:current,analysisCurrent:true,catalog:reviewRecording('TRACK-0001')});
   store.saveHandoff({actor_id:'A',request_id:r.id,expected_revision:current.revision,expected_handoff_version:0,source_token:store.handoff('A',r.id).source_token,text:text+'\nCoordinator note: Verify publishing.',idempotency_key:'handoff'});

@@ -9,8 +9,8 @@ import type {Recording} from './recording-picker';
 
 export type HandoffState = {version:number;source_token:string;latest:{version:number;source_token:string;text:string;outdated:boolean;saved_by:string;saved_at:string}|null;history:{version:number;saved_at:string;saved_by:string;request_revision:number}[]};
 type Catalog = {recording: Recording | null; blockers: {question: string}[]};
-export default function InternalHandoff({request, questions, catalog, analysisCurrent, pendingCount, busy, savedDraft, onDirtyChange, onSave}: {
-  request: SavedRequest; questions: {question: string}[]; catalog: Catalog;
+export default function InternalHandoff({coordinatorApproved,request, questions, catalog, analysisCurrent, pendingCount, busy, savedDraft, onDirtyChange, onSave}: {
+  coordinatorApproved:boolean;request: SavedRequest; questions: {question: string}[]; catalog: Catalog;
   analysisCurrent: boolean; pendingCount: number; busy: boolean; savedDraft:HandoffState; onDirtyChange:(dirty:boolean)=>void; onSave:(text:string,source:string)=>Promise<boolean>;
 }) {
   const backupKey=`handoff-${request.id}`;
@@ -19,7 +19,7 @@ export default function InternalHandoff({request, questions, catalog, analysisCu
   const dirty=!!draft && (!savedDraft.latest || draft.text!==savedDraft.latest.text || draft.source!==savedDraft.latest.source_token);
   useEffect(()=>{onDirtyChange(dirty);return ()=>onDirtyChange(false);},[dirty,onDirtyChange]);
   const [status,setStatus] = useState('');
-  const input = {request,questions,catalog,analysisCurrent,pendingCount};
+  const input = {request,questions,catalog,analysisCurrent,pendingCount,coordinatorApproved};
   const source = savedDraft.source_token;
   const outdated = !!draft && draft.source !== source;
   async function copy() {
@@ -27,7 +27,7 @@ export default function InternalHandoff({request, questions, catalog, analysisCu
     try {await navigator.clipboard.writeText(draft.text);setStatus('Internal summary copied. Nothing was sent.');}
     catch {setStatus('Clipboard unavailable. Select and copy the summary manually.');}
   }
-  return <details className="handoff-panel"><summary>Prepare an internal handoff summary</summary>
+  return <details className="handoff-panel" id="internal-handoff" open><summary>Prepare an internal handoff summary</summary>
     <p>Build a report from automatically recorded, source-backed details and any human-confirmed facts. Agent-extracted details retain their provenance; exceptions and outstanding checks remain visible.</p>
     <button className="primary-button" type="button" disabled={busy} onClick={() => {if(!confirmDiscard(dirty))return;const next={source,text:buildHandoffSummary(input)};writeEditorBackup(backupKey,next);setDraft(next);setStatus('');}}>{draft ? 'Regenerate from current record' : 'Generate internal summary'}</button>
     {draft ? <><p className="panel-note">Save your edits to restore them after reopening. Regenerating replaces the text in this editor; previous saved versions remain recorded.</p>{outdated ? <p role="status" className="stale-banner">The record or analysis changed. Regenerate before editing or copying this summary.</p> : null}
