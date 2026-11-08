@@ -1,0 +1,28 @@
+.page{min-height:100svh;display:flex;flex-direction:column;position:relative;isolation:isolate;overflow:hidden;background:#0d100e;color:#f5f2e9;font-family:Arial,Helvetica,sans-serif}
+.page::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 80% 50%,#a77a3520,transparent 60%),linear-gradient(115deg,#0d100e 20%,#171b15);pointer-events:none}
+.header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:26px clamp(24px,6vw,100px);border-bottom:1px solid #ffffff16;z-index:2}
+.brand{font-size:30px;font-weight:700;letter-spacing:-1.5px;text-decoration:none;color:#f5f2e9}.brand span{color:#ddc184}
+.entry{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 30px;box-sizing:border-box;border:1px solid #f3dfaa90;border-radius:30px;background:linear-gradient(135deg,#f0dfaf,#c5a35d);color:#171a13;font-size:14px;font-weight:700;text-decoration:none;box-shadow:inset 0 1px 0 #fff8;transition:filter .2s}
+.entry:hover{filter:brightness(1.1)}.page a:focus-visible{outline:2px solid #f2d58e;outline-offset:6px}
+.hero{position:relative;flex:1;display:flex;align-items:center;min-height:580px;padding:64px clamp(24px,6vw,100px);box-sizing:border-box}
+.copy{position:relative;z-index:1;max-width:780px}.eyebrow{font-size:11px;letter-spacing:3px;line-height:1.6;color:#d3c39d;margin:0 0 28px}
+.hero h1{font-size:clamp(64px,7.8vw,112px);font-weight:500;letter-spacing:-.065em;line-height:.98;margin:0 0 32px;white-space:normal}.hero h1 span{color:#dec489}
+.description{font-size:clamp(16px,1.4vw,20px);line-height:1.65;max-width:440px;color:#c3c5b9;margin:0}
+.record{position:absolute;width:min(64vw,900px);aspect-ratio:1;right:-12%;top:50%;transform:translateY(-50%) rotate(-25deg);border-radius:50%;background:repeating-radial-gradient(circle at center,#c7a55c12 0 1px,#080b09 2px 6px);border:1px solid #cba86130;box-shadow:0 0 120px #c5a35d12,inset 0 0 100px #000;opacity:.85;animation:spin 12s linear infinite}
+.record::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 30deg,transparent,#ecd29320,transparent 35%,#ecd2930b,transparent 75%)}
+.record>div{position:absolute;inset:37%;border-radius:50%;background:radial-gradient(circle,#0d100e 0 6%,#b1904b 7% 8%,#6b5831 9%,#b59756 55%,#806a3c);box-shadow:0 0 40px #0006}
+.footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:22px clamp(24px,6vw,100px);border-top:1px solid #ffffff12;color:#969e8e;font-size:11px;letter-spacing:.4px;z-index:1}
+.skip{position:absolute;top:-100px;left:24px;z-index:5;background:#f0dfaf;color:#15180f;padding:12px}.skip:focus{top:12px}
+@keyframes spin{from{transform:translateY(-50%) rotate(0deg)}to{transform:translateY(-50%) rotate(360deg)}}
+@media(max-width:700px){.header{padding:20px 24px}.brand{font-size:27px}.entry{padding:10px 24px;min-height:44px}.hero{min-height:560px;padding:64px 24px;align-items:center}.hero h1{font-size:clamp(54px,11.5vw,78px)}.eyebrow{font-size:9px;letter-spacing:2px}.description{max-width:31ch}.record{width:100vw;right:-58%;opacity:.5}.footer{font-size:10px;padding:20px 24px;flex-direction:column;gap:8px}}
+@media(prefers-reduced-motion:reduce){.record{animation:none}.entry{transition:none}}
+
+.record>div::after{content:"";position:absolute;left:50%;top:20%;width:20%;height:2px;transform:translateX(-50%);background:#30271480;border-radius:2px}
+
+/* Vinyl: pressed grooves, a printed label and a fixed light reflection. */
+.record{background:repeating-radial-gradient(circle,#141615 0px,#0a0c0b 1px,#222422 1.5px,#090b0a 2.5px,#101210 4px);border:3px solid #282b26;box-shadow:0 20px 65px #000b,inset 0 0 0 5px #060806,inset 0 0 0 7px #30332c,inset 0 0 55px #000;opacity:.95}
+.record::before{content:"";position:absolute;inset:7%;border-radius:50%;border:1px solid #71776620;box-shadow:0 0 0 2px #0007,inset 0 0 0 2px #0007;background:repeating-radial-gradient(circle,transparent 0 21px,#0008 22px 25px,transparent 26px 44px)}
+.record::after{background:conic-gradient(from 15deg,#ffffff00 0deg,#d3ded319 28deg,#ffffff02 46deg,#0006 85deg,#ffffff00 135deg,#d3ded320 190deg,#ffffff03 214deg,#0007 265deg,#ffffff00 330deg);box-shadow:inset 0 0 35px #0009}
+.record>div{inset:36%;background:radial-gradient(circle at 35% 25%,#e0c78e10,transparent 60%),repeating-linear-gradient(12deg,#ffffff03 0px 1px,#00000003 1px 3px),#bfa36b;border:1px solid #d5b97e;box-shadow:0 0 0 8px #0a0c09,inset 0 0 20px #55432355;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#28281f;font-family:Arial,Helvetica,sans-serif}
+
+.record>div::after{left:50%;top:50%;width:7%;height:7%;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 35% 30%,#d6d8cf,#747b71 35%,#30362c 55%,#0a0d09 60%);border:1px solid #e1d6b0;box-shadow:0 2px 5px #0009,0 0 0 4px #6b5e3b40}
