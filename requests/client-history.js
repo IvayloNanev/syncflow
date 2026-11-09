@@ -14,3 +14,14 @@ export function clientGroups(requests){
 
 // A selected file always contains the client's entire history, independent of list filters.
 export function clientFile(requests,key){return clientGroups(requests).find(group=>group.key===key)||null;}
+
+// Keep briefing cards in report order; directory recency must not override urgency.
+export function priorityClientGroups(requests,items){
+ const order=new Map(items.map((item,index)=>[item.request_id,index]));
+ const groups=clientGroups(requests.filter(request=>order.has(request.id)));
+ for(const group of groups)group.requests.sort((a,b)=>order.get(a.id)-order.get(b.id));
+ return groups.sort((a,b)=>order.get(a.requests[0].id)-order.get(b.requests[0].id));
+}
+export function priorityActionState(summary){
+ return summary?.status==='Internal review pending'?'waiting':'action';
+}
