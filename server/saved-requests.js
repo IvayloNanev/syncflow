@@ -25,7 +25,8 @@ const allowed = {
   save_handoff: ['action','request_id','expected_revision','expected_handoff_version','source_token','text','idempotency_key'],
   complete_review: ['action','request_id','expected_revision','expected_review_version','idempotency_key'],
   reviewer: ['action','request_id','expected_revision','expected_review_version','idempotency_key','operation','reviewer_id','name','role','status','notes'],
-  list: ['action'], get: ['action', 'request_id'],
+  set_deleted:['action','request_id','expected_revision','deleted','idempotency_key'],
+  list: ['action','include_deleted'], get: ['action', 'request_id'],
   create: ['action', 'email', 'timezone', 'recording_id', 'idempotency_key'],
   reply: ['action', 'request_id', 'expected_revision', 'text', 'idempotency_key'],
   decide: ['action','request_id','expected_revision','idempotency_key','run_id','proposal_id','decision'],
@@ -86,7 +87,7 @@ export function createSavedRequestsHandler({ actor = localActor, trustedOrigin =
       if (input.action === 'analyze' && analyzing) return json(429, { error: { code: 'BUSY', message: 'An analysis is running. Wait, then reopen this request before retrying.' } });
       store = await openStore();
       if (input.action === 'list') {
-        const requests = store.list(actor).map(item => {
+        const requests = store.list(actor,input.include_deleted===true).map(item => {
           const r = store.get(actor, item.id);
           r.agent_fields=effectiveFields(r,store.activeAnalysis(actor,r.id),store.decisions(actor,r.id)).filter(f=>f.origin==="agent");
           return { ...item, ...dashboardRequest(r,store.workflow(actor,r.id),store.reviewers(actor,r.id)), preview: r.messages[0].text.slice(0, 100), recording_id: r.recording_id ?? null };
@@ -95,6 +96,7 @@ export function createSavedRequestsHandler({ actor = localActor, trustedOrigin =
       }
       if (input.action === 'get') return json(200, requestDetail(store, input.request_id, actor));
       const { action, ...fields } = input;
+      if(action==='set_deleted'){const result=store.setDeleted({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='approve_brief'){const result=store.approveBrief({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if (action === 'create') {
         const result = store.create({ ...fields, actor_id: actor });

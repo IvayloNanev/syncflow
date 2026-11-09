@@ -1,8 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { coverageRows } from '../catalog/coverage-view.js';
 import { valueText, type ConfirmedFact, type FactProposal } from './fact-review';
+
+
+function AnimatedCoverageBar({states,label}:{states:{key:string;state:string}[];label:string}) {
+ const barRef=useRef<HTMLDivElement>(null);
+ const [visible,setVisible]=useState(false);
+ useEffect(()=>{
+  const element=barRef.current;if(!element)return;
+  const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){setVisible(true);observer.disconnect();}},{threshold:0.5});
+  observer.observe(element);return()=>observer.disconnect();
+ },[]);
+ return <div ref={barRef} className={`coverage-bar coverage-animated${visible?' is-visible':''}`} role="img" aria-label={label}>
+  {states.map((row,index)=><span key={row.key} className={`coverage-segment ${row.state}`} style={{animationDelay:`${index*90}ms`}}/>)}
+ </div>;
+}
 
 export default function RequestCoverage({email, analyzed, stale, proposals, confirmed, issues, agentFields = []}: {
   email: string; analyzed: boolean; stale: boolean; proposals: FactProposal[]; confirmed: ConfirmedFact[];
@@ -23,11 +37,10 @@ export default function RequestCoverage({email, analyzed, stale, proposals, conf
     <p className="panel-note">{stale ? 'Confirmed values are preserved below. Other excerpts are a conversation preview; recheck to assess the latest changes.' : analyzed ? 'Request details populated automatically. Review missing or conflicting information; source evidence is available below.' : 'Instant preview: detected excerpts only. Analyze to verify meaning and missing details.'}</p>
     <div className="coverage-totals" aria-label="Filter request details">{[{key:'provided',label:'Provided',count:provided},{key:'missing',label:analyzed&&!stale?'Missing':'Not detected',count:missing},{key:'attention',label:'Needs clarification',count:attention}].map(item=><button key={item.key} type="button" className={`coverage-filter coverage-filter-${item.key}`} aria-pressed={filter===item.key} onClick={()=>setFilter(filter===item.key?null:item.key)}><strong>{item.count}</strong><span>{item.label}</span></button>)}</div>
     {filter ? <div className="coverage-filter-note"><span role="status">Showing {filter==='provided'?'provided':filter==='missing'?'missing / not detected':'needs clarification'} details</span><button type="button" className="text-button" onClick={()=>setFilter(null)}>Show all</button></div> : null}
-    <div className="coverage-bar" role="img" aria-label={`${provided} provided, ${missing} ${analyzed && !stale ? 'missing' : 'not detected'}, ${attention} need clarification, across 12 details`}>
-      {rows.map(r => <span key={r.key} className={`coverage-segment ${r.state}`} />)}
-    </div>
+    <AnimatedCoverageBar key={`${analyzed}:${stale}:${rows.map(row=>row.state).join(',')}`} states={rows} label={`${provided} provided, ${missing} ${analyzed && !stale ? 'missing' : 'not detected'}, ${attention} need clarification, across 12 details`}/>
+
     <div className="coverage-list">{rows.filter(row=>!filter||row.state===filter).map(row => <article key={row.key} className={`coverage-row ${row.state}`}>
-      <span className="coverage-icon" aria-hidden="true">{row.state === 'attention' ? '!' : row.source === 'confirmed' ? '✓' : row.state === 'missing' ? '−' : '·'}</span>
+      <span className="coverage-icon" aria-hidden="true">{row.state === 'attention' ? '!' : row.source === 'confirmed' ? '✓' : row.state === 'missing' ? '−' : '✓'}</span>
       <div><div className="coverage-row-label"><h3>{row.label}</h3><span>{row.source === 'agent' ? 'Automatically recorded' : row.source === 'confirmed' ? 'Human-confirmed' : row.state === 'missing' ? analyzed && !stale ? 'Missing' : 'Not detected' : row.source === 'proposed' ? 'Extracted · needs attention' : 'Preview · not analyzed'}</span></div>
       <p>{row.value == null ? analyzed && !stale ? 'Not supplied — clarification needed' : 'Not detected in the email' : valueText(row.value)}</p>
       {row.source === 'confirmed' && row.hasProposal ? <p className="coverage-question">{row.changed ? 'Proposed change (not confirmed)' : 'New proposal (not yet reviewed)'}: {valueText(row.proposal)}. Review its source evidence before deciding.</p> : null}

@@ -7,6 +7,7 @@ export function dashboardRequest(request, workflow, tracking) {
     ? waiting.map(r=>`${r.name} (${r.role})`).join(', ') || 'Coordinator' : 'Coordinator';
   return {
     brief_policy:'coordinator-signoff-v1',
+    deleted_at:request.deleted_at??null,
     agent_extracted:!!request.agent_fields?.length,
     project:typeof value('project')==='string'?value('project'):null,
     contact:typeof value('client_contact')==='string'?value('client_contact'):null,

@@ -2750,3 +2750,87 @@ html body button.client-history-card {
 .inbox-identity{display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-width:0;flex:1}
 .inbox-visible-address{font-size:13px;line-height:1.6;color:#b7bbaa;overflow-wrap:anywhere;min-width:0}
 @media(max-width:650px){.inbox-identity{gap:4px}.inbox-visible-address{flex-basis:100%;font-size:12px}}
+
+/* Match status colors across summary filters, animated segments, and detail rows. */
+.workspace-theme .coverage{--coverage-provided:#a8d5ae;--coverage-missing:#f19a96;--coverage-attention:#f0cc77}
+.workspace-theme .coverage .coverage-filter-provided,.workspace-theme .coverage .provided{--coverage-status:var(--coverage-provided)}
+.workspace-theme .coverage .coverage-filter-missing,.workspace-theme .coverage .missing{--coverage-status:var(--coverage-missing)}
+.workspace-theme .coverage .coverage-filter-attention,.workspace-theme .coverage .attention{--coverage-status:var(--coverage-attention)}
+.workspace-theme .coverage button.coverage-filter{border:1px solid color-mix(in srgb,var(--coverage-status) 45%,transparent);background:color-mix(in srgb,var(--coverage-status) 8%,transparent)}
+.workspace-theme .coverage .coverage-filter strong{color:var(--coverage-status)}
+.workspace-theme .coverage .coverage-filter[aria-pressed=true]{background:color-mix(in srgb,var(--coverage-status) 18%,transparent);border-color:var(--coverage-status)}
+.workspace-theme .coverage .coverage-segment{background:var(--coverage-status);transform-origin:left;animation:coverage-segment-reveal .45s ease-out both;transition:background-color .3s ease}
+.workspace-theme .coverage .coverage-row{border-left:3px solid color-mix(in srgb,var(--coverage-status) 60%,transparent);padding-left:14px}
+.workspace-theme .coverage .coverage-row .coverage-icon{color:var(--coverage-status);background:color-mix(in srgb,var(--coverage-status) 12%,transparent)}
+.workspace-theme .coverage .coverage-row .coverage-row-label>span,.workspace-theme .coverage .coverage-row .coverage-question{color:var(--coverage-status)}
+.workspace-theme .coverage .coverage-row.missing>div>p{color:var(--coverage-missing)}
+@keyframes coverage-segment-reveal{from{transform:scaleX(0);opacity:.25}to{transform:scaleX(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){.workspace-theme .coverage .coverage-segment{animation:none;transition:none}}
+
+/* Begin the sequence when the coordinator can actually see the bars. */
+.workspace-theme .coverage .coverage-animated .coverage-segment{animation:none;transform:scaleX(.08);opacity:.3}
+.workspace-theme .coverage .coverage-animated.is-visible .coverage-segment{animation:coverage-segment-reveal 1s cubic-bezier(.22,1,.36,1) both}
+@media(prefers-reduced-motion:reduce){.workspace-theme .coverage .coverage-animated .coverage-segment,.workspace-theme .coverage .coverage-animated.is-visible .coverage-segment{animation:none;transform:none;opacity:1}}
+
+.request-save-actions{margin:20px 0;padding-top:20px;border-top:1px solid #d8bd7f30}
+.request-save-actions>.panel-note{margin:0 0 14px;font-size:13px;line-height:1.6}
+.request-save-actions>div{display:flex;flex-wrap:wrap;gap:12px}
+.request-save-actions button{margin:0}
+
+/* One spacing rhythm for the draft footer and its next actions. */
+.workspace-theme .coordinator-email-column .draft-panel .draft-copy-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:20px 0 0}
+.workspace-theme .coordinator-email-column .draft-panel .draft-copy-actions>button{margin:0!important;min-width:160px}
+.workspace-theme .coordinator-email-column .draft-panel .draft-copy-actions>p{margin:0;font-size:13px;line-height:1.6}
+.workspace-theme .coordinator-email-column .draft-panel .request-save-actions{margin:16px 0 0;padding:0;border:0}
+.workspace-theme .coordinator-email-column .draft-panel .request-save-actions>.panel-note{margin:0 0 16px;font-size:13px;line-height:1.6}
+.workspace-theme .coordinator-email-column .draft-panel .request-save-actions>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.workspace-theme .coordinator-email-column .draft-panel .request-save-actions button{width:100%;margin:0!important}
+.workspace-theme .coordinator-email-column .draft-panel .response-next-step{margin:24px 0 0;padding:20px 0 0;border-top:1px solid #d8bd7f30}
+.workspace-theme .coordinator-email-column .draft-panel .response-next-step h3{margin:0 0 10px;font-size:18px;line-height:1.4}
+.workspace-theme .coordinator-email-column .draft-panel .response-next-step p{margin:0;font-size:14px;line-height:1.7;max-width:65ch}
+@media(max-width:500px){.workspace-theme .coordinator-email-column .draft-panel .request-save-actions>div{grid-template-columns:1fr}}
+
+.request-row-actions{display:flex;flex-wrap:wrap;gap:8px}
+.workspace-theme .request-row-actions .request-delete{color:#f19a96;border-color:#f19a9655}
+
+/* Reserve room for actions instead of wrapping their labels inside pills. */
+.workspace-theme .dashboard-table th:last-child,.workspace-theme .dashboard-table td:last-child{min-width:220px;width:220px}
+.workspace-theme .dashboard-table .request-row-actions{display:flex;flex-wrap:nowrap;align-items:center;gap:10px;min-width:220px}
+.workspace-theme .dashboard-table .request-row-actions button{flex:0 0 auto;width:auto!important;min-width:100px;min-height:46px;white-space:nowrap;word-break:normal;overflow-wrap:normal;margin:0!important;padding:12px 20px!important}
+
+/* A single aligned row for request search, status, sort and refresh. */
+.workspace-theme .request-dashboard .dashboard-filters{display:grid;grid-template-columns:minmax(240px,2fr) minmax(180px,1fr) minmax(200px,1fr) auto;align-items:end;gap:16px;margin:28px 0 20px}
+.workspace-theme .request-dashboard .dashboard-filters>div{min-width:0;display:flex;flex-direction:column;gap:8px}
+.workspace-theme .request-dashboard .dashboard-filters label{display:block;margin:0;font-size:13px;line-height:20px;font-weight:600}
+.workspace-theme .request-dashboard .dashboard-filters :is(input,select){box-sizing:border-box;display:block;width:100%;height:46px;min-height:46px;margin:0;padding:12px 14px;font:inherit;font-size:14px;line-height:20px;border:1px solid #c1b38855;border-radius:12px;background-color:#11150f;color:#f4f1e7}
+.workspace-theme .request-dashboard .dashboard-filters select{padding-right:32px;cursor:pointer}
+.workspace-theme .request-dashboard .dashboard-filters>button{height:46px;min-height:46px;margin:0!important;white-space:nowrap}
+.workspace-theme .request-dashboard .dashboard-filters+button{margin:0 0 16px}
+.workspace-theme .request-dashboard .dashboard-filters+button+.panel-note{margin:0 0 20px;font-size:12px;line-height:1.6}
+@media(max-width:1200px){.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-theme .request-dashboard .dashboard-filters>button{justify-self:start}}
+@media(max-width:650px){.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:minmax(0,1fr);gap:16px}.workspace-theme .request-dashboard .dashboard-filters>button{width:100%}}
+
+.workspace-theme .request-dashboard .dashboard-filters :is(input,select){border-radius:999px;padding-left:20px}
+.workspace-theme .request-dashboard .dashboard-filters select{padding-right:36px}
+
+.inbox-message-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.workspace-theme .compact-inbox .inbox-message-actions button{min-width:100px;white-space:nowrap;word-break:normal;color:#f19a96;border-color:#f19a9655}
+.workspace-theme .compact-inbox .inbox-messages li>.inbox-message-actions{justify-self:end}
+@media(max-width:650px){.workspace-theme .compact-inbox .inbox-messages li>.inbox-message-actions{justify-self:start}}
+
+/* Native select chrome must be reset for Safari to honor pill corners. */
+.workspace-theme .request-dashboard .dashboard-filters :is(input,select){box-sizing:border-box;height:46px;min-height:46px;border-radius:999px!important;padding:12px 20px;margin:0;font-size:14px;line-height:20px}
+.workspace-theme .request-dashboard .dashboard-filters select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ddc184' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center;background-size:16px 16px}
+.workspace-theme .request-dashboard .dashboard-filters>div{min-width:0}
+.workspace-theme .request-dashboard .dashboard-filters label{margin:0;line-height:20px}
+
+/* Keep dashboard confirmation messages separate from the page heading. */
+.workspace-theme .workspace-body>div[aria-live="polite"]:has(>.notice){display:flow-root;margin:0 0 28px;padding:0}
+.workspace-theme .workspace-body>div[aria-live="polite"]>.notice{box-sizing:border-box;width:100%;margin:0;padding:14px 18px;border-radius:12px;font-size:13px;line-height:1.6;text-align:left;overflow-wrap:anywhere}
+.workspace-theme .workspace-body>.request-dashboard{padding-top:0}
+
+.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:minmax(200px,2fr) minmax(150px,1fr) minmax(180px,1fr) auto auto;gap:16px;align-items:end}
+.workspace-theme .request-dashboard .dashboard-filters>button{margin:0!important;height:46px;white-space:nowrap}
+@media(max-width:1300px){.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr)}.workspace-theme .request-dashboard .dashboard-filters>button{justify-self:start}}
+@media(max-width:750px){.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-theme .request-dashboard .dashboard-filters>div:first-child{grid-column:1/-1}.workspace-theme .request-dashboard .dashboard-filters>button{width:100%}}
+@media(max-width:500px){.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:minmax(0,1fr)}}

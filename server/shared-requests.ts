@@ -22,7 +22,7 @@ export async function sharedRequests(req:Request){
   if(reader)try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>100000){await reader.cancel();return json(413,{error:{message:'Request is too large.'}});}raw+=decoder.decode(value,{stream:true});}}finally{reader.releaseLock();}
   raw+=decoder.decode();
   let input;try{input=JSON.parse(raw);}catch{return json(400,{error:{message:'Invalid JSON.'}});}
-  if(input?.action==='list'&&Object.keys(input).length===1){const requests=await listSharedRequests(client,session.workspaceId);return json(200,{requests,priority_review:reviewPriorities(requests)});}
+  if(input?.action==='list'&&Object.keys(input).every(key=>['action','include_deleted'].includes(key))){const requests=await listSharedRequests(client,session.workspaceId,input.include_deleted===true);return json(200,{requests,priority_review:reviewPriorities(requests.filter(r=>!r.deleted_at))});}
   const id=input?.action==='create'?creationId(session.workspaceId,session.user.id,input.idempotency_key):input?.request_id;
   if(typeof id!=='string'||! /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id))return json(400,{error:{message:'Invalid request.'}});
   store=await openSharedStore({client,workspaceId:session.workspaceId,actorId:session.user.id,id});

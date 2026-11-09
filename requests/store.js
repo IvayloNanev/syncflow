@@ -124,10 +124,23 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
         return request;
       });
     },
+    setDeleted(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','deleted','idempotency_key'])||typeof input.deleted!=='boolean'||!Number.isSafeInteger(input.expected_revision))fail('INVALID_INPUT');
+      command(input);owned(input.actor_id,input.request_id);
+      return execute(input,`deleted:${input.request_id}`,{expected_revision:input.expected_revision,deleted:input.deleted},()=>{
+        const request=owned(input.actor_id,input.request_id);
+        if(request.revision!==input.expected_revision)fail('REVISION_CONFLICT');
+        request.deleted_at=input.deleted?new Date().toISOString():null;
+        request.deleted_by=input.deleted?input.actor_id:null;
+        request.updated_at=new Date().toISOString();
+        db.prepare('UPDATE requests SET body=? WHERE id=? AND owner_id=?').run(JSON.stringify(request),request.id,ownerId??input.actor_id);
+        return request;
+      });
+    },
     get(actor, id) { return owned(actor, id); },
-    list(actor) {
+    list(actor, includeDeleted=false) {
       identity(actor);
-      return db.prepare('SELECT body FROM requests WHERE owner_id=? ORDER BY rowid').all(ownerId ?? actor).map(row => {
+      return db.prepare('SELECT body FROM requests WHERE owner_id=? ORDER BY rowid').all(ownerId ?? actor).filter(row=>includeDeleted||!JSON.parse(row.body).deleted_at).map(row => {
         const r = JSON.parse(row.body); return { id: r.id, revision: r.revision, created_at: r.created_at, updated_at: r.updated_at, message_count: r.messages.length };
       });
     },

@@ -56,3 +56,14 @@ test('concurrent same-key analysis retries use the saved run and do not call the
  await a.flush();await b.flush();assert.equal(calls,1);assert.ok(outcomes.some(r=>r.replayed));
  await a.refresh();assert.equal(a.analyses('alice',id).length,1);assert.equal(a.activeAnalysis('alice',id).status,'completed');a.dispose();b.dispose();
 });
+
+test('shared deletion persists in the dashboard summary and restores across workspace members',async()=>{
+ const client=database(),id=creationId('team','alice','create-one');
+ const first=await openSharedStore({client,workspaceId:'team',actorId:'alice',id});create(first);await first.flush();
+ first.setDeleted({actor_id:'alice',request_id:id,expected_revision:0,deleted:true,idempotency_key:'delete'});await first.flush();first.dispose();
+ assert.ok(client.rows.get(`team:${id}`).dashboard.deleted_at);
+ const next=await openSharedStore({client,workspaceId:'team',actorId:'bob',id});
+ assert.equal(next.list('bob').length,0);assert.equal(next.list('bob',true).length,1);
+ next.setDeleted({actor_id:'bob',request_id:id,expected_revision:0,deleted:false,idempotency_key:'restore'});await next.flush();
+ assert.equal(client.rows.get(`team:${id}`).dashboard.deleted_at,null);assert.equal(next.get('bob',id).messages[0].text,'Original email');next.dispose();
+});
