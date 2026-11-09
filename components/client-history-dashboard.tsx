@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import CoordinatorBriefing from './coordinator-briefing';
 import {useEffect,useRef,useState} from 'react';
 import {clientGroups,clientFile,priorityClientGroups,priorityActionState} from '../requests/client-history.js';
 import type {SavedRequest,RequestSummary,AnalysisSummary} from './saved-requests';
@@ -28,7 +29,7 @@ export default function ClientHistoryDashboard({testWorkspace=false}:{testWorksp
  const [aiReport,setAiReport]=useState<{generated_at:string;reviewed_count:number;items:{blocker:string;next_action:string;client:string;client_key:string;project:string;request_id:string;citations:{message_id:string;exact_quote:string}[];destination:string}[]}|null>(null),[aiBusy,setAiBusy]=useState(false),[aiError,setAiError]=useState('');
  const [requests,setRequests]=useState<Summary[]>([]),[load,setLoad]=useState<'loading'|'ready'|'error'>('loading'),[attempt,setAttempt]=useState(0);
  const [queueView,setQueueView]=useState<'all'|'action'|'waiting'>('all');
- const [clientView,setClientView]=useState<'attention'|'all'>('attention');
+ const [clientView,setClientView]=useState<'attention'|'all'>('all');
  const [search,setSearch]=useState(''),[selected,setSelected]=useState<string|null>(null);
  const [opened,setOpened]=useState<string|null>(null),[history,setHistory]=useState<History|null>(null),[historyState,setHistoryState]=useState<'loading'|'ready'|'error'>('loading'),[historyAttempt,setHistoryAttempt]=useState(0);
  useEffect(()=>{if(!aiBusy)return;const timer=setInterval(()=>setAiElapsed(n=>n+1),1000);return()=>clearInterval(timer);},[aiBusy]);
@@ -64,7 +65,7 @@ export default function ClientHistoryDashboard({testWorkspace=false}:{testWorksp
   try{
    const response=await fetch('/api/priority-review',{method:'POST',headers:{'content-type':'application/json'},body:'{}',signal:controller.signal});
    const data=await response.json();if(!response.ok)throw new Error(data.error||'AI review could not finish.');
-   setAiReport(data.report);if(data.report){setClientView('attention');setQueueView('all');}
+   setAiReport(data.report);if(data.report){setQueueView('all');}
    setAiStale(loadedFingerprint.current!==fingerprint);if(!data.report)setAiError('No open cases need attention.');
   }catch(error){setAiStale(true);setAiError(controller.signal.aborted?'Analysis stopped. You can try again.':error instanceof Error?error.message:'AI review could not finish.');}
   finally{clearTimeout(timeout);aiController.current=null;setAiBusy(false);}
@@ -81,7 +82,8 @@ export default function ClientHistoryDashboard({testWorkspace=false}:{testWorksp
 
 
 
- {!active&&<section className="daily-briefing" aria-labelledby="daily-briefing-heading"><div className="daily-briefing-header"><div><p className="eyebrow">YOUR WORKDAY</p><h2 id="daily-briefing-heading">What needs your attention?</h2><p>Review your clients, spot urgent cases, and decide what to tackle first.</p></div><button type="button" className="secondary-button analyze-priorities" disabled={aiBusy} onClick={runAiReview}>{aiBusy?'Analyzing priorities…':'Analyze priorities'}</button></div><p className="sr-only" role="status" aria-live="polite">{aiBusy?'Analysis started.':aiReport?'Daily briefing ready.':aiError}</p><div className="briefing-result">{aiBusy?<div className="briefing-loading" role="status" aria-live="polite"><div className="briefing-loading-heading"><strong>Analyzing your priorities</strong><span aria-hidden="true">{aiElapsed}s</span></div><div className="briefing-loading-bar" aria-hidden="true"><span/></div><p>Reading saved cases and preparing your recommendation. This may take up to a minute.</p><small>Nothing is sent to clients or changed in their files.</small><button className="secondary-button" type="button" onClick={()=>aiController.current?.abort()}>Cancel analysis</button></div>:aiReport?<><div className="history-section-title"><h3>Clients who need attention</h3><button className="secondary-button" onClick={()=>setAiReport(null)}>Dismiss</button></div>{aiStale&&<p className="briefing-stale" role="status">Previous briefing · case information may have changed. Analyze priorities again before acting.</p>}{aiError&&<p role="alert">{aiError}</p>}<p className="briefing-ready" role="status">{new Set(aiReport.items.map(item=>item.client_key)).size} clients need attention. Review their cards below.</p><small>Prepared {date(aiReport.generated_at)} · AI reviewed {aiReport.reviewed_count} saved case files. Review its recommendation before acting.</small></>:aiError?<p role="status">{aiError} Saved cases needing attention are shown below; these are database statuses, not an AI briefing.</p>:<p className="briefing-empty">Analyze your saved client files to see what needs your attention first.</p>}</div></section>}
+ {!active&&<CoordinatorBriefing busy={aiBusy} error={aiError} elapsed={aiElapsed} onAnalyze={runAiReview}/>}
+ {!active&&aiStale&&aiReport?<p className="sr-only" role="status">Client directory briefing may be outdated. Use the live work queue above.</p>:null}
  {!active&&<div className="history-search"><label htmlFor="client-history-search">Find a client or request</label><input id="client-history-search" type="search" placeholder="Client, project, song or request ID" value={search} onChange={e=>{setSearch(e.target.value);setSelected(null);setOpened(null);}}/></div>}
  {!active&&<div className="dashboard-main-views"><div className="client-view-tabs" role="group" aria-label="Client view"><button aria-pressed={clientView==='attention'} onClick={()=>{setClientView('attention');setSelected(null);setOpened(null);}}>Clients who need attention <span>{attentionClients.length}</span></button><button aria-pressed={clientView==='all'} onClick={()=>{setClientView('all');setSelected(null);setOpened(null);}}>Clients <span>{groups.length}</span></button></div></div>}
 
