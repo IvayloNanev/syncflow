@@ -2642,3 +2642,17 @@ html body button.client-history-card {
 .workspace-theme .email-forwarding summary{cursor:pointer;color:#d8c38c;font-weight:600}
 .workspace-theme .email-forwarding p{font-size:14px;line-height:1.6;margin:12px 0}
 .workspace-theme .email-forwarding input{font-size:13px;overflow-wrap:anywhere}
+
+.coordinator-inbox { margin:0 0 2rem; padding:1.75rem; border:1px solid #484735; border-radius:24px; background:rgba(255,255,255,.025); }
+.inbox-title { display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:1.25rem; }
+.inbox-title h2 { margin:.4rem 0 .7rem; }
+.inbox-title p { margin:0; }
+.inbox-address { display:flex; gap:.75rem; align-items:center; margin-top:.5rem; }
+.inbox-address input { flex:1; width:100%; min-width:0; }
+.inbox-address button { flex-shrink:0; }
+.inbox-messages { margin-top:1.25rem; border-top:1px solid #383b32; padding-top:1rem; }
+.inbox-messages ul { list-style:none; margin:0; padding:0; }
+.inbox-messages li { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1rem 0; }
+.inbox-messages li+li { border-top:1px solid #383b32; }
+.inbox-messages li span { display:block; margin-top:.35rem; color:#adae9e; font-size:.875rem; }
+@media(max-width:650px) { .inbox-address,.inbox-messages li { flex-direction:column; align-items:stretch; } .coordinator-inbox { padding:1.25rem; } }

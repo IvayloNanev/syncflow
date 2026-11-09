@@ -230,6 +230,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       {mode === "coordinator" ? <>
 
       {saved ? <AnalysisRecovery latest={analyses.at(-1)} busy={busy} hasCurrentResult={!!result} onCheck={async()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return false;let success=false;await perform(async()=>{const data:Detail=await command({action:'get',request_id:saved.id});showSaved(data);success=true;setNotice('Saved analysis status refreshed. No new agent call was made.');});return success;}} onRetry={()=>{retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision}));void analyze();}} /> : null}
+      {shared?<EmailForwarding key={saved?.id||"new"} requestId={saved?.id}/>:null}
       <div className="intake-grid live-intake-grid focused-intake-grid">
         <div className="coordinator-email-column">
         <section id="client-brief" className="result-panel analysis-input" aria-labelledby="analyze-heading">
@@ -241,7 +242,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
             <details className="settings-disclosure"><summary>Request settings</summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => {setTimezone(e.target.value); clearResult();}} /></details>
             <div className="form-footer"><small>Saved automatically when you analyze. Uses your Claude API account.</small></div>
           </form>
-          {shared?<EmailForwarding key={saved?.id||"new"} requestId={saved?.id}/>:null}
+          
           {saved ? <SavedRequests {...navigationProps} response={responsePanel} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} onRecheck={() => {if(!confirmDiscard(draftDirty))return;void perform(async () => {
             const appended: Detail = await command(keyed({action:'reply',request_id:saved.id,expected_revision:saved.revision,text:reply}));
             backupEditors({reply:""});showSaved(appended); setReply(''); await refresh();

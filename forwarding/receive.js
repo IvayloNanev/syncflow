@@ -6,15 +6,17 @@ export function mailbox(value){
  const match=value.trim().match(/^(?:[^<>]*<)?([^<>\s]+@[^<>\s]+)>?$/);
  return match?match[1].toLowerCase():null;
 }
-export function recipientToken(to,domain){
+export function recipientToken(to,domain,requestsToken){
  if(!Array.isArray(to)||!domain)return null;
  const candidates=to.map(mailbox).filter(Boolean).filter(address=>address.endsWith('@'+domain.toLowerCase()));
  if(candidates.length!==1)return null;
- const local=candidates[0].split('@')[0];return /^sf-[a-f0-9]{40}$/.test(local)?local.slice(3):null;
+ const local=candidates[0].split('@')[0];
+ if(local==='requests'&&/^[a-f0-9]{40}$/.test(requestsToken||''))return requestsToken;
+ return /^sf-[a-f0-9]{40}$/.test(local)?local.slice(3):null;
 }
 export async function receiveEmail(client,email,domain){
  if(!email||typeof email.id!=='string'||!/^[a-zA-Z0-9-]{1,100}$/.test(email.id))throw Error('INVALID_EMAIL');
- const token=recipientToken(email.to,domain),sender=mailbox(email.from);
+ const token=recipientToken(email.to,domain,process.env.SYNCFLOW_INBOUND_REQUESTS_TOKEN),sender=mailbox(email.from);
  if(!token||!sender)throw Error('FORWARDING_DENIED');
  const {data:route,error}=await client.from('syncflow_email_routes').select('*').eq('token',token).eq('enabled',true).maybeSingle();
  if(error)throw Error('STORE_FAILED');if(!route)throw Error('FORWARDING_DENIED');

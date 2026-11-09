@@ -27,3 +27,10 @@ test('official webhook verifier rejects tampering and old timestamps',()=>{
  const resend=new Resend('re_test');const input={payload:raw,webhookSecret:secret,headers:{id,timestamp,signature}};
  assert.equal(resend.webhooks.verify(input).type,'email.received');assert.throws(()=>resend.webhooks.verify({...input,payload:raw+' '}));assert.throws(()=>resend.webhooks.verify({...input,headers:{...input.headers,timestamp:'1'}}));
 });
+
+test('short requests alias resolves only with an explicit route and rejects ambiguous recipients',()=>{
+ assert.equal(recipientToken(['requests@test.resend.app'],'test.resend.app',token),token);
+ assert.equal(recipientToken(['requests@test.resend.app'],'test.resend.app'),null);
+ assert.equal(recipientToken(['requests@other.example'],'test.resend.app',token),null);
+ assert.equal(recipientToken(['requests@test.resend.app',...email.to],'test.resend.app',token),null);
+});
