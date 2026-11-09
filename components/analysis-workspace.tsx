@@ -187,6 +187,8 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     }); }
   };
   const selectedId=saved?.id;
+  const handoffFollowed=useRef(false);
+  useEffect(()=>{if(loadingRequest||handoffFollowed.current||!initialRequestId||selectedId!==initialRequestId||!window.location.hash)return;const element=document.getElementById(window.location.hash.slice(1));if(element){handoffFollowed.current=true;element.closest('details')?.setAttribute('open','');element.scrollIntoView({block:'start'});}},[loadingRequest,initialRequestId,selectedId]);
   useEffect(()=>{if(selectedId&&!dashboardOpen&&!loadingRequest)headingRef.current?.focus({preventScroll:true});},[selectedId,dashboardOpen,loadingRequest]);
   const effectiveValue=(key:string)=>saved?.agent_fields?.find(f=>f.field_key===key)?.value??saved?.confirmed_fields.find(f=>f.field_key===key&&f.state==='confirmed')?.value;
   const project=effectiveValue('project');const contact=effectiveValue('client_contact');
@@ -279,7 +281,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
 
 
       </div>
-      <details className="coordinator-details"><summary>View internal workflow</summary>      {mode === "coordinator" && !loadingRequest ? <CoordinatorJourney saved={!!saved} analyzed={!!result} approved={!!workflow?.brief_approved} canApprove={!!workflow?.can_approve_brief} completed={!!workflow?.completed} needsReply={!!result&&!result.stages?.follow_up?.skipped} requestId={saved?.id} nextAction={workflow?.next_action} busy={busy}/> : null}{workflow ? briefApprovalPanel : null}</details>
+      <details className="coordinator-details" open={typeof window!=='undefined'&&window.location.hash==='#coordinator-signoff'}><summary>View internal workflow</summary>      {mode === "coordinator" && !loadingRequest ? <CoordinatorJourney saved={!!saved} analyzed={!!result} approved={!!workflow?.brief_approved} canApprove={!!workflow?.can_approve_brief} completed={!!workflow?.completed} needsReply={!!result&&!result.stages?.follow_up?.skipped} requestId={saved?.id} nextAction={workflow?.next_action} busy={busy}/> : null}{workflow ? briefApprovalPanel : null}</details>
 
 
       </> : !saved ? <p>Select a saved request from View all requests to prepare a handoff and record reviewer decisions.</p> : <p>Request {saved.id} · {saved.messages.length} source messages · {saved.recording_id || "Recording unresolved"}. Source emails and music catalog are on the Coordinator page.</p>}
