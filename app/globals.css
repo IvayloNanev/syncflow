@@ -2720,3 +2720,9 @@ html body button.client-history-card {
 /* Shared action dimensions across workspace pages; cards keep their card shape. */
 .workspace-theme :is(.primary-button,.secondary-button,.new-request-button,.account-menu button,.client-view-tabs button){box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:46px!important;padding:12px 24px!important;border-radius:999px!important;font-size:14px!important;font-weight:600;line-height:1.4!important;text-align:center;gap:8px;text-decoration:none}
 .workspace-theme :is(.primary-button,.secondary-button,.new-request-button,.account-menu button,.client-view-tabs button):focus-visible{outline:2px solid #e1cc98;outline-offset:3px}
+
+/* Landing-page controls are the visual reference for every workflow action. */
+:root{--sf-control-height:46px;--sf-control-padding:12px 30px;--sf-control-font-size:14px;--sf-control-weight:700;--sf-control-line-height:20px;--sf-control-gold:linear-gradient(135deg,#f0dfaf,#c5a35d)}
+.workspace-theme :is(.primary-button,.secondary-button,.new-request-button,.account-menu button,.client-view-tabs button){min-height:var(--sf-control-height)!important;padding:var(--sf-control-padding)!important;font-family:Arial,Helvetica,sans-serif;font-size:var(--sf-control-font-size)!important;font-weight:var(--sf-control-weight)!important;line-height:var(--sf-control-line-height)!important;border-radius:999px!important;box-sizing:border-box}
+.workspace-theme :is(.primary-button,.new-request-button){background:var(--sf-control-gold);color:#171a13;border:1px solid #f3dfaa90;box-shadow:inset 0 1px 0 #fff8}
+.workspace-theme :is(.primary-button,.new-request-button):hover{background:var(--sf-control-gold);color:#171a13;filter:brightness(1.1)}
