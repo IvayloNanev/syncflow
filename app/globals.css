@@ -2834,3 +2834,14 @@ html body button.client-history-card {
 @media(max-width:1300px){.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr)}.workspace-theme .request-dashboard .dashboard-filters>button{justify-self:start}}
 @media(max-width:750px){.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace-theme .request-dashboard .dashboard-filters>div:first-child{grid-column:1/-1}.workspace-theme .request-dashboard .dashboard-filters>button{width:100%}}
 @media(max-width:500px){.workspace-theme .request-dashboard .dashboard-filters{grid-template-columns:minmax(0,1fr)}}
+
+/* Briefing controls preserve the report order and distinguish waiting work. */
+.priority-queue-filters{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0 24px;align-items:center}
+.priority-queue-filters .panel-note{flex-basis:100%;margin:0}
+.priority-queue-filters button[aria-pressed=true]{border-color:#d8bd7f;background:#d8bd7f18}
+.client-card-ai-reasons .priority-action-state{display:table;font-size:12px;line-height:1.5;border-radius:999px;padding:5px 12px;margin:0 0 12px;color:#f0cc77;background:#f0cc7712;border:1px solid #f0cc7740}
+.client-card-ai-reasons .priority-action-state.waiting{color:#a9c9ed;background:#a9c9ed12;border-color:#a9c9ed40}
+.priority-evidence{margin:12px 0 16px;font-size:13px;line-height:1.6}
+.priority-evidence blockquote{margin:12px 0;padding:8px 14px;border-left:2px solid #d8bd7f70;white-space:pre-wrap;overflow-wrap:anywhere}
+.priority-evidence summary{cursor:pointer;color:#e1cc98}
+.client-card-ai-reasons .priority-owner{font-size:13px;color:#bfc3b3}
