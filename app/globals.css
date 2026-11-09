@@ -2746,3 +2746,7 @@ html body button.client-history-card {
 .inbox-list-panel .inbox-address-settings{margin-top:12px}
 
 .workspace-theme .inbox-list-panel button.inbox-toggle{width:46px;min-width:46px;padding:0!important;border-radius:999px!important}
+
+.inbox-identity{display:flex;align-items:center;gap:16px;flex-wrap:wrap;min-width:0;flex:1}
+.inbox-visible-address{font-size:13px;line-height:1.6;color:#b7bbaa;overflow-wrap:anywhere;min-width:0}
+@media(max-width:650px){.inbox-identity{gap:4px}.inbox-visible-address{flex-basis:100%;font-size:12px}}
