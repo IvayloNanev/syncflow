@@ -14,3 +14,8 @@ test('cross-case or stale fingerprint cannot reuse another recommendation',()=>{
 test('failed assessments are not cached as successful runs',async()=>{const client=memory();await assert.rejects(assessOnce({client,workspace:'w',actor:'a',c:make(),generate:async()=>{throw Error('AI_UNAVAILABLE');}}));assert.equal(client.rows.syncflow_internal_assessments.length,0);});
 
 test('return to coordinator sends a version-checked transfer and reports conflicts',async()=>{const c=make();let recorded;await returnToCoordinator({rpc:async(name,input)=>{recorded={name,input};return {error:null};}},'w','actor',c);assert.equal(recorded.name,'syncflow_return_internal_case');assert.equal(recorded.input.p_version,c.storage_version);assert.equal(recorded.input.p_actor,'actor');await assert.rejects(returnToCoordinator({rpc:async()=>({error:{message:'STORAGE_CONFLICT'}})},'w','actor',c),/REVIEW_CHANGED/);});
+
+test('list freshness includes queue transfers, new assessments and request changes',async()=>{
+ const {reviewListVersion}=await import('../agents/internal/lifecycle.js');const c=make(),rows={queue:[{request_id:c.id,active:true,admitted_at:'2026-11-01'}],assessments:[]};const initial=reviewListVersion([c],rows);
+ rows.queue[0].active=false;assert.notEqual(reviewListVersion([c],rows),initial);const returned=reviewListVersion([c],rows);rows.assessments.push({request_id:c.id,fingerprint:'new-assessment'});assert.notEqual(reviewListVersion([c],rows),returned);const assessed=reviewListVersion([c],rows);c.storage_version++;assert.notEqual(reviewListVersion([c],rows),assessed);
+});

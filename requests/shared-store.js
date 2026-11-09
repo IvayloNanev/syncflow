@@ -6,7 +6,7 @@ import {dashboardRequest} from './dashboard.js';
 // One PostgreSQL row per request, not a workspace-wide lock or a database-file blob.
 // The existing domain engine runs in temporary memory; only validated structured
 // rows are persisted. This keeps its tested evidence/revision rules identical.
-const mutations=new Set(['setDeleted','approveBrief','create','appendReply','changeRecording','decideProposal','beginAnalysis','finishAnalysis','recordReview','completeReview','saveHandoff']);
+const mutations=new Set(['setCompleted','setDeleted','approveBrief','create','appendReply','changeRecording','decideProposal','beginAnalysis','finishAnalysis','recordReview','completeReview','saveHandoff']);
 export function creationId(workspace,actor,key) {
  const h=createHash('sha256').update(JSON.stringify([workspace,actor,key])).digest('hex');
  return `${h.slice(0,8)}-${h.slice(8,12)}-5${h.slice(13,16)}-a${h.slice(17,20)}-${h.slice(20,32)}`;

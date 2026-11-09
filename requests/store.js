@@ -172,6 +172,10 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
         const now = new Date().toISOString(); const messageId = randomUUID();
         request.messages.push({ message_id: messageId, kind: 'reply', text: input.text,
           supplied_message_date: input.supplied_message_date ?? null, received_at: now, added_by: input.actor_id });
+        if(request.completed_at){
+          request.completed_at=null;request.completed_by=null;
+          request.completion_history=[...(request.completion_history||[]),{request_id:request.id,revision:request.revision+1,actor_id:input.actor_id,action:'case_reopened',reason:'New email reply',at:now}];
+        }
         request.revision++; request.updated_at = now;
         const result = db.prepare('UPDATE requests SET revision=?,body=? WHERE id=? AND owner_id=? AND revision=?').run(request.revision, JSON.stringify(request), request.id, ownerId ?? input.actor_id, input.expected_revision);
         if (result.changes !== 1) fail('REVISION_CONFLICT');

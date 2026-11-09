@@ -17,7 +17,11 @@ export function assessmentResult(c,recommendation,now=new Date()){
  return {fingerprint:reviewFingerprint(c,{now}),request_version:c.storage_version,generated_at:now.toISOString(),context,recommendation,draft:recommendation.lane==='manager'?managerDraft(c,recommendation):null};
 }
 export function currentAssessment(c,rows,now=new Date()){const fingerprint=reviewFingerprint(c,{now});return rows.find(row=>row.request_id===c.id&&row.fingerprint===fingerprint)?.result||null;}
+// Queue and assessment updates can occur without changing the request aggregate.
+export function reviewListVersion(cases,rows){
+ return createHash('sha256').update(JSON.stringify({cases:cases.map(c=>[c.id,c.storage_version,reviewFingerprint(c)]).sort(),queue:rows.queue.map(r=>[r.request_id,r.active,r.admitted_at,r.returned_at]).sort(),assessments:rows.assessments.map(r=>[r.request_id,r.fingerprint]).sort()})).digest('hex');
+}
 export function caseListing(c,assessment){
  const policy=eligibleLanes(c),lane=['Internal review complete','Case completed'].includes(c.workflow.status)?'finished':assessment?.recommendation.lane||(policy.escalation.length?'manager':policy.allowed.includes('human')?'human':'coordinator');
- return {request_id:c.id,lane,project:contextForReview(c).project,client:c.summary.contact||'Client not supplied',destination:lane==='coordinator'?'coordinator':'internal',status:c.workflow.status,track:c.summary.track||'',deadline:c.summary.deadline||null,classification_source:assessment?'assessment':'workflow'};
+ return {request_id:c.id,fingerprint:reviewFingerprint(c),lane,project:contextForReview(c).project,client:c.summary.contact||'Client not supplied',destination:lane==='coordinator'?'coordinator':'internal',status:c.workflow.status,track:c.summary.track||'',deadline:c.summary.deadline||null,classification_source:assessment?'assessment':'workflow'};
 }

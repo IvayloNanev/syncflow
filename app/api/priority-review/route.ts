@@ -20,7 +20,7 @@ export async function POST(req:Request){
   const snapshot=async()=>{const {data,error}=await client.from('syncflow_requests').select('id,version').eq('workspace_id',workspace).order('id');if(error)throw new Error('STORE_FAILED');return JSON.stringify(data);};
   const before=await snapshot();
   const {cases,supervision}=await loadBriefing(client,workspace,session.user.id);
-  const open=cases.filter(c=>c.workflow.status!=='Internal review complete');
+  const open=cases.filter(c=>!['Internal review complete','Case completed'].includes(c.workflow.status));
   const review=reviewPriorities(cases.map(c=>({...c.summary,status:c.workflow.status})));
   if(open.length>50)return json(422,{error:'AI review supports up to 50 open cases. Completed cases remain available below.'});
   if(before!==await snapshot())return json(409,{error:'A case changed during review. Run the review again.'});

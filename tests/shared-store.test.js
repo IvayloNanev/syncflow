@@ -67,3 +67,18 @@ test('shared deletion persists in the dashboard summary and restores across work
  next.setDeleted({actor_id:'bob',request_id:id,expected_revision:0,deleted:false,idempotency_key:'restore'});await next.flush();
  assert.equal(client.rows.get(`team:${id}`).dashboard.deleted_at,null);assert.equal(next.get('bob',id).messages[0].text,'Original email');next.dispose();
 });
+
+test('completion and reopening persist across shared-store reloads and workspace members',async()=>{
+ const client=database(),id=creationId('team','alice','create-one'),options={client,workspaceId:'team',actorId:'alice',id};
+ let store=await openSharedStore(options);create(store);await store.flush();
+ store.setCompleted({actor_id:'alice',request_id:id,expected_revision:0,completed:true,idempotency_key:'done'});await store.flush();store.dispose();
+ store=await openSharedStore({...options,actorId:'bob'});assert.equal(store.workflow('bob',id).status,'Case completed');assert.equal(client.rows.get(`team:${id}`).dashboard.status,'Case completed');
+ store.setCompleted({actor_id:'bob',request_id:id,expected_revision:0,completed:false,idempotency_key:'reopen'});await store.flush();store.dispose();
+ store=await openSharedStore(options);assert.notEqual(store.workflow('alice',id).status,'Case completed');assert.deepEqual(store.history('alice',id).filter(e=>e.action.startsWith('case_')).map(e=>e.action),['case_completed','case_reopened']);store.dispose();
+});
+test('a reply reopens a completed shared case and persists the source and completion history',async()=>{
+ const client=database(),id=creationId('team','alice','create-one'),options={client,workspaceId:'team',actorId:'alice',id};
+ let store=await openSharedStore(options);create(store);await store.flush();store.setCompleted({actor_id:'alice',request_id:id,expected_revision:0,completed:true,idempotency_key:'done'});await store.flush();
+ store.appendReply({actor_id:'alice',request_id:id,expected_revision:0,text:'Urgent changed scope',idempotency_key:'new-mail'});await store.flush();store.dispose();
+ store=await openSharedStore(options);assert.equal(store.get('alice',id).revision,1);assert.equal(store.get('alice',id).messages.at(-1).text,'Urgent changed scope');assert.equal(store.workflow('alice',id).status,'Needs analysis');assert.ok(store.history('alice',id).some(e=>e.action==='case_reopened'&&e.reason==='New email reply'));store.dispose();
+});
