@@ -25,7 +25,7 @@ export function deadlineInstant(deadline){
  return null;
 }
 export function reviewPriorities(requests,{now=new Date()}={}){
- const open=requests.filter(r=>r.status!=='Internal review complete');
+ const open=requests.filter(r=>!['Internal review complete','Case completed'].includes(r.status));
  const ranked=open.map(r=>{
   const days=deadlineDay(r.deadline,now),instant=deadlineInstant(r.deadline);
   let rank=7,reason='This case still has open actions.';

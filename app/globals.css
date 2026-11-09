@@ -2863,3 +2863,20 @@ html body button.client-history-card {
 .workspace-picker select{height:46px;max-width:100%;min-width:240px;padding:10px 40px 10px 20px;border-radius:999px;appearance:none;-webkit-appearance:none;background:#11150f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d8bd7f' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;border:1px solid #d8bd7f55;color:#f4f0df;font-size:14px}
 .workspace-picker button{margin:0;min-height:46px}
 @media(max-width:650px){.workspace-picker{padding:0 24px;align-items:stretch}.workspace-picker label{flex-basis:100%}.workspace-picker select{min-width:0;flex:1}}
+/* Keep receiving-workflow follow-up content aligned with surrounding cards. */
+.workspace-theme #reviewer-follow-up{box-sizing:border-box;padding:28px;margin:0 0 28px;display:flex;flex-direction:column;align-items:flex-start;gap:18px;border:1px solid #ddc18470;border-radius:22px}
+.workspace-theme #reviewer-follow-up>:is(p,h2,ul){margin:0;max-width:90ch;overflow-wrap:anywhere}
+.workspace-theme #reviewer-follow-up>h2{font-size:22px;line-height:1.35}
+.workspace-theme #reviewer-follow-up>p:not(.eyebrow){font-size:14px;line-height:1.7;color:#c0c7b5}
+.workspace-theme #reviewer-follow-up>ul{padding-left:22px;display:grid;gap:12px;font-size:14px;line-height:1.6}
+.workspace-theme #reviewer-follow-up>a.secondary-button{box-sizing:border-box;min-height:44px;margin:0;padding:12px 22px;white-space:normal;line-height:1.5;text-align:left;max-width:100%}
+@media(max-width:650px){.workspace-theme #reviewer-follow-up{padding:22px;margin-bottom:22px}}
+
+/* Separate reviewer follow-up from the conversation and summary cards. */
+#reviewer-follow-up.result-panel{margin-bottom:40px!important}
+@media(max-width:650px){#reviewer-follow-up.result-panel{margin-bottom:28px!important}}
+
+/* Three distinct review destinations, visible before and after analysis. */
+.review-lane{min-width:0;border-top:4px solid #ddc184;padding-top:20px}
+.review-lane-human{border-top-color:#91b5df}
+.review-lane-manager{border-top-color:#ef9b8e}

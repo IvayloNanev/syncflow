@@ -7,7 +7,7 @@ export function caseSnapshot(c){
 }
 export function caseHandoff(c){
  const status=c.workflow.status,issues=c.analysis?.result?.stages?.review?.output?.issues||[];
- if(status==='Internal review complete')return {stage:'finished',label:'Internal review complete',destination:'internal',anchor:'internal-handoff',state:'finished'};
+ if(['Internal review complete','Case completed'].includes(status))return {stage:'finished',label:'Internal review complete',destination:'internal',anchor:'internal-handoff',state:'finished'};
  if(status==='Needs analysis'||!c.analysis)return {stage:'analysis',label:'Analyze conversation',destination:'coordinator',anchor:'analyze-heading',state:'action'};
  if(!c.recording_id||['Recording unresolved','Recording mismatch'].includes(status)||c.catalogue_assessment?.status==='not_found')return {stage:'catalogue',label:'Check catalogue & recording',destination:'coordinator',anchor:'request-record',state:'blocked'};
  if(issues.length||['Needs clarification','Needs request details'].includes(status))return {stage:'response',label:'Review response draft',destination:'coordinator',anchor:'client-response',state:'blocked'};
@@ -18,7 +18,7 @@ export function caseHandoff(c){
 export function eligibleHandoffs(c){
  const primary=caseHandoff(c);
  const options=[{...primary,action:primary.stage}];
- if(c.workflow.status==='Internal review pending')options.push({action:'follow_up',stage:'follow_up',label:'Manage reviewer follow-up',destination:'coordinator',anchor:'reviewer-follow-up',state:'action'});
+ if(c.workflow.status==='Internal review pending')options.push({action:'follow_up',stage:'follow_up',label:'Manage reviewer follow-up',destination:'internal',anchor:'reviewer-follow-up',state:'action'});
  return options;
 }
 /** @param {object[]} cases @param {{snapshots?:Object,report?:Object,generated_at?:string}|null} saved */
@@ -27,7 +27,7 @@ export function superviseCases(cases,saved=null,{now=new Date()}={}){
  const review=reviewPriorities(summaries,{now});
  const snapshots=Object.fromEntries(cases.map(c=>[c.id,caseSnapshot(c)]));
  const labels={emails:'Email conversation changed',analysis:'Analysis updated',details:'Request details changed',catalogue:'Catalogue check changed',reviewers:'Reviewer decisions changed',workflow:'Workflow status changed'};
- const decisionCurrent=saved?.report?.decision_version===2&&saved.generated_at?.slice(0,10)===now.toISOString().slice(0,10)&&cases.every(c=>saved?.snapshots?.[c.id]?.fingerprint===snapshots[c.id].fingerprint)&&saved.report.items.length===cases.filter(c=>c.workflow.status!=='Internal review complete').length;
+ const decisionCurrent=saved?.report?.decision_version===3&&saved.generated_at?.slice(0,10)===now.toISOString().slice(0,10)&&cases.every(c=>saved?.snapshots?.[c.id]?.fingerprint===snapshots[c.id].fingerprint)&&saved.report.items.length===cases.filter(c=>!['Internal review complete','Case completed'].includes(c.workflow.status)).length;
  const items=cases.map(c=>{
   const current=snapshots[c.id],previous=saved?.snapshots?.[c.id];
   const changed=!previous||previous.fingerprint!==current.fingerprint;
@@ -42,7 +42,7 @@ export function superviseCases(cases,saved=null,{now=new Date()}={}){
   for(const issue of issues)evidence.push({kind:'analysis',text:issue.question||issue.message||issue.reason||issue.description||issue.code||'Unresolved checklist issue'});
   for(const reviewer of c.reviewers?.reviewers||[])evidence.push({kind:'reviewer',text:`${reviewer.name} (${reviewer.role}): ${reviewer.status}${reviewer.needs_reconfirmation?' — reconfirmation required':''}${reviewer.notes?`: ${reviewer.notes}`:''}`});
   for(const citation of ai?.citations||[])evidence.push({kind:'email',text:citation.exact_quote});
-  return {request_id:c.id,client:c.summary.contact||'Client not identified',project:c.summary.project||c.summary.track||c.subject||'Untitled request',status:c.workflow.status,deadline:c.summary.deadline||null,responsible:handoff.state==='waiting'?c.summary.responsible||'Internal reviewers':'Coordinator',handoff,reason:decision?.reason||ranked?.reason||'Internal review is complete; rights clearance remains separate.',blocker:ai?.blocker||c.workflow.reasons.join(' ')||'No internal-review blockers.',next_action:decision?.next_action||c.workflow.next_action,changes,changed,explanation_source:ai?'ai':'saved_state',evidence,priority:ranked?.rank??99};
+  return {request_id:c.id,client:c.summary.contact||'Client not identified',project:c.summary.project||c.summary.track||c.subject||'Untitled request',status:c.workflow.status,deadline:c.summary.deadline||null,responsible:handoff.destination==='internal'?c.summary.responsible||'Internal reviewers':'Coordinator',handoff,reason:decision?.reason||ranked?.reason||'Internal review is complete; rights clearance remains separate.',blocker:ai?.blocker||c.workflow.reasons.join(' ')||'No internal-review blockers.',next_action:decision?.next_action||c.workflow.next_action,changes,changed,explanation_source:ai?'ai':'saved_state',evidence,priority:ranked?.rank??99};
  });
  const order=new Map((decisionCurrent?saved.report.items.map(item=>item.request_id):review.ranked_request_ids).map((id,index)=>[id,index]));
  items.sort((a,b)=>(order.get(a.request_id)??Infinity)-(order.get(b.request_id)??Infinity)||a.request_id.localeCompare(b.request_id));
