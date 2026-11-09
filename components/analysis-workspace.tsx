@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import BriefingHandoff from "./briefing-handoff";
 import { useRouter } from "next/navigation";
 import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from "react";
 
@@ -52,6 +53,8 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const [handoffDirty,setHandoffDirty]=useState(false);
   const [reviewerDirty,setReviewerDirty]=useState(false);
   const [loadingRequest,setLoadingRequest]=useState(!!initialRequestId);
+  const [fromBriefing,setFromBriefing]=useState(false);
+  useEffect(()=>{let active=true;queueMicrotask(()=>{if(active)setFromBriefing(window.location.hash==='#briefing-handoff');});return()=>{active=false;};},[initialRequestId]);
   const [requestLoadFailed,setRequestLoadFailed]=useState(false);
   const [listState,setListState]=useState<"loading"|"ready"|"error">("loading");
   const [loadAttempt,setLoadAttempt]=useState(0);
@@ -241,6 +244,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       <div aria-live="polite">{busy ? <p className="busy-notice">Working on the request. Saved facts and history are preserved…</p> : null}</div>
       {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p>{saved ? <button className="secondary-button" disabled={busy} onClick={()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return;void perform(async()=>{const data:Detail=await command({action:"get",request_id:saved.id});showSaved(data);setNotice("Saved request checked. Review its latest status before retrying.");});}}>Check saved request</button> : null}</div> : null}
       {recoveredDraft ? <details className="handoff-panel" open><summary>Recovered unsent email edits · outdated, review before reuse</summary><p>These are your tab-local editor notes, not a current generated response. They were not sent or confirmed.</p><strong>{recoveredDraft.subject}</strong><textarea aria-label="Recovered unsent email" value={recoveredDraft.body} readOnly rows={8}/></details> : null}
+      {shared&&saved&&fromBriefing?<BriefingHandoff key={saved.id} requestId={saved.id} destination={mode} revision={`${saved.revision}:${reviewers.version}:${reviewRun?.run_id||''}`}/>:null}
       {mode === "internal" && saved ? <p><Link className="secondary-button" href={`${mode === "internal" ? "/coordinator" : "/internal"}?request=${encodeURIComponent(saved.id)}`}>{mode === "internal" ? "Back to this request in Coordinator" : "Open this request in Internal review"}</Link></p> : null}
       {mode === "internal" && saved && workflow ? <section className="workflow-status" aria-label="Request status and next action"><div><p className="eyebrow">CURRENT STATUS</p><h2>{workflow.status}</h2><p>{workflow.next_action}</p></div><div><details><summary>Readiness checks ({workflow.reasons.length})</summary>{workflow.reasons.map((reason,i)=><p key={i}>{reason}</p>)}<p>Readiness refers to internal review only. Publishing verification and the licensing process remain separate.</p></details>
         {workflow.completion?.needs_reconfirmation ? <p className="stale-banner">Previous completion is outdated after a request or reviewer change.</p> : null}
