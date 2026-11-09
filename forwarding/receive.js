@@ -39,7 +39,7 @@ export async function receiveEmail(client,email,domain){
   try{
    if(row){const r=store.get(route.actor_id,id);store.appendReply({actor_id:route.actor_id,request_id:id,expected_revision:r.revision,text,idempotency_key:`inbound:${email.id}`});}
    else store.create({actor_id:route.actor_id,idempotency_key:`inbound:${email.id}`,email:text,timezone:'UTC',recording_id:null});
-   const request=store.get(route.actor_id,id),dashboard={...dashboardRequest(request,store.workflow(route.actor_id,id),store.reviewers(route.actor_id,id)),created_at:request.created_at,updated_at:request.updated_at,message_count:request.messages.length,preview:request.messages[0].text.slice(0,100)};
+   const request=store.get(route.actor_id,id),dashboard={...dashboardRequest(request,store.workflow(route.actor_id,id),store.reviewers(route.actor_id,id)),id:request.id,revision:request.revision,recording_id:request.recording_id??null,created_at:request.created_at,updated_at:request.updated_at,message_count:request.messages.length,preview:request.messages[0].text.slice(0,100)};
    const {data:committed,error:commitError}=await client.rpc('syncflow_commit_email',{p_token:token,p_email:email.id,p_sender:sender,p_id:id,p_expected:row?.version??0,p_state:store.exportState(),p_dashboard:dashboard,p_subject:subject,p_attachments:attachments});
    if(!commitError)return {requestId:committed};
    if(!commitError.message?.includes('STORAGE_CONFLICT'))throw Error(commitError.message?.includes('FORWARDING_DENIED')?'FORWARDING_DENIED':'STORE_FAILED');

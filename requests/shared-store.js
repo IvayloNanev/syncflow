@@ -6,7 +6,7 @@ import {dashboardRequest} from './dashboard.js';
 // One PostgreSQL row per request, not a workspace-wide lock or a database-file blob.
 // The existing domain engine runs in temporary memory; only validated structured
 // rows are persisted. This keeps its tested evidence/revision rules identical.
-const mutations=new Set(['approveBrief','create','appendReply','changeRecording','decideProposal','beginAnalysis','finishAnalysis','recordReview','completeReview','saveHandoff']);
+const mutations=new Set(['setDeleted','approveBrief','create','appendReply','changeRecording','decideProposal','beginAnalysis','finishAnalysis','recordReview','completeReview','saveHandoff']);
 export function creationId(workspace,actor,key) {
  const h=createHash('sha256').update(JSON.stringify([workspace,actor,key])).digest('hex');
  return `${h.slice(0,8)}-${h.slice(8,12)}-5${h.slice(13,16)}-a${h.slice(17,20)}-${h.slice(20,32)}`;
@@ -53,12 +53,12 @@ export async function openSharedStore({client,workspaceId,actorId,id}) {
   const result=engine[key](...args);if(mutations.has(key)){pending.push([key,structuredClone(args)]);lastMutationResult=result;}return result;
  };}}));
 }
-export async function listSharedRequests(client,workspaceId){
+export async function listSharedRequests(client,workspaceId,includeDeleted=false){
  const results=[];
  for(let from=0;;from+=100){
-  const {data,error}=await client.from('syncflow_requests').select('dashboard').eq('workspace_id',workspaceId).order('updated_at',{ascending:false}).order('id').range(from,from+99);
-  if(error)throw new RequestStoreError('STORE_FAILED');results.push(...data.map(r=>{
-   const summary=r.dashboard;
+  const {data,error}=await client.from('syncflow_requests').select('id,dashboard').eq('workspace_id',workspaceId).order('updated_at',{ascending:false}).order('id').range(from,from+99);
+  if(error)throw new RequestStoreError('STORE_FAILED');results.push(...data.filter(r=>includeDeleted||!r.dashboard.deleted_at).map(r=>{
+   const summary={...r.dashboard,id:r.id};
    // Older persisted summaries must not bypass the newly required human gate.
    if(summary.brief_policy!=='coordinator-signoff-v1'&&['Ready for internal review','Internal review pending','Ready to complete internal review','Internal review complete'].includes(summary.status))return {...summary,status:'Needs coordinator review',next_action:'Open the request, check its current analysis and approve the brief before internal review.',blocker:'Current coordinator sign-off required.'};
    return summary;

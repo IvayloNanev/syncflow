@@ -29,5 +29,10 @@ export async function GET(req:Request){
  if(requestId)query=query.eq('request_id',requestId);
  const {data,error}=await query.order('received_at',{ascending:false}).limit(20);
  if(error)return json(503,{error:'Unable to load incoming emails. Retrying…'});
- return json(200,{emails:data});
+ const ids=[...new Set((data||[]).map(email=>email.request_id))];
+ if(!ids.length)return json(200,{emails:[]});
+ const {data:cases,error:caseError}=await storageClient().from('syncflow_requests').select('id,dashboard').eq('workspace_id',session.workspaceId).in('id',ids);
+ if(caseError)return json(503,{error:'Unable to load incoming emails. Retrying…'});
+ const active=new Set((cases||[]).filter(item=>!item.dashboard?.deleted_at).map(item=>item.id));
+ return json(200,{emails:(data||[]).filter(email=>active.has(email.request_id))});
 }
