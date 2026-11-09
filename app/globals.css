@@ -2656,3 +2656,63 @@ html body button.client-history-card {
 .inbox-messages li+li { border-top:1px solid #383b32; }
 .inbox-messages li span { display:block; margin-top:.35rem; color:#adae9e; font-size:.875rem; }
 @media(max-width:650px) { .inbox-address,.inbox-messages li { flex-direction:column; align-items:stretch; } .coordinator-inbox { padding:1.25rem; } }
+
+/* Compact receiving panel: one text edge and matching action heights. */
+.workspace-theme .workspace-body .compact-inbox{padding:0;margin:0 0 20px;border:1px solid #d8bd7f45;border-radius:16px;background:linear-gradient(135deg,#d8bd7f0b,#ffffff02)}
+.compact-inbox .inbox-summary{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;cursor:pointer;list-style:none}
+.compact-inbox .inbox-summary::-webkit-details-marker{display:none}
+.compact-inbox .inbox-summary>span:first-child{display:flex;align-items:center;gap:16px;min-width:0;flex-wrap:wrap}
+.compact-inbox .inbox-summary strong{font-size:15px;line-height:1.5;color:#e1cc98}
+.compact-inbox .inbox-summary-address{font-size:13px;color:#b7bbaa;overflow-wrap:anywhere}
+.compact-inbox .inbox-summary-count{font-size:12px;color:#d8bd7f;white-space:nowrap}
+.compact-inbox .inbox-summary-count::after{content:' ▾'}
+.compact-inbox details[open] .inbox-summary-count::after{content:' ▴'}
+.compact-inbox .inbox-summary:focus-visible{outline:2px solid #d8bd7f;outline-offset:3px;border-radius:16px}
+.workspace-theme .compact-inbox .inbox-expanded{padding:20px;border-top:1px solid #d8bd7f25}
+.workspace-theme .compact-inbox .inbox-expanded>label{display:block;margin:20px 0 8px;font-size:13px;line-height:1.5}
+.workspace-theme .compact-inbox .inbox-expanded>.panel-note{margin:12px 0 0;font-size:13px;line-height:1.6}
+.workspace-theme .compact-inbox .inbox-expanded>.panel-note:first-child{margin:0}
+.workspace-theme .compact-inbox .inbox-address{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:stretch;margin:0;min-width:0}
+.workspace-theme .compact-inbox .inbox-address input{box-sizing:border-box;width:100%;min-width:0;height:46px;padding:12px 14px;margin:0;font-size:13px;line-height:1.5;border-radius:10px}
+.workspace-theme .compact-inbox .inbox-address button,.workspace-theme .compact-inbox .inbox-messages .primary-button{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin:0;padding:12px 22px;font-size:13px;line-height:1.5;border-radius:999px;white-space:nowrap}
+.workspace-theme .compact-inbox .inbox-messages{margin:20px 0 0;padding:20px 0 0;border-top:1px solid #d8bd7f25}
+.workspace-theme .compact-inbox .inbox-messages ul{list-style:none;margin:0;padding:0}
+.workspace-theme .compact-inbox .inbox-messages li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:20px;padding:16px 0;margin:0}
+.workspace-theme .compact-inbox .inbox-messages li:first-child{padding-top:0}
+.workspace-theme .compact-inbox .inbox-messages li:last-child{padding-bottom:0}
+.workspace-theme .compact-inbox .inbox-messages li>div{min-width:0;overflow-wrap:anywhere}
+.workspace-theme .compact-inbox .inbox-messages strong{font-size:14px;line-height:1.5}
+.workspace-theme .compact-inbox .inbox-messages span{display:block;margin:4px 0 0;font-size:12px;line-height:1.6;color:#b7bbaa}
+.workspace-theme .compact-inbox .inbox-messages p{margin:0;font-size:13px;line-height:1.6}
+.workspace-theme .workspace-body>.workspace-title{align-items:center;gap:16px;margin-bottom:20px}
+.workspace-theme .workspace-body>.workspace-title h1{font-size:clamp(26px,2.5vw,34px);line-height:1.2;margin:0 0 8px;letter-spacing:-1px}
+.workspace-theme .workspace-body>.workspace-title .eyebrow{font-size:10px;margin:0 0 8px}
+.workspace-theme .workspace-body>.workspace-title p:not(.eyebrow){font-size:13px;line-height:1.6;margin:0}
+.workspace-theme .workspace-body .case-status-slot:empty{display:none}
+.workspace-theme .workspace-body .case-status-slot{margin:0 0 16px}
+.workspace-theme .workspace-body .case-inline-status{box-sizing:border-box;margin:0;padding:10px 14px;border:1px solid #d8bd7f35;border-radius:10px;font-size:13px;line-height:1.6;color:#d9d0b5;background:#d8bd7f09}
+@media(max-width:650px){.compact-inbox .inbox-summary{align-items:flex-start;padding:14px 16px}.compact-inbox .inbox-summary>span:first-child{gap:4px}.compact-inbox .inbox-summary-address{flex-basis:100%;font-size:12px}.compact-inbox .inbox-summary-count{font-size:11px}.workspace-theme .compact-inbox .inbox-expanded{padding:16px}.workspace-theme .compact-inbox .inbox-address,.workspace-theme .compact-inbox .inbox-messages li{grid-template-columns:minmax(0,1fr);gap:12px}.workspace-theme .compact-inbox :is(.inbox-address button,.inbox-messages .primary-button){justify-self:start}}
+
+/* Conversation controls have their own spacing, independent of card padding. */
+.workspace-theme .coordinator-email-column .conversation-panel>.primary-button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;margin:0 0 28px;padding:12px 24px;line-height:1.5;border-radius:999px}
+.workspace-theme .coordinator-email-column .reply-composer{margin:24px 0 0;padding:24px 0 0;border-top:1px solid #d8bd7f30;min-width:0}
+.workspace-theme .coordinator-email-column .reply-composer>.conversation-step{margin:0 0 20px;gap:12px;line-height:1.5}
+.workspace-theme .coordinator-email-column .reply-composer>label{display:block;margin:0 0 8px;font-size:14px;line-height:1.5}
+.workspace-theme .coordinator-email-column .reply-composer>textarea{box-sizing:border-box;display:block;width:100%;min-height:140px;margin:0;padding:14px 16px;font-size:14px;line-height:1.6;border-radius:12px;resize:vertical}
+.workspace-theme .coordinator-email-column .composer-footer{display:flex;flex-direction:column;align-items:flex-start;gap:14px;margin:14px 0 0;padding:0}
+.workspace-theme .coordinator-email-column .composer-footer small{flex:none;max-width:65ch;margin:0;font-size:12px;line-height:1.6}
+.workspace-theme .coordinator-email-column .composer-footer button{align-self:flex-start;min-height:46px;margin:0;padding:12px 24px;line-height:1.5;border-radius:999px}
+.workspace-theme .focused-intake-grid .coverage-row{align-items:flex-start;gap:14px;padding:18px 0}
+.workspace-theme .focused-intake-grid .coverage-row h3{margin:0 0 6px;font-size:14px;line-height:1.5}
+.workspace-theme .focused-intake-grid .coverage-row p{margin:6px 0 0;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.workspace-theme .focused-intake-grid .coverage-row>div{min-width:0}
+@media(max-width:650px){.workspace-theme .coordinator-email-column .composer-footer button{width:100%;align-self:stretch}}
+
+/* Separate the request identity, status feedback, and receiving controls. */
+.workspace-theme .workspace-body>.workspace-title{align-items:center;column-gap:24px;row-gap:16px;margin-bottom:24px}
+.workspace-theme .workspace-body>.workspace-title>.status-pill{align-self:center;flex-shrink:0;margin:0}
+.workspace-theme .workspace-body .case-status-slot{margin:0 0 24px}
+.workspace-theme .workspace-body .case-inline-status{padding:12px 16px;line-height:1.6}
+.workspace-theme .workspace-body>div[aria-live=polite]:has(>.notice){margin:0 0 24px}
+.workspace-theme .workspace-body>div[aria-live=polite]>.notice{margin:0}
+@media(max-width:650px){.workspace-theme .workspace-body>.workspace-title{flex-wrap:wrap;align-items:flex-start}.workspace-theme .workspace-body>.workspace-title>.status-pill{align-self:flex-start}}
