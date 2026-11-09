@@ -235,7 +235,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       {mode === "coordinator" ? <>
 
       {saved ? <AnalysisRecovery latest={analyses.at(-1)} busy={busy} hasCurrentResult={!!result} onCheck={async()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return false;let success=false;await perform(async()=>{const data:Detail=await command({action:'get',request_id:saved.id});showSaved(data);success=true;setNotice('Saved analysis status refreshed. No new agent call was made.');});return success;}} onRetry={()=>{retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision}));void analyze();}} /> : null}
-      {shared?<EmailForwarding key={saved?.id||"new"} requestId={saved?.id}/>:null}
+      {shared&&!saved?<EmailForwarding key="coordinator-inbox"/>:null}
       <div className="intake-grid live-intake-grid focused-intake-grid">
         <div className="coordinator-email-column">
         <section id="client-brief" className="result-panel analysis-input" aria-labelledby="analyze-heading">
