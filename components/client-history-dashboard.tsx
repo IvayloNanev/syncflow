@@ -74,7 +74,7 @@ export default function ClientHistoryDashboard({testWorkspace=false}:{testWorksp
   setOpened(id);
   setHistory(null);setHistoryState('loading');setHistoryAttempt(n=>n+1);
  }
- return <main className="client-dashboard team-workspace"><div className="workspace-title"><div><p className="eyebrow">YOUR WORKSPACE</p><h1>Daily briefing</h1><p>Review priorities, then continue the work in Coordinator.</p></div><Link href="/coordinator" className="primary-button">＋ New request</Link></div>
+ return <main className="client-dashboard team-workspace"><div className="workspace-title"><div><p className="eyebrow">YOUR WORKSPACE</p><h1>Daily briefing</h1><p>Review priorities, then continue the work in Coordinator.</p></div><div className="history-actions"><Link href="/demo" className="secondary-button">Demo workspace</Link><Link href="/coordinator" className="primary-button">＋ New request</Link></div></div>
  {refreshError&&<p role="status" className="briefing-stale">{refreshError}</p>}
  {load==='loading'?<p role="status" aria-busy="true">Loading client history…</p>:load==='error'?<div role="alert" className="analysis-error"><p>Client history could not load. Your saved requests are unchanged.</p><button className="secondary-button" onClick={()=>{setOpened(null);setLoad('loading');setAttempt(n=>n+1);}}>Retry loading history</button></div>:<>
 

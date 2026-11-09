@@ -345,3 +345,11 @@ The agent never sends client messages, changes case decisions or grants rights. 
 ### Forwarded client emails
 
 Coordinator includes **Forward an email instead** for workspace-scoped new-case and case-reply addresses. Setup, boundaries and live verification steps are in [email forwarding](docs/email-forwarding.md). Receiving remains unavailable until the server-side Resend configuration is connected; pasted-email drafting continues to work.
+
+### Scripted coordinator journeys
+
+Open **Daily briefing → Demo workspace** (`/demo`), then **Create demo workspace**. Each signed-in workspace member gets separate synthetic state in `syncflow_demo_runs`; the sandbox never writes `syncflow_requests`, email routes or the real briefing. Apply `db/demo-journeys.sql` before releasing this feature. The table is server-only, with RLS and no browser-role grants; the API validates workspace membership, actor identity, origin and a compare-and-swap version before mutations.
+
+Three repeatable journeys use the real request store and workflow commands: missing-budget inquiry through internal review, an unmatched fictional catalogue recording that stays blocked, and a completed request reopened by a territory change. Follow each card's next-event button, inspect the conversation/draft/reviewer record, and watch the resulting priority queue and before/event/after log. **Advance one day** moves a fixed demo clock to demonstrate deadline changes; **Save demo briefing** establishes a new comparison baseline; **Reset demo** restores the three starting cases.
+
+Analysis in this sandbox is a fixed synthetic fixture replay with source-evidence validation, not a live AI extraction or accuracy evaluation. No email is sent and no model is called. The virtual clock controls priority calculations; domain audit events retain their actual creation timestamps. Demo state survives reloads and is isolated by workspace and user.

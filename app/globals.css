@@ -2857,3 +2857,20 @@ html body button.client-history-card {
 .priority-change{color:#f0cc77;font-size:13px;line-height:1.6}
 .supervisor-briefing .primary-button{display:inline-flex;text-decoration:none;justify-content:center;align-items:center}
 @media(max-width:650px){.supervisor-task{padding:18px}.supervisor-task h3{font-size:18px}}
+
+.demo-disclosure{border:1px solid #d8bd7f60;border-radius:16px;padding:16px 20px;color:#e1cc98;font-size:14px;line-height:1.7;margin:0 0 24px;background:#d8bd7f09}
+.demo-controls{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:24px;margin-bottom:28px;flex-wrap:wrap}
+.demo-controls p{font-size:13px;margin:8px 0 0}
+.demo-scenario-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:20px 0 28px}
+.demo-scenario{padding:24px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.demo-scenario h3,.demo-scenario p{margin:0}
+.demo-scenario h3{font-size:21px;line-height:1.4}
+.demo-scenario ol{padding-left:20px;line-height:1.7;font-size:14px;flex:1}
+.demo-scenario li[aria-current=step]{color:#f0cc77;font-weight:700}
+.demo-scenario button{margin:0!important;width:100%}
+.demo-case-detail{padding:24px;margin:24px 0;scroll-margin-top:24px}
+.demo-case-detail[hidden]{display:none}
+.demo-email{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;font-size:14px;line-height:1.8;margin:16px 0;padding:20px;border-left:2px solid #d8bd7f80;background:#ffffff05;border-radius:12px}
+.demo-event-log{padding-left:20px;line-height:1.8;font-size:14px}
+.demo-event-log li{padding:12px}
+@media(max-width:1000px){.demo-scenario-grid{grid-template-columns:1fr}}
