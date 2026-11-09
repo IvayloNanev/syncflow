@@ -20,9 +20,9 @@ export async function receiveEmail(client,email,domain){
  if(!token||!sender)throw Error('FORWARDING_DENIED');
  const {data:route,error}=await client.from('syncflow_email_routes').select('*').eq('token',token).eq('enabled',true).maybeSingle();
  if(error)throw Error('STORE_FAILED');if(!route)throw Error('FORWARDING_DENIED');
- // Sender is the forwarding coordinator, never the From line inside forwarded text.
+ // A workspace inbox accepts new client enquiries. Case reply routes remain coordinator-only.
  const {data:{user},error:userError}=await client.auth.admin.getUserById(route.actor_id);
- if(userError||!user?.email_confirmed_at||user.email?.toLowerCase()!==sender)throw Error('FORWARDING_DENIED');
+ if(userError||!user?.email_confirmed_at||(route.request_id&&user.email?.toLowerCase()!==sender))throw Error('FORWARDING_DENIED');
  const {data:member}=await client.from('syncflow_members').select('user_id').eq('workspace_id',route.workspace_id).eq('user_id',route.actor_id).maybeSingle();
  if(!member)throw Error('FORWARDING_DENIED');
  const {data:receipt,error:receiptError}=await client.from('syncflow_email_receipts').select('request_id').eq('email_id',email.id).maybeSingle();
@@ -30,7 +30,7 @@ export async function receiveEmail(client,email,domain){
  if(typeof email.text!=='string'||!email.text.trim()||email.text.length>18000)throw Error('UNSUPPORTED_EMAIL');
  const subject=typeof email.subject==='string'?email.subject.slice(0,500):'(no subject)';
  const attachments=Array.isArray(email.attachments)?email.attachments.length:0;
- const text=`Forwarded by: ${sender}\nSubject: ${subject}\n${attachments?'Attachments were not imported.\n':''}\n${email.text}`;
+ const text=`${route.request_id?'Forwarded by':'From'}: ${sender}\nSubject: ${subject}\n${attachments?'Attachments were not imported.\n':''}\n${email.text}`;
  const id=route.request_id||creationId(route.workspace_id,route.actor_id,`email:${email.id}`);
  for(let attempt=0;attempt<3;attempt++){
   const {data:row,error:loadError}=await client.from('syncflow_requests').select('state,version').eq('workspace_id',route.workspace_id).eq('id',id).maybeSingle();

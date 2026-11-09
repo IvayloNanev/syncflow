@@ -15,7 +15,7 @@ test('forwarded messages create a case, append through its case route, and repla
  await receiveEmail(client({requestId:first.requestId}),{...email,id:'email-two',text:'Our budget is CAD 5000.'},'test.resend.app');assert.equal(rows.get(first.requestId).version,2);
 });
 test('forwarding rejects unauthorized sender, revoked membership, ambiguous destinations and unsupported bodies',async()=>{
- await assert.rejects(receiveEmail(client(),{...email,from:'other@example.com'},'test.resend.app'),/DENIED/);
+ await assert.rejects(receiveEmail(client({requestId:'existing-case'}),{...email,from:'other@example.com'},'test.resend.app'),/DENIED/);
  await assert.rejects(receiveEmail(client({member:false}),email,'test.resend.app'),/DENIED/);
  await assert.rejects(receiveEmail(client(),{...email,id:'new',text:null,html:'<p>html</p>'},'test.resend.app'),/UNSUPPORTED/);
  assert.equal(recipientToken([...email.to,...email.to],'test.resend.app'),null);
@@ -33,4 +33,16 @@ test('short requests alias resolves only with an explicit route and rejects ambi
  assert.equal(recipientToken(['requests@test.resend.app'],'test.resend.app'),null);
  assert.equal(recipientToken(['requests@other.example'],'test.resend.app',token),null);
  assert.equal(recipientToken(['requests@test.resend.app',...email.to],'test.resend.app',token),null);
+});
+
+ test('workspace inbox accepts external client requests and keeps the sender in the case',async()=>{
+ rows.clear();receipts.clear();
+ const external={...email,id:'external-client',from:'Client <ivaylo.nanev@pursuit.org>'};
+ const result=await receiveEmail(client(),external,'test.resend.app');
+ assert.ok(result.requestId);
+ assert.match(JSON.stringify(rows.get(result.requestId).state),/From: ivaylo.nanev@pursuit.org/);
+ await receiveEmail(client(),external,'test.resend.app');
+ assert.equal(rows.get(result.requestId).version,1);
+ await assert.rejects(receiveEmail(client({requestId:result.requestId}),{...external,id:'unauthorized-reply'},'test.resend.app'),/DENIED/);
+ await assert.rejects(receiveEmail(client({member:false}),{...external,id:'revoked-route'},'test.resend.app'),/DENIED/);
 });
