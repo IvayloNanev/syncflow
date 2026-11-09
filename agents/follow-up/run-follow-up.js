@@ -1,3 +1,4 @@
+import {assessCatalogue} from '../../catalog/availability.js';
 import { validateContract } from '../../contracts/validate.js';
 
 const messages = {
@@ -32,7 +33,7 @@ class RunFailure extends Error {
  * Returns proposals only. Never writes records or retries automatically.
  * getCurrentVersion is an optional server-side freshness check, not a write lock.
  */
-export async function runFollowUp(context, review, { provider, timeoutMs = 30000, getCurrentVersion } = {}) {
+export async function runFollowUp(context, review, { provider, timeoutMs = 30000, getCurrentVersion, catalogueAssessment } = {}) {
   const meta = { stage: 'follow_up', provider: null, mode: 'unconfigured', run_id: null,
     base_record_version: null, freshness: 'not_checked' };
   const fail = code => ({ ok: false, ...meta, error: {
@@ -79,6 +80,20 @@ export async function runFollowUp(context, review, { provider, timeoutMs = 30000
       const covered = new Set(output.addressed_issue_ids);
       if (allIssues.some(issue => !covered.has(issue.issue_id))) throw new Error('Missing issue coverage');
     } catch { throw new RunFailure('INVALID_OUTPUT'); }
+    // Keep the catalogue finding ahead of the general intake questions. This is a
+    // server-owned coverage statement, never an assertion about external rights.
+    if(reviewSnapshot.issues.some(issue=>issue.issue_id.startsWith('catalogue-coverage-check'))){
+      const catalogue=catalogueAssessment||assessCatalogue({messages:snapshot.messages,fields:snapshot.confirmed_fields});
+      if(catalogue.status==='not_found'){
+        const notice=`We could not find a match for “${catalogue.artist||catalogue.title}” in our current SyncFlow catalogue. We need to verify availability before progressing. Please share the specific songs, recording versions and recording links.`;
+        const paragraphs=output.body.split(/\n\s*\n/),greeting=/^(?:hello|hi|dear)\b[^.!?]*[,!]?$/.test(paragraphs[0].trim().toLowerCase());
+        const opening=(paragraphs[greeting?1:0]||'').split('\n')[0];
+        if(!/(?:not|no|couldn.t).*?(?:find|match|catalogue|catalog)/i.test(opening)){
+          paragraphs.splice(greeting?1:0,0,notice);output.body=paragraphs.join('\n\n');
+          validateContract('follow_up',output,snapshot,reviewSnapshot);
+        }
+      }
+    }
     if (getCurrentVersion) {
       let current;
       try { current = await getCurrentVersion(snapshot.request_id, { signal: controller.signal }); }
