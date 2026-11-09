@@ -188,7 +188,21 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   };
   const selectedId=saved?.id;
   const handoffFollowed=useRef(false);
-  useEffect(()=>{if(loadingRequest||handoffFollowed.current||!initialRequestId||selectedId!==initialRequestId||!window.location.hash)return;const element=document.getElementById(window.location.hash.slice(1));if(element){handoffFollowed.current=true;element.closest('details')?.setAttribute('open','');element.scrollIntoView({block:'start'});}},[loadingRequest,initialRequestId,selectedId]);
+  useEffect(()=>{
+    if(loadingRequest||handoffFollowed.current||!initialRequestId||selectedId!==initialRequestId||!window.location.hash)return;
+    let frame=0;
+    const timer=window.setTimeout(()=>{frame=window.requestAnimationFrame(()=>{
+      const element=document.getElementById(window.location.hash.slice(1));
+      if(!element)return;
+      let parent:HTMLElement|null=element;
+      while(parent){if(parent instanceof HTMLDetailsElement)parent.open=true;parent=parent.parentElement;}
+      element.setAttribute('tabindex','-1');
+      element.focus({preventScroll:true});
+      element.scrollIntoView({block:'start',behavior:'instant'});
+      handoffFollowed.current=true;
+    });},100);
+    return()=>{window.clearTimeout(timer);window.cancelAnimationFrame(frame);};
+  },[loadingRequest,initialRequestId,selectedId]);
   useEffect(()=>{if(selectedId&&!dashboardOpen&&!loadingRequest)headingRef.current?.focus({preventScroll:true});},[selectedId,dashboardOpen,loadingRequest]);
   const effectiveValue=(key:string)=>saved?.agent_fields?.find(f=>f.field_key===key)?.value??saved?.confirmed_fields.find(f=>f.field_key===key&&f.state==='confirmed')?.value;
   const project=effectiveValue('project');const contact=effectiveValue('client_contact');
