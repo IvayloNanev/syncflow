@@ -8,6 +8,7 @@ import { previewEmail } from "../catalog/email-preview.js";
 import {readEditorBackup,writeEditorBackup,clearEditorBackup} from "./editor-backup";
 import { confirmDiscard, useUnsavedGuard } from "./use-unsaved-guard";
 import CoordinatorJourney from "./coordinator-journey";
+import EmailForwarding from "./email-forwarding";
 import AnalysisRecovery from "./analysis-recovery";
 import RequestDashboard from "./request-dashboard";
 import ReviewerTracking, {type ReviewTracking} from "./reviewer-tracking";
@@ -240,6 +241,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
             <details className="settings-disclosure"><summary>Request settings</summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => {setTimezone(e.target.value); clearResult();}} /></details>
             <div className="form-footer"><small>Saved automatically when you analyze. Uses your Claude API account.</small></div>
           </form>
+          {shared?<EmailForwarding key={saved?.id||"new"} requestId={saved?.id}/>:null}
           {saved ? <SavedRequests {...navigationProps} response={responsePanel} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} onRecheck={() => {if(!confirmDiscard(draftDirty))return;void perform(async () => {
             const appended: Detail = await command(keyed({action:'reply',request_id:saved.id,expected_revision:saved.revision,text:reply}));
             backupEditors({reply:""});showSaved(appended); setReply(''); await refresh();
