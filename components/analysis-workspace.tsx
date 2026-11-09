@@ -53,7 +53,8 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const [handoffDirty,setHandoffDirty]=useState(false);
   const [reviewerDirty,setReviewerDirty]=useState(false);
   const [loadingRequest,setLoadingRequest]=useState(!!initialRequestId);
-  const [fromBriefing]=useState(()=>typeof window!=='undefined'&&window.location.hash==='#briefing-handoff');
+  const [fromBriefing,setFromBriefing]=useState(false);
+  useEffect(()=>{let active=true;queueMicrotask(()=>{if(active)setFromBriefing(window.location.hash==='#briefing-handoff');});return()=>{active=false;};},[initialRequestId]);
   const [requestLoadFailed,setRequestLoadFailed]=useState(false);
   const [listState,setListState]=useState<"loading"|"ready"|"error">("loading");
   const [loadAttempt,setLoadAttempt]=useState(0);
