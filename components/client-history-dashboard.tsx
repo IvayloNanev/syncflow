@@ -12,7 +12,7 @@ async function readRequest(payload:Record<string,string>,signal:AbortSignal){
  const data=await response.json();if(!response.ok)throw new Error('Saved history could not load. Try again.');return data;
 }
 function stageOf(r:Summary){
- if(r.status==='Internal review complete')return 'complete';
+ if(['Internal review complete','Case completed'].includes(r.status||''))return 'complete';
  if(r.status==='Needs coordinator review')return 'approval';
  if(['Ready for internal review','Internal review pending','Ready to complete internal review','Changes requested','Declined'].includes(r.status||''))return 'review';
  return 'attention';

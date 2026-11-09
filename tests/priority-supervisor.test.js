@@ -52,10 +52,10 @@ test('briefing persistence is workspace scoped and save errors never claim succe
 test('fresh AI decisions control order and eligible follow-up; any changed case invalidates the whole decision',()=>{
  const a=make('a','Needs coordinator review'),b=make('b','Internal review pending');
  const initial=superviseCases([a,b],null,{now});
- const saved={generated_at:now.toISOString(),snapshots:initial.snapshots,report:{decision_version:2,items:[{request_id:'b',action:'follow_up',reason:'Chase the pending reviewer first.',next_action:'Contact the reviewer for a decision.',blocker:'Pending reviewer.',citations:[]},{request_id:'a',action:'signoff',reason:'Review after the follow-up.',next_action:'Review and sign off the brief.',citations:[]}]}};
+ const saved={generated_at:now.toISOString(),snapshots:initial.snapshots,report:{decision_version:3,items:[{request_id:'b',action:'follow_up',reason:'Chase the pending reviewer first.',next_action:'Contact the reviewer for a decision.',blocker:'Pending reviewer.',citations:[]},{request_id:'a',action:'signoff',reason:'Review after the follow-up.',next_action:'Review and sign off the brief.',citations:[]}]}};
  const result=superviseCases([a,b],saved,{now});
  assert.equal(result.decision_source,'ai');assert.deepEqual(result.items.map(i=>i.request_id),['b','a']);
- assert.equal(result.items[0].handoff.destination,'coordinator');assert.equal(result.items[0].handoff.anchor,'reviewer-follow-up');assert.equal(result.items[0].next_action,'Contact the reviewer for a decision.');
+ assert.equal(result.items[0].handoff.destination,'internal');assert.equal(result.items[0].handoff.anchor,'reviewer-follow-up');assert.equal(result.items[0].next_action,'Contact the reviewer for a decision.');
  a.messages.push({message_id:'reply',text:'Scope changed'});
  const stale=superviseCases([a,b],saved,{now});assert.equal(stale.decision_source,'workflow');assert.equal(stale.items.find(i=>i.request_id==='b').handoff.destination,'internal');
  assert.equal(superviseCases([b],saved,{now:new Date('2026-11-10T17:00:00Z')}).decision_source,'workflow');

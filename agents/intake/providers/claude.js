@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import shared from '../../../contracts/shared.schema.json' with { type: 'json' };
 import outputSchema from '../../../contracts/intake.schema.json' with { type: 'json' };
 
-export const INTAKE_PROMPT_VERSION = 'intake-v1.1';
+export const INTAKE_PROMPT_VERSION = 'intake-v1.2';
 const prompt = readFileSync(new URL('../prompts/intake-v1.txt', import.meta.url), 'utf8');
 // Inline our local shared refs for a self-contained client-tool schema.
 function inline(value) {

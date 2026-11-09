@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import shared from '../../../contracts/shared.schema.json' with { type: 'json' };
 import outputSchema from '../../../contracts/follow_up.schema.json' with { type: 'json' };
 
-export const FOLLOW_UP_PROMPT_VERSION = 'follow-up-v1';
+export const FOLLOW_UP_PROMPT_VERSION = 'follow-up-v1.1';
 const prompt = readFileSync(new URL('../prompts/follow-up-v1.txt', import.meta.url), 'utf8');
 // Inline our local shared refs for a self-contained client-tool schema.
 function inline(value) {

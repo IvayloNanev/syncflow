@@ -25,6 +25,7 @@ const allowed = {
   save_handoff: ['action','request_id','expected_revision','expected_handoff_version','source_token','text','idempotency_key'],
   complete_review: ['action','request_id','expected_revision','expected_review_version','idempotency_key'],
   reviewer: ['action','request_id','expected_revision','expected_review_version','idempotency_key','operation','reviewer_id','name','role','status','notes'],
+  set_completed:['action','request_id','expected_revision','completed','idempotency_key'],
   set_deleted:['action','request_id','expected_revision','deleted','idempotency_key'],
   list: ['action','include_deleted'], get: ['action', 'request_id'],
   create: ['action', 'email', 'timezone', 'recording_id', 'idempotency_key'],
@@ -96,6 +97,7 @@ export function createSavedRequestsHandler({ actor = localActor, trustedOrigin =
       }
       if (input.action === 'get') return json(200, requestDetail(store, input.request_id, actor));
       const { action, ...fields } = input;
+      if(action==='set_completed'){const result=store.setCompleted({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='set_deleted'){const result=store.setDeleted({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='approve_brief'){const result=store.approveBrief({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if (action === 'create') {

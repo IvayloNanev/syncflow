@@ -54,3 +54,5 @@ test('two database handles cannot overwrite the same revision',t=>{
  assert.throws(()=>b.appendReply({actor_id:'owner-A',request_id:r.id,idempotency_key:'b',expected_revision:0,text:'Reply B'}),error('REVISION_CONFLICT'));
  assert.equal(b.get('owner-A',r.id).messages.length,2);
 });
+
+test('case completion is audited, persists in the aggregate and can be reopened without granting approval',t=>{const s=setup(t),created=s.create(input()).request;const command={actor_id:'owner-A',request_id:created.id,expected_revision:0,completed:true,idempotency_key:'complete-case-1'};s.setCompleted(command);assert.equal(s.workflow('owner-A',created.id).status,'Case completed');assert.ok(s.get('owner-A',created.id).completed_at);assert.equal(s.setCompleted(command).replayed,true);assert.ok(s.history('owner-A',created.id).some(e=>e.action==='case_completed'));assert.throws(()=>s.setCompleted({...command,actor_id:'other',idempotency_key:'foreign'}));s.setCompleted({...command,completed:false,idempotency_key:'reopen-case-1'});assert.notEqual(s.workflow('owner-A',created.id).status,'Case completed');assert.equal(s.get('owner-A',created.id).completed_at,null);});

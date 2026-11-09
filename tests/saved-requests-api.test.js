@@ -170,3 +170,5 @@ test('customer submission returns only a receipt and rejects internal commands',
   assert.equal((await replay.json()).request_id,receipt.request_id);
   assert.equal(calls(),0);
 });
+
+test('completed cases stay in the library and can be reopened through versioned commands',async t=>{const {call}=setup(t),created=await call(create);const id=created.request.id;const completed=await call({action:'set_completed',request_id:id,expected_revision:0,completed:true,idempotency_key:'finish-case'});assert.equal(completed.status,200);assert.equal(completed.workflow.status,'Case completed');const listed=await call({action:'list'});assert.ok(listed.requests.some(r=>r.id===id&&r.status==='Case completed'));const reopened=await call({action:'set_completed',request_id:id,expected_revision:0,completed:false,idempotency_key:'reopen-case'});assert.equal(reopened.status,200);assert.notEqual(reopened.workflow.status,'Case completed');});

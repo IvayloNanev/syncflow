@@ -124,6 +124,20 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
         return request;
       });
     },
+    setCompleted(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','completed','idempotency_key'])||typeof input.completed!=='boolean'||!Number.isSafeInteger(input.expected_revision))fail('INVALID_INPUT');
+      command(input);owned(input.actor_id,input.request_id);
+      return execute(input,`completed:${input.request_id}`,{expected_revision:input.expected_revision,completed:input.completed},()=>{
+        const request=owned(input.actor_id,input.request_id);
+        if(request.revision!==input.expected_revision)fail('REVISION_CONFLICT');
+        request.completed_at=input.completed?new Date().toISOString():null;
+        request.completed_by=input.completed?input.actor_id:null;
+        request.updated_at=new Date().toISOString();
+        request.completion_history=[...(request.completion_history||[]),{request_id:request.id,revision:request.revision,actor_id:input.actor_id,action:input.completed?'case_completed':'case_reopened',at:request.updated_at}];
+        db.prepare('UPDATE requests SET body=? WHERE id=? AND owner_id=?').run(JSON.stringify(request),request.id,ownerId??input.actor_id);
+        return request;
+      });
+    },
     setDeleted(input) {
       if(!keys(input,['actor_id','request_id','expected_revision','deleted','idempotency_key'])||typeof input.deleted!=='boolean'||!Number.isSafeInteger(input.expected_revision))fail('INVALID_INPUT');
       command(input);owned(input.actor_id,input.request_id);
@@ -223,8 +237,8 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
       });
     },
     history(actor, id) {
-      owned(actor, id);
-      return db.prepare('SELECT body FROM events WHERE request_id=? ORDER BY revision').all(id).map(row => JSON.parse(row.body));
+      const request=owned(actor, id);
+      return [...db.prepare('SELECT body FROM events WHERE request_id=? ORDER BY revision').all(id).map(row => JSON.parse(row.body)),...(request.completion_history||[])];
     },
     context(actor, id, runId = randomUUID()) {
       const r = owned(actor, id);
@@ -365,6 +379,7 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
     },
     workflow(actor,id) {
       const request=owned(actor,id);
+      if(request.completed_at)return {status:'Case completed',reasons:[],next_action:'Case completed. Reopen it if further work is needed.',completed:true,can_complete:false,can_approve_brief:false,completion:{completed_at:request.completed_at,completed_by:request.completed_by},history:[]};
       const history=db.prepare('SELECT body FROM review_completions WHERE request_id=? ORDER BY sequence').all(id).map(row=>JSON.parse(row.body));
       return {...requestReadiness({request,analysis:this.activeAnalysis(actor,id),tracking:this.reviewers(actor,id),decisions:this.decisions(actor,id),briefApproval:this.briefApproval(actor,id).latest,latestAnalysis:this.analyses(actor,id).at(-1)||null,completion:history.at(-1) || null}),history};
     },

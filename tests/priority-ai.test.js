@@ -34,9 +34,9 @@ test('invalid generated evidence retries once and still requires a fully valid r
  await assert.rejects(draftPriorityReport({...args,fetchImpl:async()=>{attempts++;return provider({items:[]})();}}),/AI_INVALID_OUTPUT/);
  assert.equal(attempts,2);
 });
-test('agent may select coordinator follow-up for pending review but cannot bypass analysis',async()=>{
+test('agent may select internal reviewer follow-up for pending review but cannot bypass analysis',async()=>{
  await assert.rejects(draftPriorityReport({...args,fetchImpl:provider({items:[{...valid,action:'internal'}]})}),/AI_INVALID_OUTPUT/);
  const pending={...cases[0],summary:{status:'Internal review pending'},workflow:{status:'Internal review pending'},recording_id:'recording',analysis:{result:{stages:{review:{output:{issues:[]}}}}}};
  const result=await draftPriorityReport({...args,cases:[pending],fetchImpl:provider({items:[{...valid,action:'follow_up'}]})});
- assert.equal(result.decision_version,2);assert.equal(result.items[0].destination,'coordinator');assert.equal(result.items[0].action,'follow_up');
+ assert.equal(result.decision_version,3);assert.equal(result.items[0].destination,'internal');assert.equal(result.items[0].action,'follow_up');
 });
