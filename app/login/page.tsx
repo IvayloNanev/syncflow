@@ -1,3 +1,4 @@
+import SiteHeader from '../../components/site-header';
 import {googleAuthEnabled} from '../../lib/google-auth';
 import landing from "../landing.module.css";
 import styles from "./login.module.css";
@@ -75,7 +76,7 @@ export default async function Login({searchParams}:{searchParams:Promise<{messag
  const notice=noticeFor(message);
  const view=notice?.view??(['signup','forgot','reset'].includes(mode||'')?mode:'signin');
  if(sharedConfigured()){const {data:{user}}=await (await sessionClient()).auth.getUser();if(view==='reset'&&!user)redirect(loginDestination(next,{message:'reset-link-failed'}));if(user&&view==='signin')redirect(next);}
- return <div className={`workspace-theme ${landing.page} ${styles.page}`}><header className={landing.header}><Link href="/" className={landing.brand} aria-label="SyncFlow home">Sync<span>Flow</span></Link><Link className={styles.home} href="/">Back to home</Link></header><main className={styles.main}><div className={`${landing.record} ${styles.record}`} aria-hidden="true"><div /></div><section className={`auth-card ${styles.card}`} aria-label="Account access">
+ return <div className={`workspace-theme ${landing.page} ${styles.page}`}><SiteHeader><Link className={styles.home} href="/">Back to home</Link></SiteHeader><main className={styles.main}><div className={`${landing.record} ${styles.record}`} aria-hidden="true"><div /></div><section className={`auth-card ${styles.card}`} aria-label="Account access">
   <p className={styles.eyebrow}>YOUR MUSIC LICENSING WORKSPACE</p>
   {notice&&<p role={notice.tone==='error'?'alert':'status'} className={`auth-notice auth-notice-${notice.tone}`}>{notice.text}</p>}
   {view==='signup'?<SignUp next={next} google={google}/>:view==='verify'?<Verify next={next}/>:view==='forgot'||view==='reset'?<Recovery next={next} reset={view==='reset'}/>:<SignIn next={next} google={google}/>}

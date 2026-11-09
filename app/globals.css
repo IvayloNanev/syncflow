@@ -2716,3 +2716,7 @@ html body button.client-history-card {
 .workspace-theme .workspace-body>div[aria-live=polite]:has(>.notice){margin:0 0 24px}
 .workspace-theme .workspace-body>div[aria-live=polite]>.notice{margin:0}
 @media(max-width:650px){.workspace-theme .workspace-body>.workspace-title{flex-wrap:wrap;align-items:flex-start}.workspace-theme .workspace-body>.workspace-title>.status-pill{align-self:flex-start}}
+
+/* Shared action dimensions across workspace pages; cards keep their card shape. */
+.workspace-theme :is(.primary-button,.secondary-button,.new-request-button,.account-menu button,.client-view-tabs button){box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:46px!important;padding:12px 24px!important;border-radius:999px!important;font-size:14px!important;font-weight:600;line-height:1.4!important;text-align:center;gap:8px;text-decoration:none}
+.workspace-theme :is(.primary-button,.secondary-button,.new-request-button,.account-menu button,.client-view-tabs button):focus-visible{outline:2px solid #e1cc98;outline-offset:3px}
