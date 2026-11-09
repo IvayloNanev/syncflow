@@ -3,7 +3,7 @@ import {useEffect,useState} from 'react';
 import Link from 'next/link';
 import styles from './coordinator-briefing.module.css';
 type Item={priority:number;request_id:string;client:string;project:string;status:string;responsible:string;reason:string;blocker:string;next_action:string;changed:boolean;changes:string[];explanation_source:string;deadline:{date?:string;time?:string;timezone?:string;supplied_text?:string}|null;handoff:{state:string;stage:string;label:string;destination:string;anchor:string};evidence:{kind:string;text:string}[]};
-type Supervision={checked_at:string;saved_at:string|null;items:Item[];changed_count:number;finished_count:number};
+type Supervision={decision_source?:string;checked_at:string;saved_at:string|null;items:Item[];changed_count:number;finished_count:number};
 export default function CoordinatorBriefing({busy,error,elapsed,onAnalyze}:{busy:boolean;error:string;elapsed:number;onAnalyze:()=>void}){
  const [data,setData]=useState<Supervision|null>(null),[failure,setFailure]=useState(''),[filter,setFilter]=useState('all'),[refresh,setRefresh]=useState(0);
  useEffect(()=>{
@@ -18,7 +18,7 @@ export default function CoordinatorBriefing({busy,error,elapsed,onAnalyze}:{busy
   return()=>{stopped=true;controller.abort();clearTimeout(timer);window.removeEventListener('focus',focus);};
  },[busy,refresh]);
  const open=data?.items.filter(item=>item.handoff.state!=='finished')||[];
- const matches=(item:Item,value:string)=>value==='all'?item.handoff.state!=='finished':value==='overdue'?item.priority===0&&item.handoff.state!=='finished':value==='today'?item.priority===1&&item.handoff.state!=='finished':value==='changed'?item.changed:item.handoff.state===value;
+ const matches=(item:Item,value:string)=>value==='all'?item.handoff.state!=='finished':value==='overdue'?item.priority===0&&item.handoff.state!=='finished':value==='today'?item.priority===1&&item.handoff.state!=='finished':value==='changed'?item.changed:value==='waiting'?item.status==='Internal review pending':item.handoff.state===value;
  const items=data?.items.filter(item=>matches(item,filter))||[];
  const urgency=(item:Item)=>item.handoff.state==='finished'?['Complete','finished']:item.priority===0?['Overdue','urgent']:item.priority===1?['Due today','today']:item.priority===2?['Due soon','today']:item.handoff.state==='waiting'?['Waiting on review','waiting']:item.handoff.state==='blocked'?['Needs attention','blocked']:['Ready for action','action'];
  return <section className={styles.dashboard} aria-labelledby="daily-briefing-heading">
@@ -29,11 +29,11 @@ export default function CoordinatorBriefing({busy,error,elapsed,onAnalyze}:{busy
   {!data&&!failure?<p role="status">Checking current work…</p>:null}
   {data?<>
    <div className={styles.metrics}>{[['all','Open requests','Across your workspace'],['overdue','Overdue','Time-sensitive follow-up'],['today','Due today','Keep these moving'],['waiting','Awaiting review','With your reviewers']].map(([value,label,note])=><button key={value} className={`${styles.metric} ${styles[value]||''}`} aria-pressed={filter===value} onClick={()=>setFilter(value)}><span>{label}</span><strong>{data.items.filter(item=>matches(item,value)).length}</strong><small>{note}</small></button>)}</div>
-   <div className={styles.queueHeading}><div><p className={styles.eyebrow}>PRIORITY QUEUE</p><h3>{filter==='all'?'Your next moves':filter==='overdue'?'Overdue requests':filter==='today'?'Due today':filter==='finished'?'Completed work':'Focused work'}</h3></div><span className={styles.live}><i/> Workflow updated every 15s</span></div>
+   <div className={styles.queueHeading}><div><p className={styles.eyebrow}>PRIORITY QUEUE</p><h3>{filter==='all'?'Your next moves':filter==='overdue'?'Overdue requests':filter==='today'?'Due today':filter==='finished'?'Completed work':'Focused work'}</h3></div><span className={styles.live}><i/>{data.decision_source==='ai'?'AI-recommended order · current evidence':'Workflow order · AI decision needed'}</span></div>
    <div className={styles.filters} role="group" aria-label="Work queue">{[['all','All open'],['action','Your actions'],['blocked','Blockers'],['waiting','Waiting'],['finished','Finished'],['changed','Changed']].map(([value,label])=><button key={value} aria-pressed={filter===value} onClick={()=>setFilter(value)}>{label}<span>{data.items.filter(item=>matches(item,value)).length}</span></button>)}</div>
-   <ol className={styles.queue}>{items.map((item,index)=>{const [label,tone]=urgency(item);const featured=filter==='all'&&index===0;return <li key={item.request_id} className={`${styles.card} ${styles[tone]} ${featured?styles.featured:''}`}>
-    <div className={styles.cardTop}><span className={styles.rank}>{featured?'START HERE':`#${(open.findIndex(row=>row.request_id===item.request_id)+1)||index+1}`}</span><span className={styles.badge}><i/>{label}</span></div>
-    <h3>{item.project||'Untitled request'}</h3><p className={styles.client}>{item.client}</p>
+   <ol className={styles.queue}>{items.map((item,index)=>{const [label,tone]=urgency(item);const featured=item.request_id===open[0]?.request_id&&filter==='all';return <li key={item.request_id} className={`${styles.card} ${styles[tone]} ${featured?styles.featured:''}`}>
+    <div className={styles.cardTop}><span className={styles.rank}>{featured?(data.decision_source==='ai'?'AI’S FIRST PRIORITY':'WORKFLOW FIRST PRIORITY'):`#${(open.findIndex(row=>row.request_id===item.request_id)+1)||index+1}`}</span><span className={styles.badge}><i/>{label}</span></div>
+    {featured?<p className={styles.eyebrow}>{data.decision_source==='ai'?'Do this first · chosen by your briefing agent':'Run Analyze priorities for the agent’s recommendation'}</p>:null}<h3>{item.project||'Untitled request'}</h3><p className={styles.client}>{item.client}</p>
     <p className={styles.reason}>{item.reason}</p>
     <div className={styles.next}><span>{item.handoff.state==='waiting'?'WAITING FOR':'NEXT ACTION'}</span><p>{item.next_action}</p></div>
     <dl className={styles.meta}><div><dt>Responsible</dt><dd>{item.responsible}</dd></div><div><dt>Deadline</dt><dd>{item.deadline?[item.deadline.date||item.deadline.supplied_text,item.deadline.time,item.deadline.timezone].filter(Boolean).join(' · '):'Not supplied'}{item.deadline&&!item.deadline.timezone?' · timezone unconfirmed':''}</dd></div></dl>
