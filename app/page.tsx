@@ -11,7 +11,7 @@ export default async function Home() {
     <div className={styles.page}>
       <a className={styles.skip} href="#main">Skip to content</a>
       <SiteHeader>
-        <Link className={styles.entry} href={user?"/coordinator":"/login"}>{user?"Open workspace":"Sign in"}</Link>
+        <Link className={styles.entry} href={user?"/dashboard":"/login"}>{user?"Open workspace":"Sign in"}</Link>
       </SiteHeader>
       <main id="main" className={styles.hero}>
         <div className={styles.record} aria-hidden="true"><div /></div>
