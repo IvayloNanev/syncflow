@@ -1,0 +1,13 @@
+.header{box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:20px;min-height:100px;padding:26px clamp(24px,6vw,100px);border-bottom:1px solid #ffffff16;background:#10120fe8;color:#e1cc98;position:relative;z-index:2;font-family:Arial,Helvetica,sans-serif}
+.header .brand{justify-self:start;white-space:nowrap;font-size:30px;font-weight:700;line-height:1.2;letter-spacing:-1.5px;text-decoration:none;color:#f5f2e9}
+.brand span{color:#ddc184}
+.actions{grid-column:3;justify-self:end;display:flex;align-items:center;min-width:0}
+.header :global(.page-navigation){grid-column:2;display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:nowrap}
+.header :global(.page-navigation) a{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 14px;font-size:14px;line-height:1.4;border-radius:999px;color:#c9cbbf;white-space:nowrap}
+.header :global(.page-navigation) a[aria-current=page]{color:#e1cc98}
+.header .actions :is(a,button){box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-height:var(--sf-control-height);padding:var(--sf-control-padding);margin:0;font-size:var(--sf-control-font-size);font-weight:var(--sf-control-weight);line-height:var(--sf-control-line-height);border-radius:999px;text-decoration:none;white-space:nowrap}
+.header .actions :global(.account-menu){flex-wrap:nowrap;gap:12px}
+.header .actions :global(.account-menu) span{font-size:12px;line-height:1.4;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.header a:focus-visible,.header button:focus-visible{outline:2px solid #f2d58e;outline-offset:4px}
+@media(max-width:1350px){.header .actions :global(.account-menu) span{display:none}}
+@media(max-width:900px){.header{grid-template-columns:minmax(0,1fr) auto;gap:14px 20px;padding:18px 24px}.actions{grid-column:2}.header :global(.page-navigation){grid-column:1/-1;grid-row:2;justify-content:flex-start;overflow-x:auto;max-width:100%;padding-bottom:2px}.header .brand{font-size:27px}.header :global(.page-navigation) a{font-size:13px;padding:10px 12px}}

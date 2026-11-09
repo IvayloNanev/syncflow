@@ -2,7 +2,7 @@
 .page::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 80% 50%,#a77a3520,transparent 60%),linear-gradient(115deg,#0d100e 20%,#171b15);pointer-events:none}
 .header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:26px clamp(24px,6vw,100px);border-bottom:1px solid #ffffff16;z-index:2}
 .brand{font-size:30px;font-weight:700;letter-spacing:-1.5px;text-decoration:none;color:#f5f2e9}.brand span{color:#ddc184}
-.entry{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 30px;box-sizing:border-box;border:1px solid #f3dfaa90;border-radius:30px;background:linear-gradient(135deg,#f0dfaf,#c5a35d);color:#171a13;font-size:14px;font-weight:700;text-decoration:none;box-shadow:inset 0 1px 0 #fff8;transition:filter .2s}
+.entry{display:inline-flex;align-items:center;justify-content:center;min-height:var(--sf-control-height);padding:var(--sf-control-padding);box-sizing:border-box;border:1px solid #f3dfaa90;border-radius:30px;background:var(--sf-control-gold);color:#171a13;font-size:var(--sf-control-font-size);font-weight:var(--sf-control-weight);line-height:var(--sf-control-line-height);text-decoration:none;box-shadow:inset 0 1px 0 #fff8;transition:filter .2s}
 .entry:hover{filter:brightness(1.1)}.page a:focus-visible{outline:2px solid #f2d58e;outline-offset:6px}
 .hero{position:relative;flex:1;display:flex;align-items:center;min-height:580px;padding:64px clamp(24px,6vw,100px);box-sizing:border-box}
 .copy{position:relative;z-index:1;max-width:780px}.eyebrow{font-size:11px;letter-spacing:3px;line-height:1.6;color:#d3c39d;margin:0 0 28px}

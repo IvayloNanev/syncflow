@@ -1,3 +1,4 @@
+import SiteHeader from '../components/site-header';
 import Link from "next/link";
 import {sessionClient,sharedConfigured} from "../lib/supabase/server";
 import styles from "./landing.module.css";
@@ -9,10 +10,9 @@ export default async function Home() {
   return (
     <div className={styles.page}>
       <a className={styles.skip} href="#main">Skip to content</a>
-      <header className={styles.header}>
-        <Link className={styles.brand} href="/" aria-label="SyncFlow home">Sync<span>Flow</span></Link>
+      <SiteHeader>
         <Link className={styles.entry} href={user?"/coordinator":"/login"}>{user?"Open workspace":"Sign in"}</Link>
-      </header>
+      </SiteHeader>
       <main id="main" className={styles.hero}>
         <div className={styles.record} aria-hidden="true"><div /></div>
         <div className={styles.copy}>
