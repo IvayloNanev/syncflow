@@ -1,9 +1,10 @@
+import {assessCatalogue} from '../../catalog/availability.js';
 import { explicitTerritoryConflict } from './territory-conflict.js';
 import checklist from '../../contracts/checklists/intake-v1.json' with { type: 'json' };
 import { validateContract } from '../../contracts/validate.js';
 
 /** Deterministic review of candidate facts. Does not save, confirm, clear issues or approve rights. */
-export function runReview(context, intake) {
+export function runReview(context, intake, {catalogueCheck=false}={}) {
   try { validateContract('context', context); }
   catch { return { ok: false, stage: 'review', error: { code: 'INVALID_CONTEXT', message: 'Correct request context before review.' } }; }
   try { validateContract('intake', intake, context); }
@@ -59,6 +60,8 @@ export function runReview(context, intake) {
   checks.push({ rule_id: 'single_recording', result: issues.some(i => i.type === 'split_request') ? 'fail' : 'unknown' },
     { rule_id: 'evidence_valid', result: 'pass' },
     { rule_id: 'no_conflicting_scope', result: issues.some(i => ['conflict', 'ambiguous'].includes(i.type)) ? 'fail' : 'unknown' });
+  const catalogue=assessCatalogue({messages:context.messages,fields:[...fields].map(([field_key,field])=>({field_key,value:field.value}))});
+  if(catalogue.catalogueWide||(catalogue.status==='not_found'&&(catalogue.sourceIdentified||catalogueCheck)))add('catalogue-coverage-check','ambiguous',['artist','track_title','recording_version'],catalogue.message+' '+catalogue.question);
   const output = { schema_version: context.schema_version, run_id: context.run_id,
     base_record_version: context.base_record_version, issues, checks };
   validateContract('review', output, context);
@@ -70,5 +73,10 @@ export function runReview(context, intake) {
         && !issues.some(other => other.issue_id !== issue.issue_id
           && other.type !== 'missing' && other.field_keys.includes(key));
     })).map(issue => issue.issue_id);
-  return { ok: true, stage: 'review', mode: 'rules', freshness: 'not_checked', coordinator_issue_ids, output };
+  // First resolve catalogue coverage. Preserve all other blockers internally rather
+  // than making the client complete a full licensing brief for unsupported music.
+  if(catalogue.status==='not_found'&&(catalogue.sourceIdentified||catalogueCheck)){
+    for(const issue of issues)if(!issue.issue_id.startsWith('catalogue-coverage-check')&&!coordinator_issue_ids.includes(issue.issue_id))coordinator_issue_ids.push(issue.issue_id);
+  }
+  return { ok: true, stage: 'review', mode: 'rules', catalogue_assessment:catalogue, freshness: 'not_checked', coordinator_issue_ids, output };
 }

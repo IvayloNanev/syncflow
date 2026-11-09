@@ -18,6 +18,6 @@ export async function analyzeEmail(input, providers) {
     base_record_version: 0, checklist_version: 'intake-v1', coordinator_timezone: input.timezone,
     messages: [{ message_id: 'initial-email', kind: 'initial', text: input.email, supplied_message_date: null }],
     confirmed_fields: [], unresolved_issues: [] };
-  const result = await runWorkflow(context, providers);
+  const result = await runWorkflow(context, {...providers,catalogueCheck:true});
   return { status: result.ok ? 200 : 502, body: { ...result, catalog_review: catalogReview } };
 }

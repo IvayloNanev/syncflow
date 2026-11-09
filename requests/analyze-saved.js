@@ -10,7 +10,7 @@ export async function analyzeSavedRequest(store, command, providers) {
   const {analysis}=started;
   let result;
   try {
-    result=await runWorkflow(analysis.context,{...providers,
+    result=await runWorkflow(analysis.context,{...providers,catalogueCheck:true,
       getCurrentVersion:async()=>store.currentRevision ? store.currentRevision() : store.get(command.actor_id,command.request_id).revision});
   } catch { result={ok:false,failed_stage:'intake'}; }
   await store.refresh?.();
