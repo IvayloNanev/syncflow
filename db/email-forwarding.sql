@@ -3,6 +3,7 @@ create table public.syncflow_email_routes(
  token text primary key check(token ~ '^[a-f0-9]{40}$'),
  workspace_id uuid not null references public.syncflow_workspaces(id),
  actor_id uuid not null references auth.users(id),
+ forwarder_email text not null,
  request_id uuid, enabled boolean not null default true,
  created_at timestamptz not null default now(),
  foreign key(workspace_id,request_id) references public.syncflow_requests(workspace_id,id)
@@ -26,8 +27,8 @@ declare r public.syncflow_email_routes; existing uuid;
 begin
  select * into r from public.syncflow_email_routes where token=p_token and enabled for share;
  if not found then raise exception 'FORWARDING_DENIED'; end if;
- perform 1 from public.syncflow_members m join auth.users u on u.id=m.user_id
- where m.workspace_id=r.workspace_id and m.user_id=r.actor_id and lower(u.email)=lower(p_sender) and u.email_confirmed_at is not null for share of m;
+ perform 1 from public.syncflow_members m
+ where m.workspace_id=r.workspace_id and m.user_id=r.actor_id and lower(r.forwarder_email)=lower(p_sender) for share of m;
  if not found then raise exception 'FORWARDING_DENIED'; end if;
  if r.request_id is not null and r.request_id<>p_id then raise exception 'FORWARDING_DENIED'; end if;
  perform pg_advisory_xact_lock(hashtextextended(p_email,0));

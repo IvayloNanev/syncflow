@@ -16,6 +16,6 @@ export async function POST(req:Request){
  query=requestId?query.eq('request_id',requestId):query.is('request_id',null);
  const {data,error}=await query.limit(1).maybeSingle();if(error)return json(503,{error:'Forwarding is unavailable. Try again.'});
  let token=data?.token;
- if(!token){token=randomBytes(20).toString('hex');const {error}=await client.from('syncflow_email_routes').insert({token,workspace_id:session.workspaceId,actor_id:session.user.id,request_id:requestId});if(error)return json(503,{error:'Forwarding address could not be created.'});}
+ if(!token){token=randomBytes(20).toString('hex');const {error}=await client.from('syncflow_email_routes').insert({token,workspace_id:session.workspaceId,actor_id:session.user.id,forwarder_email:session.user.email!.toLowerCase(),request_id:requestId});if(error)return json(503,{error:'Forwarding address could not be created.'});}
  return json(200,{address:`sf-${token}@${domain}`,sender:session.user.email,caseSpecific:!!requestId,live:process.env.NODE_ENV==='production'});
 }
