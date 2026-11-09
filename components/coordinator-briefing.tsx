@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
+import CoordinatorHandoffButton from './coordinator-handoff-button';
 import styles from './coordinator-briefing.module.css';
 type Item={priority:number;request_id:string;client:string;project:string;status:string;responsible:string;reason:string;blocker:string;next_action:string;changed:boolean;changes:string[];explanation_source:string;deadline:{date?:string;time?:string;timezone?:string;supplied_text?:string}|null;handoff:{state:string;stage:string;label:string;destination:string;anchor:string};evidence:{kind:string;text:string}[]};
 type Supervision={decision_source?:string;checked_at:string;saved_at:string|null;items:Item[];changed_count:number;finished_count:number};
@@ -38,7 +39,7 @@ export default function CoordinatorBriefing({busy,error,elapsed,onAnalyze}:{busy
     <div className={styles.next}><span>{item.handoff.state==='waiting'?'WAITING FOR':'NEXT ACTION'}</span><p>{item.next_action}</p></div>
     <dl className={styles.meta}><div><dt>Responsible</dt><dd>{item.responsible}</dd></div><div><dt>Deadline</dt><dd>{item.deadline?[item.deadline.date||item.deadline.supplied_text,item.deadline.time,item.deadline.timezone].filter(Boolean).join(' · '):'Not supplied'}{item.deadline&&!item.deadline.timezone?' · timezone unconfirmed':''}</dd></div></dl>
     <details className={styles.evidence}><summary>Reason & evidence <span>＋</span></summary><p><strong>{item.status}:</strong> {item.blocker}</p>{item.changes.length?<p><strong>Changed:</strong> {item.changes.join(' · ')}</p>:null}<p>{item.explanation_source==='ai'?'Saved AI explanation, checked against unchanged evidence.':'Current workflow guidance from saved case records.'}</p>{item.evidence.map((e,i)=><blockquote key={i}><strong>{e.kind}: </strong>{e.text}</blockquote>)}</details>
-    <Link className={`primary-button ${styles.continue}`} href={item.handoff.destination==='internal'?`/internal?case=${encodeURIComponent(item.request_id)}`:`/coordinator?request=${encodeURIComponent(item.request_id)}#briefing-handoff`}>{item.handoff.destination==='internal'?'Internal review':'Coordinator'} · {item.handoff.label}</Link>
+    {item.handoff.destination==='internal'?<Link className={`primary-button ${styles.continue}`} href={`/internal?case=${encodeURIComponent(item.request_id)}`}>Internal review · {item.handoff.label}</Link>:<CoordinatorHandoffButton className={`primary-button ${styles.continue}`} requestId={item.request_id} hash='#briefing-handoff'>Coordinator · {item.handoff.label}</CoordinatorHandoffButton>}
    </li>;})}</ol>
    {!items.length?<div className={styles.empty}><strong>All clear in this view.</strong><p>Choose another filter to see the rest of your work.</p></div>:null}
    <footer className={styles.footer}><span>{data.saved_at?`AI briefing saved ${new Date(data.saved_at).toLocaleString()}`:'Analyze priorities to add an AI briefing.'}{data.changed_count>0?` · ${data.changed_count} cases have fresh changes.`:''}</span><span>Actions and approvals stay with you. Internal review is not rights clearance.</span></footer>

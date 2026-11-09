@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {briefingCase} from '../server/briefing-store.js';
+const request={id:'case',revision:1,messages:[{text:'Project: Summer film'}],confirmed_fields:[],recording_id:null};
+const analysis={run_id:'run',base_revision:1,result:{ok:true,stages:{intake:{output:{proposed_changes:[{proposal_id:'p',field_key:'project',proposed_value:'Summer film',evidence:[{message_id:'m',exact_quote:'Summer film'}]}]}},review:{output:{issues:[]}}}}};
+function store(current=analysis,decisions=[]){return {get:()=>request,activeAnalysis:()=>current,decisions:()=>decisions,workflow:()=>({status:'Needs analysis'}),reviewers:()=>({reviewers:[]}),handoff:()=>null};}
+test('review context includes effective extraction even when raw request has no agent_fields',()=>{assert.equal(request.agent_fields,undefined);const c=briefingCase(store(),'actor',{id:'case'},4);assert.equal(c.agent_fields[0].value,'Summer film');assert.equal(c.agent_fields[0].origin,'agent');assert.equal(c.storage_version,4);assert.deepEqual(request.confirmed_fields,[]);});
+test('review context excludes rejected and outdated extraction',()=>{assert.deepEqual(briefingCase(store(analysis,[{run_id:'run',proposal_id:'p',decision:'reject'}]),'actor',{id:'case'},4).agent_fields,[]);assert.deepEqual(briefingCase(store({...analysis,base_revision:0}),'actor',{id:'case'},4).agent_fields,[]);});

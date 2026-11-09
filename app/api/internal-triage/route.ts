@@ -3,7 +3,7 @@ import {workspaceSession,storageClient} from '../../../lib/supabase/server';
 import {requestOrigin} from '../../../server/request-origin.js';
 import {loadBriefing} from '../../../server/briefing-store.js';
 import {triageReviews} from '../../../agents/internal/triage.js';
-import {caseListing,currentAssessment,reviewFingerprint} from '../../../agents/internal/lifecycle.js';
+import {caseListing,currentAssessment,reviewFingerprint,reviewListVersion} from '../../../agents/internal/lifecycle.js';
 import {admitReview,assessOnce,reviewRows,returnToCoordinator} from '../../../server/internal-review-store.js';
 export const runtime='nodejs';
 export const maxDuration=60;
@@ -37,7 +37,7 @@ export async function GET(){
  const client=storageClient(),{cases}=await loadBriefing(client,session.workspaceId,session.user.id),rows=await reviewRows(client,session.workspaceId);
  const current=await workspaceSession();if(current?.workspaceId!==session.workspaceId||current?.user.id!==session.user.id)return json(403,{error:'Workspace access changed.'});
  const items=cases.map(c=>({...caseListing(c,currentAssessment(c,rows.assessments)),queued:rows.queue.some((row:{request_id:string;active:boolean})=>row.request_id===c.id&&row.active)&&!['Internal review complete','Case completed'].includes(c.workflow.status)}));
- return json(200,{cases:items,version:JSON.stringify(cases.map(c=>[c.id,c.storage_version])),scope:`${session.user.id}:${session.workspaceId}`});
+ return json(200,{cases:items,version:reviewListVersion(cases,rows),scope:`${session.user.id}:${session.workspaceId}`});
  }catch{return json(503,{error:'Saved cases could not load. Please refresh.'});}
 }
 
