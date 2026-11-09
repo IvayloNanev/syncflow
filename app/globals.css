@@ -2744,3 +2744,5 @@ html body button.client-history-card {
 .workspace-theme .inbox-list-panel .inbox-toggle{flex-shrink:0;margin:0}
 .inbox-list-panel #inbox-content[hidden]{display:none}
 .inbox-list-panel .inbox-address-settings{margin-top:12px}
+
+.workspace-theme .inbox-list-panel button.inbox-toggle{width:46px;min-width:46px;padding:0!important;border-radius:999px!important}
