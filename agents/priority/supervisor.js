@@ -28,7 +28,7 @@ export function superviseCases(cases,saved=null,{now=new Date()}={}){
   const ai=!changed?saved?.report?.items?.find(item=>item.request_id===c.id):null;
   const issues=c.analysis?.result?.stages?.review?.output?.issues||[];
   const evidence=[{kind:'workflow',text:`Saved workflow: ${c.workflow.status}`}];
-  if(c.catalogue_assessment)evidence.push({kind:'catalogue',text:JSON.stringify(c.catalogue_assessment)});
+  if(c.catalogue_assessment)evidence.push({kind:'catalogue',text:c.catalogue_assessment.blockers?.map(blocker=>blocker.question||blocker.code).join(' ')||JSON.stringify(c.catalogue_assessment)});
   for(const issue of issues)evidence.push({kind:'analysis',text:issue.question||issue.message||issue.reason||issue.description||issue.code||'Unresolved checklist issue'});
   for(const reviewer of c.reviewers?.reviewers||[])evidence.push({kind:'reviewer',text:`${reviewer.name} (${reviewer.role}): ${reviewer.status}${reviewer.needs_reconfirmation?' — reconfirmation required':''}${reviewer.notes?`: ${reviewer.notes}`:''}`});
   for(const citation of ai?.citations||[])evidence.push({kind:'email',text:citation.exact_quote});
