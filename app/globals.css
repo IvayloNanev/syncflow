@@ -2638,3 +2638,7 @@ html body button.client-history-card {
 .workspace-theme .reply-composer>.conversation-step{margin-top:0}
 .workspace-theme .conversation-panel .message-timeline{border-left-color:#d8c38c55}
 .workspace-theme .draft-ready-notice{display:flex;align-items:center;gap:10px;margin:0 0 16px;padding:12px 14px;border-radius:12px;background:#9eb78412;color:#c4d3b6;font-size:14px;line-height:1.5}
+.workspace-theme .email-forwarding{margin:20px 0;padding:16px 0;border-block:1px solid #ffffff20}
+.workspace-theme .email-forwarding summary{cursor:pointer;color:#d8c38c;font-weight:600}
+.workspace-theme .email-forwarding p{font-size:14px;line-height:1.6;margin:12px 0}
+.workspace-theme .email-forwarding input{font-size:13px;overflow-wrap:anywhere}

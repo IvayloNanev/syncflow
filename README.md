@@ -341,3 +341,7 @@ The authenticated request-list response includes a read-only `priority-v1` ranki
 **Analyze priorities** sends the selected workspace's saved case histories to the configured Claude provider (maximum 50 cases / 200,000 context characters). The report-only tool must cover every open case and provide exact source-message citations. Invalid reports and transient provider failures retry once; evidence validation remains strict. Case versions and workspace access are rechecked before a result is returned. The briefing shows client cards with reasons, next actions and links to the same request in Coordinator or Internal review. On failure, clearly labelled database statuses provide access to open cases. Changed summaries mark an existing briefing as stale.
 
 The agent never sends client messages, changes case decisions or grants rights. Coordinator sign-off remains required before the internal handoff. Local verification covered a real AI call against the eight-case test workspace without changing client messages or approvals.
+
+### Forwarded client emails
+
+Coordinator includes **Forward an email instead** for workspace-scoped new-case and case-reply addresses. Setup, boundaries and live verification steps are in [email forwarding](docs/email-forwarding.md). Receiving remains unavailable until the server-side Resend configuration is connected; pasted-email drafting continues to work.
