@@ -2857,3 +2857,9 @@ html body button.client-history-card {
 .priority-change{color:#f0cc77;font-size:13px;line-height:1.6}
 .supervisor-briefing .primary-button{display:inline-flex;text-decoration:none;justify-content:center;align-items:center}
 @media(max-width:650px){.supervisor-task{padding:18px}.supervisor-task h3{font-size:18px}}
+
+.workspace-picker{max-width:1500px;margin:24px auto 0;padding:0 40px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-sizing:border-box}
+.workspace-picker label{font-size:13px;color:#d8bd7f;font-weight:700}
+.workspace-picker select{height:46px;max-width:100%;min-width:240px;padding:10px 40px 10px 20px;border-radius:999px;appearance:none;-webkit-appearance:none;background:#11150f url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d8bd7f' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;border:1px solid #d8bd7f55;color:#f4f0df;font-size:14px}
+.workspace-picker button{margin:0;min-height:46px}
+@media(max-width:650px){.workspace-picker{padding:0 24px;align-items:stretch}.workspace-picker label{flex-basis:100%}.workspace-picker select{min-width:0;flex:1}}

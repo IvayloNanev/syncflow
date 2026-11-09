@@ -345,3 +345,9 @@ The agent never sends client messages, changes case decisions or grants rights. 
 ### Forwarded client emails
 
 Coordinator includes **Forward an email instead** for workspace-scoped new-case and case-reply addresses. Setup, boundaries and live verification steps are in [email forwarding](docs/email-forwarding.md). Receiving remains unavailable until the server-side Resend configuration is connected; pasted-email drafting continues to work.
+
+### Priority presentation dataset
+
+`SYNCFLOW_SEED_PRIORITY_CLIENTS=1 node scripts/seed-priority-clients.mjs` adds ten naturally written generated client inquiries to the isolated **Client Portfolio** workspace, with ordinary client/company names and no visible test prefixes. This script calls the configured live intake/follow-up providers; it does not replay canned analysis. Cases cover relative deadlines, missing budget, sign-off, pending review, requested changes, completed review, a fresh scope reply and an unmatched recording. Review commands use the same readiness gates as ordinary requests. Seed provenance remains in internal idempotency keys, and original workspace versions are checked before/after. Repeated runs reuse existing records without additional model calls.
+
+Use **Workspace → Client Portfolio → Open workspace** on Daily briefing, then **Analyze priorities** to review these ordinary records with the real priority agent. Membership is checked before setting the HttpOnly workspace preference. Presentation data never shares request rows or email routes with the original workspace. The earlier scripted demo runner is not part of this feature.
