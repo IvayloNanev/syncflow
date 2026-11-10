@@ -2,7 +2,7 @@ import {randomUUID} from 'node:crypto';
 import {workspaceSession,storageClient} from '../../../lib/supabase/server';
 import {requestOrigin} from '../../../server/request-origin.js';
 import {loadBriefing} from '../../../server/briefing-store.js';
-import {triageReviews} from '../../../agents/internal/triage.js';
+import {triageReviews,eligibleLanes} from '../../../agents/internal/triage.js';
 import {caseListing,currentAssessment,reviewFingerprint,reviewListVersion} from '../../../agents/internal/lifecycle.js';
 import {admitReview,assessOnce,reviewRows,returnToCoordinator} from '../../../server/internal-review-store.js';
 export const runtime='nodejs';
@@ -22,6 +22,7 @@ export async function POST(req:Request){
  const {cases}=await loadBriefing(client,workspace,session.user.id),c=cases.find(c=>c.id===input.request_id);
  if(!c)return json(404,{error:'Request not found in this workspace.'});
  if(['Internal review complete','Case completed'].includes(c.workflow.status))return json(409,{error:'This case is complete. Its saved records remain available in Cases.'});
+ if(!eligibleLanes(c).allowed.includes('manager'))return json(409,{error:'This case belongs to Coordinator. Open it there instead.'});
  await admitReview(client,workspace,session.user.id,c.id);
  const result=await assessOnce({client,workspace,actor:session.user.id,c,generate:async()=>triageReviews({cases:[c],signal:AbortSignal.any([req.signal,AbortSignal.timeout(45000)])})});
  const current=await workspaceSession();if(current?.workspaceId!==workspace||current?.user.id!==session.user.id)return json(403,{error:'Workspace access changed.'});
@@ -36,7 +37,7 @@ export async function GET(){
  const session=await workspaceSession();if(!session?.workspaceId)return json(403,{error:'Workspace access required.'});
  const client=storageClient(),{cases}=await loadBriefing(client,session.workspaceId,session.user.id),rows=await reviewRows(client,session.workspaceId);
  const current=await workspaceSession();if(current?.workspaceId!==session.workspaceId||current?.user.id!==session.user.id)return json(403,{error:'Workspace access changed.'});
- const items=cases.map(c=>({...caseListing(c,currentAssessment(c,rows.assessments)),queued:rows.queue.some((row:{request_id:string;active:boolean})=>row.request_id===c.id&&row.active)&&!['Internal review complete','Case completed'].includes(c.workflow.status)}));
+ const items=cases.map(c=>({...caseListing(c,currentAssessment(c,rows.assessments)),queued:eligibleLanes(c).allowed.includes('manager')&&rows.queue.some((row:{request_id:string;active:boolean})=>row.request_id===c.id&&row.active)&&!['Internal review complete','Case completed'].includes(c.workflow.status)}));
  return json(200,{cases:items,version:reviewListVersion(cases,rows),scope:`${session.user.id}:${session.workspaceId}`});
  }catch{return json(503,{error:'Saved cases could not load. Please refresh.'});}
 }
@@ -47,6 +48,7 @@ export async function PATCH(req:Request){
  const session=await workspaceSession();if(!session?.workspaceId)return json(403,{error:'Workspace access required.'});
  const client=storageClient(),{cases}=await loadBriefing(client,session.workspaceId,session.user.id),c=cases.find(c=>c.id===input.request_id);
  if(!c)return json(404,{error:'Case not found.'});if(reviewFingerprint(c)!==input.fingerprint)return json(409,{error:'This case changed. Refresh before routing.'});
+ if(!eligibleLanes(c).allowed.includes('coordinator'))return json(409,{error:'This case requires Internal Review. It cannot also be routed to Coordinator.'});
  await returnToCoordinator(client,session.workspaceId,session.user.id,c);return json(200,{destination:'coordinator'});
  }catch{return json(409,{error:'Handoff could not be saved. Refresh this case and retry.'});}
 }

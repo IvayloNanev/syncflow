@@ -13,7 +13,7 @@ test('AI report requires exact case/message citations and accepts a model-select
  await assert.rejects(draftPriorityReport({...args,fetchImpl:provider({items:[{...valid,citations:[{message_id:'foreign',exact_quote:'Canada'}]}]})}),/AI_INVALID_EVIDENCE/);
 });
 test('AI context includes saved case histories and only exposes a report tool',async()=>{
- await draftPriorityReport({...args,fetchImpl:async(url,options)=>{assert.equal(url,'https://api.anthropic.com/v1/messages');const body=JSON.parse(options.body);assert.deepEqual(JSON.parse(body.messages[0].content).cases.map(({eligible_actions,...c})=>c),cases);assert.equal(body.tools.length,1);assert.equal(body.tools[0].name,'submit_priority_report');return provider({items:[valid]})();}});
+ await draftPriorityReport({...args,fetchImpl:async(url,options)=>{assert.equal(url,'https://api.anthropic.com/v1/messages');const body=JSON.parse(options.body);assert.deepEqual(JSON.parse(body.messages[0].content).cases.map(c=>{const saved={...c};delete saved.eligible_actions;return saved;}),cases);assert.equal(body.tools.length,1);assert.equal(body.tools[0].name,'submit_priority_report');return provider({items:[valid]})();}});
  await assert.rejects(draftPriorityReport({...args,cases:[{id:'one',messages:[{text:'x'.repeat(200001)}]}],fetchImpl:()=>assert.fail('No call for oversized history')}),/AI_CONTEXT_TOO_LARGE/);
 });
 test('AI briefing must cover all open cases, exclude completed cases, and preserve AI-selected priority order',async()=>{
@@ -34,9 +34,9 @@ test('invalid generated evidence retries once and still requires a fully valid r
  await assert.rejects(draftPriorityReport({...args,fetchImpl:async()=>{attempts++;return provider({items:[]})();}}),/AI_INVALID_OUTPUT/);
  assert.equal(attempts,2);
 });
-test('agent may select internal reviewer follow-up for pending review but cannot bypass analysis',async()=>{
+test('agent may select Coordinator reviewer follow-up for pending review but cannot bypass analysis',async()=>{
  await assert.rejects(draftPriorityReport({...args,fetchImpl:provider({items:[{...valid,action:'internal'}]})}),/AI_INVALID_OUTPUT/);
  const pending={...cases[0],summary:{status:'Internal review pending'},workflow:{status:'Internal review pending'},recording_id:'recording',analysis:{result:{stages:{review:{output:{issues:[]}}}}}};
  const result=await draftPriorityReport({...args,cases:[pending],fetchImpl:provider({items:[{...valid,action:'follow_up'}]})});
- assert.equal(result.decision_version,3);assert.equal(result.items[0].destination,'internal');assert.equal(result.items[0].action,'follow_up');
+ assert.equal(result.decision_version,5);assert.equal(result.items[0].destination,'coordinator');assert.equal(result.items[0].action,'follow_up');
 });

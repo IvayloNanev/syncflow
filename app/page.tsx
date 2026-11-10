@@ -1,17 +1,15 @@
 import SiteHeader from '../components/site-header';
 import Link from "next/link";
-import {sessionClient,sharedConfigured} from "../lib/supabase/server";
 import styles from "./landing.module.css";
 
 export const dynamic='force-dynamic';
 
 export default async function Home() {
-  const user=sharedConfigured()?(await (await sessionClient()).auth.getUser()).data.user:null;
   return (
     <div className={styles.page}>
       <a className={styles.skip} href="#main">Skip to content</a>
       <SiteHeader>
-        <Link className={styles.entry} href={user?"/dashboard":"/login"}>{user?"Open workspace":"Sign in"}</Link>
+        <nav className={styles.menu} aria-label="Landing page navigation"><Link className={styles.entry} href="/login">Login</Link><Link className={styles.entry} href="/login?mode=signup">Sign up</Link></nav>
       </SiteHeader>
       <main id="main" className={styles.hero}>
         <div className={styles.record} aria-hidden="true"><div /></div>

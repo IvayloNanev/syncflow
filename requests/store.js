@@ -1,7 +1,9 @@
+import {escalationReasons} from '../agents/internal/escalation.js';
+import {managerDecisionToken} from './manager-decision.js';
 import {effectiveFields} from "./effective-fields.js";
 import { safeAnalysisFailure } from './analysis-failure.js';
 import { requestReadiness } from './readiness.js';
-import { resolveRecording } from '../catalog/review.js';
+import { resolveRecording,reviewRecording } from '../catalog/review.js';
 import { DatabaseSync } from 'node:sqlite';
 import { randomUUID, createHash } from 'node:crypto';
 import { validateSuccessfulAnalysis } from './validate-analysis.js';
@@ -325,6 +327,45 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
       const hasAutomatic=fields.some(f=>f.origin==='agent');
       return {version:row?.version ?? 0, ...state, reviewers:state.reviewers.map(r => ({...r, needs_reconfirmation:r.status !== 'Pending' && (r.reviewed_revision !== request.revision || (hasAutomatic && r.reviewed_fields_token!==token))}))};
     },
+    requestInternalReview(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','analysis_run_id','reason','question','idempotency_key'])||!text(input.reason,2000)||!text(input.question,4000))fail('INVALID_INPUT');
+      command(input);
+      return execute(input,`request-internal:${input.request_id}`,Object.fromEntries(Object.entries(input).filter(([key])=>!['actor_id','idempotency_key'].includes(key))),()=>{
+        const request=owned(input.actor_id,input.request_id),analysis=this.activeAnalysis(input.actor_id,request.id);
+        if(request.revision!==input.expected_revision)fail('REVISION_CONFLICT');
+        if(request.completed_at||request.deleted_at||!analysis?.result?.ok||analysis.base_revision!==request.revision||analysis.run_id!==input.analysis_run_id||this.analyses(input.actor_id,request.id).at(-1)?.run_id!==analysis.run_id)fail('REVIEW_NOT_READY');
+        const review={id:randomUUID(),reason:input.reason.trim(),question:input.question.trim(),request_revision:request.revision,analysis_run_id:analysis.run_id,requested_by:input.actor_id,requested_at:new Date().toISOString()};
+        request.internal_review_request=review;request.internal_review_history=[...(request.internal_review_history||[]),review];request.updated_at=review.requested_at;
+        db.prepare('UPDATE requests SET body=? WHERE id=?').run(JSON.stringify(request),request.id);
+        return request;
+      });
+    },
+    recordManagerDecision(input) {
+      if(!keys(input,['actor_id','request_id','expected_revision','expected_scope_token','manager_name','notes','decision','idempotency_key'])||!text(input.manager_name,200)||!text(input.notes,12000)||!['return_to_coordinator','close_case'].includes(input.decision))fail('INVALID_INPUT');
+      command(input);
+      return execute(input,`manager-decision:${input.request_id}`,Object.fromEntries(Object.entries(input).filter(([key])=>!['actor_id','idempotency_key'].includes(key))),()=>{
+        const request=owned(input.actor_id,input.request_id);
+        const scope=managerDecisionToken({revision:request.revision,recording_id:request.recording_id,internal_review_request:request.internal_review_request,analysis:this.activeAnalysis(input.actor_id,request.id),reviewers:this.reviewers(input.actor_id,request.id)});
+        if(request.revision!==input.expected_revision||scope!==input.expected_scope_token)fail('REVISION_CONFLICT');
+        const currentAnalysis=this.activeAnalysis(input.actor_id,request.id),tracking=this.reviewers(input.actor_id,request.id);
+        const fields=effectiveFields(request,currentAnalysis,this.decisions(input.actor_id,request.id));
+        const resolved_triggers=escalationReasons({revision:request.revision,recording_id:request.recording_id,internal_review_request:request.internal_review_request,analysis:currentAnalysis,reviewers:tracking,summary:{deadline:fields.find(f=>f.field_key==='response_deadline')?.value},catalogue_assessment:currentAnalysis?.result?.catalogue_assessment||currentAnalysis?.result?.stages?.review?.output?.catalogue_assessment||reviewRecording(request.recording_id)});
+        const decision={scope_token:scope,resolved_triggers,manager_name:input.manager_name.trim(),notes:input.notes.trim(),decision:input.decision,recorded_by:input.actor_id,recorded_at:new Date().toISOString()};
+        request.messages.push({message_id:randomUUID(),kind:'reply',source:'manager_decision',text:`INTERNAL MANAGER DECISION — recorded by the coordinator, not a client email.\nManager: ${decision.manager_name}\n${decision.notes}\nOutcome: ${input.decision==='close_case'?'Close case':'Return to Coordinator'}. This does not grant music rights.`,received_at:decision.recorded_at,supplied_message_date:null,added_by:input.actor_id});
+        request.revision++;
+        decision.scope_token=managerDecisionToken({revision:request.revision,recording_id:request.recording_id,internal_review_request:request.internal_review_request,reviewers:tracking});
+        request.manager_resolution=decision;
+        request.manager_decision_history=[...(request.manager_decision_history||[]),decision];
+        if(input.decision==='close_case'){request.completed_at=decision.recorded_at;request.completed_by=input.actor_id;request.completion_history=[...(request.completion_history||[]),{request_id:request.id,revision:request.revision,actor_id:input.actor_id,action:'case_completed',at:decision.recorded_at}];}
+        request.updated_at=decision.recorded_at;
+        db.prepare('UPDATE requests SET revision=?,body=? WHERE id=?').run(request.revision,JSON.stringify(request),request.id);
+        db.prepare('DELETE FROM active_analyses WHERE request_id=?').run(request.id);
+        db.prepare("UPDATE analysis_runs SET status='stale' WHERE request_id=? AND status='completed'").run(request.id);
+        db.prepare('DELETE FROM review_heads WHERE request_id=?').run(request.id);
+        event(request,input.actor_id,'manager_decision_recorded',null,{decision:input.decision});
+        return request;
+      });
+    },
     recordReview(input) {
       if (!keys(input,['actor_id','request_id','expected_revision','expected_review_version','idempotency_key','operation','reviewer_id','name','role','status','notes'])) fail('INVALID_INPUT');
       command(input);
@@ -397,7 +438,7 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
         if(request.revision!==expected_revision) fail('REVISION_CONFLICT');
         if(this.reviewers(actor_id,request_id).version!==expected_review_version) fail('REVIEW_CONFLICT');
         if(!this.workflow(actor_id,request_id).can_complete) fail('REVIEW_NOT_READY');
-        db.prepare('INSERT INTO review_completions (request_id,body) VALUES (?,?)').run(request_id,JSON.stringify({brief_approval_version:this.briefApproval(actor_id,request_id).latest.version,request_revision:expected_revision,review_version:expected_review_version,completed_by:actor_id,completed_at:new Date().toISOString()}));
+        db.prepare('INSERT INTO review_completions (request_id,body) VALUES (?,?)').run(request_id,JSON.stringify({brief_approval_version:this.briefApproval(actor_id,request_id).latest?.version??null,request_revision:expected_revision,review_version:expected_review_version,completed_by:actor_id,completed_at:new Date().toISOString()}));
         return request;
       });
     },

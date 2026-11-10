@@ -1,17 +1,11 @@
 "use client";
 import Link from "next/link";
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-
-type Page = "cases" | "dashboard" | "home" | "coordinator" | "internal";
-function Links({current,requestId}:{current:Page;requestId?:string|null}) {
- const suffix=requestId?`?request=${encodeURIComponent(requestId)}`:"";
+import styles from "../app/landing.module.css";
+type Page = "cases" | "dashboard" | "home" | "coordinator" | "internal" | "inquiries";
+export default function PageNavigation({current}:{current:Page}){
  return <nav className="page-navigation" aria-label="Main navigation">
- <Link href="/dashboard" aria-current={current==="dashboard"?"page":undefined}>Daily briefing</Link>
- <Link href="/cases" aria-current={current==="cases"?"page":undefined}>Cases</Link>
- <Link href={`/coordinator${suffix}`} aria-current={current==="coordinator"?"page":undefined}>Coordinator</Link>
- <Link href="/internal" aria-current={current==="internal"?"page":undefined}>Internal review</Link>
+ <Link className={styles.entry} style={{background:"var(--sf-control-gold)",color:"#171a13",border:"1px solid #f3dfaa90",boxShadow:"inset 0 1px 0 #fff8"}} href="/dashboard" aria-current={current==="dashboard"?"page":undefined}>Workspace</Link>
+ <Link className={styles.entry} style={{background:"var(--sf-control-gold)",color:"#171a13",border:"1px solid #f3dfaa90",boxShadow:"inset 0 1px 0 #fff8"}} href="/inquiries" aria-current={current==="inquiries"?"page":undefined}>New Inquiries</Link>
+ <Link className={styles.entry} style={{background:"var(--sf-control-gold)",color:"#171a13",border:"1px solid #f3dfaa90",boxShadow:"inset 0 1px 0 #fff8"}} href="/cases" aria-current={current==="cases"?"page":undefined}>Cases</Link>
  </nav>;
 }
-function RequestLinks({current}:{current:Page}){const query=useSearchParams();return <Links current={current} requestId={current==="home"?null:query.get("request")}/>;}
-export default function PageNavigation({current}:{current:Page}){return <Suspense fallback={<Links current={current}/>}><RequestLinks current={current}/></Suspense>;}

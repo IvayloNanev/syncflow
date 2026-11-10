@@ -4,3 +4,8 @@ test('full correspondence retains all source text and labels drafts as unsent in
 test('failed analysis never masquerades as correspondence',()=>{assert.deepEqual(caseCorrespondence([],[{result:{ok:false,stages:{follow_up:{output:{body:'Not a valid draft'}}}}}]),[]);});
 
 test('already-open cases using older payloads retain messages without a correspondence field',()=>{const source={messages:[{message_id:'legacy',kind:'initial',text:'Entire saved email.'}]};assert.equal(savedCorrespondence(source)[0].text,'Entire saved email.');assert.deepEqual(savedCorrespondence({}),[]);assert.deepEqual(savedCorrespondence({correspondence:null}),[]);});
+
+test('reviewer drafts are labeled as unsent reviewer correspondence',()=>{
+ const entries=caseCorrespondence([],[],[{fingerprint:'human',result:{recommendation:{lane:'human'},draft:{subject:'Decision requested',body:'Please review.'}}}]);
+ assert.equal(entries[0].kind,'Reviewer email draft · not sent');assert.equal(entries[0].draft,true);
+});

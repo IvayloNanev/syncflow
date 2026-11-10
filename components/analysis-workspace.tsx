@@ -1,4 +1,7 @@
 "use client";
+import {isAbandonedAnalysis} from '../requests/analysis-recovery-policy.js';
+import InternalReviewRequest from './internal-review-request';
+import ReviewerOutcomeForm from './reviewer-outcome-form';
 import CompleteCaseButton from './complete-case-button';
 
 import Link from "next/link";
@@ -11,11 +14,9 @@ import {assessCatalogue} from "../catalog/availability.js";
 import { previewEmail } from "../catalog/email-preview.js";
 import {readEditorBackup,writeEditorBackup,clearEditorBackup} from "./editor-backup";
 import { confirmDiscard, useUnsavedGuard } from "./use-unsaved-guard";
-import CoordinatorJourney from "./coordinator-journey";
 import EmailForwarding from "./email-forwarding";
-import AnalysisRecovery from "./analysis-recovery";
 import RequestDashboard from "./request-dashboard";
-import ReviewerTracking, {type ReviewTracking} from "./reviewer-tracking";
+import {type ReviewTracking} from "./reviewer-tracking";
 import InternalHandoff, {type HandoffState} from "./internal-handoff";
 import { reviewRecording } from "../catalog/review.js";
 import RequestCoverage from "./request-coverage";
@@ -45,7 +46,7 @@ const recordingFollowUpBody = "Hi,\n\nThank you for sending your music request a
 const acknowledgementBody = "Hi,\n\nThank you for sending the details of your music request. We’ll check the exact recording and the relevant rights information before confirming availability, fees or permission to use the music.\n\nWe’ll get back to you once those checks are complete.\n\nBest regards";
 const example = "Hi, this is Jordan Pike. We’d like to use Northern Lights by Maya Rivers (original recording) in a Canadian online advertising campaign for six months. Our budget is CAD 5,000 for both rights. Please respond by November 6, 2026.";
 
-export default function AnalysisWorkspace({ mode = "coordinator", initialRequestId, shared = false }: {shared?:boolean;mode?: "coordinator" | "internal"; initialRequestId?: string}) {
+export default function AnalysisWorkspace({ mode = "coordinator", initialRequestId, shared = false, inquiryEntry = false }: {inquiryEntry?:boolean;shared?:boolean;mode?: "coordinator" | "internal"; initialRequestId?: string}) {
   const router=useRouter();
   const [dashboardOpen,setDashboardOpen]=useState(mode === "internal" && !initialRequestId);
   const [catalogOpen, setCatalogOpen] = useState(false);
@@ -55,7 +56,6 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const [recordingOverride, setRecordingOverride] = useState(false);
   const [reviewRun, setReviewRun] = useState<{ run_id: string; result: Result } | null>(null);
   const [handoffDirty,setHandoffDirty]=useState(false);
-  const [reviewerDirty,setReviewerDirty]=useState(false);
   const [loadingRequest,setLoadingRequest]=useState(!!initialRequestId);
   const [fromBriefing,setFromBriefing]=useState(false);
   useEffect(()=>{let active=true;queueMicrotask(()=>{if(active)setFromBriefing(window.location.hash==='#briefing-handoff');});return()=>{active=false;};},[initialRequestId]);
@@ -65,7 +65,6 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const headingRef=useRef<HTMLHeadingElement>(null);
   const responseRef=useRef<HTMLElement>(null);
   const [handoff,setHandoff]=useState<HandoffState|null>(null);
-  const [briefHistory,setBriefHistory]=useState<BriefApproval[]>([]);
   const [workflow,setWorkflow]=useState<Workflow|null>(null);
   const [reviewers,setReviewers]=useState<ReviewTracking>({version:0,reviewers:[],history:[]});
   const [decisions, setDecisions] = useState<FactDecision[]>([]);
@@ -74,6 +73,14 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const [analyses, setAnalyses] = useState<AnalysisSummary[]>([]);
   const [reply, setReply] = useState("");
   const [notice, setNotice] = useState("");
+  const [inquiryCaseId,setInquiryCaseId]=useState('');
+  const [inquiryCaseStatus,setInquiryCaseStatus]=useState('pending');
+  useEffect(()=>{
+    if(!inquiryEntry)return;
+    let active=true;const previous=readEditorBackup('last-inquiry-case')?.request_id;
+    if(previous&&/^[a-f0-9-]{36}$/i.test(previous)){void command({action:'get',request_id:previous}).then((data:Detail)=>{if(active&&!data.request.deleted_at){setInquiryCaseId(previous);setInquiryCaseStatus(data.workflow.completed?'completed':'pending');}}).catch(()=>{if(active)clearEditorBackup('last-inquiry-case');});}
+    return()=>{active=false;};
+  },[inquiryEntry]);
   const retryCommands = useRef(new Map<string, string>());
   const [recording, setRecording] = useState<Recording | null>(null);
   const [email, setEmail] = useState("");
@@ -90,7 +97,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const catalogueAssessment=assessCatalogue({messages:saved?.messages||[{text:email}],fields:[...(saved?.confirmed_fields||[]),...(saved?.agent_fields||[])]});
   const fallbackBody = saved&&!saved.recording_id ? recordingFollowUpBody : acknowledgementBody;
   const draftDirty = !!result && (subject !== (result.stages?.follow_up?.output?.subject || acknowledgementSubject) || draft !== (result.stages?.follow_up?.output?.body || fallbackBody));
-  const unsavedText = reviewerDirty || handoffDirty || draftDirty || !!reply.trim() || (!saved && !!email.trim());
+  const unsavedText = handoffDirty || draftDirty || !!reply.trim() || (!saved && !!email.trim());
   useUnsavedGuard(unsavedText);
   function requestUrl(id:string){return `/${mode === "internal" ? "internal" : "coordinator"}?request=${encodeURIComponent(id)}`;}
   function backupEditors(next:Record<string,string>){if(saved)writeEditorBackup(saved.id,{reply,subject,body:draft,run:reviewRun?.run_id||"",...next});}
@@ -127,7 +134,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     return () => { mounted = false; };
   }, [initialRequestId,mode,loadAttempt]);
   function showSaved(data: Detail) {
-    setBriefHistory(data.brief_approval_history||[]);setRecordingCandidate(undefined);setRecordingReason("");setRecordingChanges(data.recording_changes||[]); setHandoff(data.handoff); setWorkflow(data.workflow); setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
+    setRecordingCandidate(undefined);setRecordingReason("");setRecordingChanges(data.recording_changes||[]); setHandoff(data.handoff); setWorkflow(data.workflow); setReviewers(data.reviewer_tracking || {version:0,reviewers:[],history:[]}); clearResult(); setReviewRun(data.review_analysis); setDecisions(data.decisions || []); setSaved(data.request); setEmail(data.request.messages[0].text); setTimezone(data.request.coordinator_timezone);
     setRecordingOverride(true); setRecording(recordings.find(r => r.id === data.request.recording_id) || null); setAnalyses(data.analyses);
     setRecoveredDraft(null);
     const backup=readEditorBackup(data.request.id);
@@ -151,6 +158,21 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     const data: Detail = await command(keyed(payload)); clearEditorBackup("new"); showSaved(data); window.history.replaceState(null,"",requestUrl(data.request.id)); await refresh();
     setNotice("Request saved. Analysis will populate source-backed details automatically."); return data.request;
   }
+  async function saveInquiryCase(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if(busy||!email.trim())return;
+    await perform(async()=>{
+      const payload={action:'create',email,timezone,recording_id:effectiveRecording?.id??null};
+      const data:Detail=await command(keyed(payload));
+      setInquiryCaseId(data.request.id);setInquiryCaseStatus('pending');
+      writeEditorBackup('last-inquiry-case',{request_id:data.request.id});
+      clearEditorBackup('new');
+      retryCommands.current.delete(JSON.stringify(payload));
+      setEmail('');setRecording(null);setRecordingOverride(false);setCatalogOpen(false);
+      setNotice('Case saved. You can find it in Cases.');
+      window.dispatchEvent(new Event('syncflow:case-updated'));
+    });
+  }
   async function analyze(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     if(!confirmDiscard(draftDirty || !!reply.trim())) return;
@@ -164,12 +186,45 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       await refresh();
     });
   }
+  const automaticAnalysis=useRef(new Set<string>());
+  const [pendingExpired,setPendingExpired]=useState(false);
+  const runOnOpen=useEffectEvent(async()=>{
+    if(!saved)return;
+    await perform(async()=>{
+      const payload={action:'analyze',request_id:saved.id,expected_revision:saved.revision};
+      if(pendingExpired)retryCommands.current.delete(JSON.stringify(payload));
+      setPendingExpired(false);
+      const data:Detail=await command(keyed(payload));
+      showSaved(data);
+      if(data.analysis_status==='completed'){retryCommands.current.delete(JSON.stringify(payload));setNotice('Your response draft is ready.');}
+      else if(data.analysis_status==='running')setNotice('The agent is analyzing this case…');
+      else {retryCommands.current.delete(JSON.stringify(payload));setError('The agent could not finish this analysis. Your case is saved. Use Retry agent to try again.');}
+      await refresh();
+    });
+  });
+  const autoCaseKey=saved?`${saved.id}:${saved.revision}`:'';
+  const latestAnalysisStatus=analyses.at(-1)?.status;
+  useEffect(()=>{
+    if(mode!=='coordinator'||!autoCaseKey||busy||dashboardOpen||result||workflow?.status==='Case completed'||automaticAnalysis.current.has(autoCaseKey))return;
+    if(latestAnalysisStatus==='running'&&!pendingExpired)return;
+    automaticAnalysis.current.add(autoCaseKey);
+    void runOnOpen();
+  },[mode,autoCaseKey,busy,dashboardOpen,result,workflow?.status,latestAnalysisStatus,pendingExpired]);
+  const checkPendingAnalysis=useEffectEvent(async()=>{
+    if(!saved||running.current)return;
+    try{const data:Detail=await command({action:'get',request_id:saved.id});const latest=data.analyses.at(-1);if(latest?.status==='running'){const abandoned=isAbandonedAnalysis(latest);setPendingExpired(abandoned);if(abandoned&&automaticAnalysis.current.has(autoCaseKey))setError('The previous agent run did not finish. Use Retry agent to start a new attempt.');return;}setPendingExpired(false);if(unsavedText&&!confirmDiscard(true)){setError('The agent finished. Your unsaved edits are preserved; reload when ready to view the result.');return;}showSaved(data);}catch{setError('Could not check the running agent. Use Retry agent to reconnect.');}
+  });
+  useEffect(()=>{
+    if(!autoCaseKey||result||pendingExpired||latestAnalysisStatus!=='running')return;
+    const timer=window.setInterval(()=>void checkPendingAnalysis(),5000);
+    return()=>window.clearInterval(timer);
+  },[autoCaseKey,result,latestAnalysisStatus,pendingExpired]);
   function newRequest() {
     if(!confirmDiscard(unsavedText))return;
     window.history.replaceState(null,"",`/${mode === "internal" ? "internal" : "coordinator"}`);
     clearEditorBackup("new");
     setDashboardOpen(false); setCatalogOpen(false); setRecordingOverride(false); retryCommands.current.clear();
-    setRecordingCandidate(undefined);setRecordingReason("");setRecordingChanges([]); setHandoffDirty(false); setReviewerDirty(false);setRequestLoadFailed(false);setLoadingRequest(false);setHandoff(null); setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
+    setRecordingCandidate(undefined);setRecordingReason("");setRecordingChanges([]); setHandoffDirty(false);setRequestLoadFailed(false);setLoadingRequest(false);setHandoff(null); setWorkflow(null); setReviewers({version:0,reviewers:[],history:[]}); setReviewRun(null); setDecisions([]); setSaved(null); setEmail(""); setRecording(null); setReply(""); setAnalyses([]); setNotice(""); clearResult();
   }
   async function copyDraft() {
     try { await navigator.clipboard.writeText(`Subject: ${subject}\n\n${draft}`); setCopyStatus("Draft copied. Nothing was sent."); }
@@ -195,6 +250,12 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     }); }
   };
   const selectedId=saved?.id;
+  const openedCase=useRef<string|null>(null);
+  useEffect(()=>{
+    if(!selectedId||loadingRequest||dashboardOpen||openedCase.current===selectedId)return;
+    openedCase.current=selectedId;
+    if(!window.location.hash)window.scrollTo({top:0,left:0,behavior:'instant'});
+  },[selectedId,loadingRequest,dashboardOpen]);
   const handoffFollowed=useRef(false);
   useEffect(()=>{
     if(loadingRequest||handoffFollowed.current||!initialRequestId||selectedId!==initialRequestId||!window.location.hash)return;
@@ -227,17 +288,10 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
           {needsCatalogueRegeneration?<p className="analysis-error" role="alert"><strong>This saved draft used the old catalogue logic.</strong> Click Regenerate draft before using it. The existing text is preserved below for reference.</p>:null}
           {catalogueAssessment.status==='not_found'?<p className="catalogue-draft-warning"><strong>Lead with the catalogue gap.</strong> No matching catalogue entry was found. Availability needs verification before this request can progress.</p>:null}
           {responseReadyNotice?<p className="draft-ready-notice" role="status"><span aria-hidden="true">✓</span> Your response draft is ready. Review and copy it below.</p>:null}
-          {result ? <><p className="panel-note">{draftDirty ? "Edited draft · unsaved. Leaving or replacing this editor requires confirmation. " : result.stages?.follow_up?.skipped ? (!saved?.recording_id ? "Recording clarification template · " : "Acknowledgement template · ") : "AI-generated draft · "}Review the wording before sending. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {backupEditors({subject:e.target.value});setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {backupEditors({body:e.target.value});setDraft(e.target.value);setCopyStatus('');}} /><div className="draft-copy-actions"><button type="button" className="primary-button" disabled={busy||needsCatalogueRegeneration} onClick={copyDraft}>Copy draft</button>{copyStatus?<p role="status">{copyStatus}</p>:null}</div><div className="request-save-actions"><p className="panel-note">Request and AI analysis saved automatically.{draftDirty?' Your edited email draft is kept in this browser only.':''}</p><div><button type="button" className="secondary-button" disabled={busy} onClick={()=>{if(!confirmDiscard(unsavedText))return;setDashboardOpen(true);void perform(refresh);}}>View in requests</button><button type="button" className="secondary-button" disabled={busy} onClick={newRequest}>New request</button></div></div>{saved?<CompleteCaseButton requestId={saved.id} revision={saved.revision} disabled={busy||stale}/>:null}<div className="response-next-step"><h3>After you send this email</h3><p>Send the draft from your email app. When the client answers, paste their reply into this request and recheck it.</p></div></> : <p>{stale ? 'Use Draft response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Resolve exceptions and complete the internal checks; this does not approve a licence.' : 'Use Draft response to generate the checklist and any necessary email.'}</p>}
+          {result ? <><p className="panel-note">{draftDirty ? "Edited draft · unsaved. Leaving or replacing this editor requires confirmation. " : result.stages?.follow_up?.skipped ? (!saved?.recording_id ? "Recording clarification template · " : "Acknowledgement template · ") : "AI-generated draft · "}Review the wording before sending. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {backupEditors({subject:e.target.value});setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {backupEditors({body:e.target.value});setDraft(e.target.value);setCopyStatus('');}} /><div className="draft-copy-actions"><button type="button" className="primary-button" disabled={busy||needsCatalogueRegeneration} onClick={copyDraft}>Copy draft</button>{copyStatus?<p role="status">{copyStatus}</p>:null}</div><div className="request-save-actions"><p className="panel-note">Request and AI analysis saved automatically.{draftDirty?' Your edited email draft is kept in this browser only.':''}</p></div><div className="response-next-step"><h3>After you send this email</h3><p>Send the draft from your email app. When the client answers, paste their reply into this request and recheck it.</p>{mode==='coordinator'&&saved?<CompleteCaseButton completionLabel="Mark as completed" requestId={saved.id} revision={saved.revision} completed={workflow?.status==='Case completed'} disabled={busy} beforeComplete={async()=>{if(!confirmDiscard(unsavedText))throw Error('Case remains open. Save or copy your edits before completing.');}}/>:null}</div></> : <p>{stale ? 'Use Draft response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Resolve exceptions and complete the internal checks; this does not approve a licence.' : 'Use Draft response to generate the checklist and any necessary email.'}</p>}
         </section> : saved ? <button type="button" className="primary-button" disabled={busy} onClick={()=>void analyze()}>{busy?"Drafting response…":"Draft response"}</button> : null;
-  const briefApprovalPanel = saved&&workflow?<section id="coordinator-signoff" className="workflow-status coordinator-signoff" aria-label="Coordinator brief approval"><div><h2>{workflow.brief_approved?'Brief approved for internal review':'Coordinator brief review'}</h2><p>Review the recording and complete summary once. This approves the brief for internal review; it does not confirm each agent-extracted fact or grant music rights.</p>{workflow.brief_approval?<p>{workflow.brief_approval.outdated?'Previous approval is outdated. ':''}Approved by {workflow.brief_approval.approved_by} at {workflow.brief_approval.approved_at} · revision {workflow.brief_approval.request_revision}</p>:null}</div><div>{mode==='coordinator'&&!workflow.brief_approved?<><button className="primary-button" disabled={busy||!workflow.can_approve_brief||!reviewRun} onClick={()=>{if(!confirmDiscard(unsavedText))return;void perform(async()=>{const data:Detail=await command(keyed({action:'approve_brief',request_id:saved.id,expected_revision:saved.revision,analysis_run_id:reviewRun!.run_id}));showSaved(data);await refresh();setNotice('Coordinator approval saved for this request revision and analysis. No licence or rights clearance was granted.');});}}>Approve brief for internal review</button>{!workflow.can_approve_brief?<div><p>Before you can approve:</p><ul>{workflow.reasons.map((reason,i)=><li key={i}>{reason}</li>)}</ul></div>:null}</>:!workflow.brief_approved?<Link className="secondary-button" href={`/coordinator?request=${encodeURIComponent(saved.id)}`}>Review and approve in Coordinator</Link>:<><p>Current sign-off recorded. Changes require fresh approval.</p>{mode==='coordinator'?<Link className="primary-button" href={`/internal?request=${encodeURIComponent(saved.id)}`}>Continue to internal review</Link>:null}</>}{briefHistory.length?<details><summary>Brief approval history ({briefHistory.length})</summary>{briefHistory.map(record=><p key={record.version}>Revision {record.request_revision} · analysis {record.analysis_run_id} · {record.approved_by} · {record.approved_at}</p>)}</details>:null}</div></section>:null;
-  return <div className="app-shell">
+  return <div className="app-shell case-workspace-shell">
     <a className="skip-link" href="#main-workspace">Skip to workspace</a>
-    <aside className="app-sidebar" aria-label="Request navigation">
-      <a className="brand" href="#main-workspace">syncflow<span className="brand-period">.</span></a>
-      <p className="sidebar-caption">MUSIC LICENSING WORKSPACE</p>
-      {mode === "coordinator" ? <button className="new-request-button" disabled={busy} onClick={newRequest}>＋ New request</button> : <Link className="new-request-button" href={saved ? `/coordinator?request=${encodeURIComponent(saved.id)}` : "/coordinator"}>Open coordinator page</Link>}<button type="button" className="dashboard-nav" disabled={busy} onClick={()=>{if(!confirmDiscard(unsavedText))return;setDashboardOpen(true);void perform(refresh);}}>View all requests {listState==='ready'?`(${requests.length})`:listState==='loading'?"…":""}</button>
-      <div className="sidebar-bottom"><small>{shared?"Shared workspace · Authorized team members":"Saved on this computer · Single operator"}<br />Fictional catalog · Nothing sends automatically</small></div>
-    </aside>
     <main className="main-workspace" id="main-workspace"><div className="workspace-body">
       {dashboardOpen && saved ? <button type="button" className="dashboard-entry text-button" disabled={busy} onClick={()=>setDashboardOpen(false)}>Back to selected request</button> : null}
       {dashboardOpen?<div aria-live="polite">{notice&&!responseReadyNotice?<p className="notice">{notice}</p>:null}</div>:null}
@@ -245,38 +299,42 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       {dashboardOpen && error ? <p role="alert" className="analysis-error">{error}</p> : null}
       {loadingRequest?<section className="result-panel" role="status" aria-busy="true"><h1>Opening saved request…</h1><p>Loading the conversation, analysis and reviewer records.</p></section>:requestLoadFailed&&!dashboardOpen?<section className="result-panel" role="alert"><h1>Couldn’t open this request</h1><p>Check your connection or choose another saved request. Your existing work is unchanged.</p><button className="primary-button" onClick={()=>{setLoadingRequest(true);setLoadAttempt(n=>n+1);}}>Retry opening request</button><button className="secondary-button" onClick={()=>{setDashboardOpen(true);void perform(refresh);}}>View all requests</button></section>:dashboardOpen ? <RequestDashboard requests={requests} loadState={listState} busy={busy} onOpen={navigationProps.onOpen} onNew={mode === "internal" ? () => {router.push("/coordinator");} : newRequest} onRefresh={navigationProps.onRefresh} onDelete={navigationProps.onDelete} /> : <>
 
-      <div className="workspace-title"><div><p className="eyebrow">SYNC REQUEST INTAKE</p><h1 ref={headingRef} tabIndex={-1}>{saved ? `${mode === 'internal' ? 'Internal review' : 'Request'} · ${valueText(project||contact||recording?.title||saved.id.slice(0,8))}` : mode === 'internal' ? 'Internal handoffs & decisions' : 'Start with the client’s email.'}</h1><p>{mode === "internal" ? "Prepare the reviewer handoff and record decisions received from your team." : "Paste the client’s email, draft a response, then review and copy it."}</p></div><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span></div>
+      <div className="workspace-title"><div><p className="eyebrow">{mode==='internal'?'INTERNAL REVIEW AGENT':'COORDINATOR AGENT'}</p><h1 ref={headingRef} tabIndex={-1}>{saved ? `${mode === 'internal' ? 'Internal review' : 'Request'} · ${valueText(project||contact||recording?.title||saved.id.slice(0,8))}` : mode === 'internal' ? 'Internal handoffs & decisions' : inquiryEntry ? 'New Inquiries' : 'Start with the client’s email.'}</h1><p>{mode === "internal" ? "Prepare the reviewer handoff and record decisions received from your team." : inquiryEntry ? "Paste the client’s email below, then save it as a case." : "Paste the client’s email, draft a response, then review and copy it."}</p></div><div className="case-header-actions"><span className="status-pill">{saved ? `Saved · revision ${saved.revision}` : 'New request'}</span>{saved?<CompleteCaseButton completionLabel="Mark as completed" requestId={saved.id} revision={saved.revision} completed={workflow?.status==='Case completed'} disabled={busy} beforeComplete={async()=>{if(!confirmDiscard(unsavedText))throw Error('Case remains open. Save or copy your edits before closing.');}}/>:null}</div></div>
       <div className="case-status-slot" aria-live="polite">{notice&&!responseReadyNotice?<p className="case-inline-status">{notice}</p>:null}</div>
 
       {mode==='coordinator'&&catalogueAssessment.status==='not_found'?<section className="catalogue-stop" role="status" aria-label="Catalogue check needs attention"><p className="eyebrow">CATALOGUE CHECK · ACTION REQUIRED</p><h2>No matching music in SyncFlow’s catalogue</h2><p><strong>Requested: {[catalogueAssessment.artist,catalogueAssessment.title].filter(Boolean).join(' · ')}</strong></p><p>We cannot confirm this request against the current catalogue. Ask for specific songs and recording links, then verify availability before progressing.</p><small>This does not mean the music cannot be licensed elsewhere.</small></section>:null}
       {mode === "internal" && saved ? <section className="selected-request-context" aria-label="Selected request"><strong>{valueText(project || 'Project missing')}</strong><span>{valueText(contact || 'Client missing')}</span><span>{recording ? `${recording.title} · ${recording.artist} · ${recording.version}` : 'Recording unresolved'}</span><small>{saved.agent_fields?.length?"Includes agent-extracted details · ":""}Revision {saved.revision} · {workflow?.status || 'Status loading'}</small></section> : null}
       <div aria-live="polite">{busy ? <AIProgress label="Working on the request…"/> : null}</div>
-      {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p>{saved ? <button className="secondary-button" disabled={busy} onClick={()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return;void perform(async()=>{const data:Detail=await command({action:"get",request_id:saved.id});showSaved(data);setNotice("Saved request checked. Review its latest status before retrying.");});}}>Check saved request</button> : null}</div> : null}
+      {saved?.manager_resolution?<section className="result-panel"><h2>Manager decision</h2><p><strong>{saved.manager_resolution.manager_name}</strong></p><p style={{whiteSpace:'pre-wrap'}}>{saved.manager_resolution.notes}</p></section>:null}
+      {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p>{saved&&!result?<button className="secondary-button" disabled={busy} onClick={()=>{automaticAnalysis.current.add(autoCaseKey);retryCommands.current.clear();void analyze();}}>Retry agent</button>:null}{saved ? <button className="secondary-button" disabled={busy} onClick={()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return;void perform(async()=>{const data:Detail=await command({action:"get",request_id:saved.id});showSaved(data);setNotice("Saved request checked. Review its latest status before retrying.");});}}>Check saved request</button> : null}</div> : null}
       {recoveredDraft ? <details className="handoff-panel" open><summary>Recovered unsent email edits · outdated, review before reuse</summary><p>These are your tab-local editor notes, not a current generated response. They were not sent or confirmed.</p><strong>{recoveredDraft.subject}</strong><textarea aria-label="Recovered unsent email" value={recoveredDraft.body} readOnly rows={8}/></details> : null}
       {shared&&saved&&fromBriefing?<BriefingHandoff key={saved.id} requestId={saved.id} destination={mode} revision={`${saved.revision}:${reviewers.version}:${reviewRun?.run_id||''}`}/>:null}
       {mode === "internal" && saved && !fromBriefing ? <p><Link className="secondary-button" href={`${mode === "internal" ? "/coordinator" : "/internal"}?request=${encodeURIComponent(saved.id)}`}>{mode === "internal" ? "Back to this request in Coordinator" : "Open this request in Internal review"}</Link></p> : null}
       {mode === "internal" && saved && workflow ? <section className="workflow-status" aria-label="Request status and next action"><div><p className="eyebrow">CURRENT STATUS</p><h2>{workflow.status}</h2><p>{workflow.next_action}</p></div><div><details><summary>Readiness checks ({workflow.reasons.length})</summary>{workflow.reasons.map((reason,i)=><p key={i}>{reason}</p>)}<p>Readiness refers to internal review only. Publishing verification and the licensing process remain separate.</p></details>
         {workflow.completion?.needs_reconfirmation ? <p className="stale-banner">Previous completion is outdated after a request or reviewer change.</p> : null}
-        {mode === "internal" ? <nav className="review-next-actions" aria-label="Review actions"><Link href={`/coordinator?request=${encodeURIComponent(saved.id)}`}>Resolve client or recording gaps</Link><a href="#internal-handoff">Prepare handoff summary</a><a href="#internal-reviewers">Record reviewer decisions</a></nav>:<p>Reviewer decisions and completion are managed in Internal review.</p>}
+        {mode === "internal" ? <nav className="review-next-actions" aria-label="Review actions"><Link href={`/coordinator?request=${encodeURIComponent(saved.id)}`}>Resolve client or recording gaps</Link><a href="#internal-handoff">Prepare handoff summary</a><a href="#internal-reviewers">Record reviewer decisions</a></nav>:<p>Record received reviewer outcomes in Coordinator. Escalations requiring a manager are handled by Internal Review.</p>}
         {workflow.history.length ? <details><summary>Completion history ({workflow.history.length})</summary>{workflow.history.map((event,i)=><p key={i}>Revision {event.request_revision} · {event.completed_by} · {event.completed_at}</p>)}</details> : null}
       </div></section> : null}
       {mode==='internal'&&saved?<details className="result-panel" id="manager-escalation" aria-labelledby="manager-escalation-heading"><summary>Manager escalation</summary><h2 id="manager-escalation-heading">Prepare a manager review</h2><p>Review the evidence and current blockers before contacting your manager. No manager has been assigned or notified by SyncFlow.</p><ul>{workflow?.reasons.map((reason,i)=><li key={i}>{reason}</li>)}{reviewers.reviewers.map(r=><li key={r.id}>{r.name} · {r.role}: {r.status}{r.notes?` — ${r.notes}`:''}</li>)}</ul><p>Share the request, the decision needed and the client deadline with your manager through your usual channel. Record their decision in the reviewer panel once received.</p><a className="secondary-button" href="#internal-reviewers">Reviewers · Record received manager decision</a></details>:null}
-      {mode==='internal'&&saved&&reviewers.reviewers.some(r=>r.status==='Pending'||r.needs_reconfirmation)?<section id="reviewer-follow-up" className="result-panel" style={{marginBottom:40}} aria-labelledby="reviewer-follow-up-heading"><p className="eyebrow">REVIEWER FOLLOW-UP</p><h2 id="reviewer-follow-up-heading">Follow up on pending reviewer decisions</h2><p>Contact the reviewers below for a decision or an updated response time. Review the client’s deadline and update them if needed. No follow-up has been sent by SyncFlow.</p><ul>{reviewers.reviewers.filter(r=>r.status==='Pending'||r.needs_reconfirmation).map(r=><li key={r.id}><strong>{r.name} · {r.role}</strong> — {r.needs_reconfirmation?'Decision needs reconfirmation':'Decision pending'}{r.notes?` · ${r.notes}`:''}</li>)}</ul><a className="secondary-button" href="#internal-reviewers">Record received decision</a></section>:null}
-      {mode === 'internal' ? briefApprovalPanel : null}
+      {mode==='coordinator'&&saved&&result&&workflow?.status!=='Case completed'?<InternalReviewRequest key={saved.id} busy={busy} onSend={async(reason,question)=>{
+        if(!confirmDiscard(unsavedText))return false;
+        let success=false;await perform(async()=>{await command(keyed({action:'request_internal_review',request_id:saved.id,expected_revision:saved.revision,analysis_run_id:reviewRun!.run_id,reason,question}));success=true;router.push(`/internal?request=${encodeURIComponent(saved.id)}`);});return success;
+      }}/>:null}
+      {mode==='coordinator'&&saved&&reviewers.reviewers.length>0?<section id="reviewer-follow-up" className="result-panel" style={{marginBottom:40}} aria-labelledby="reviewer-follow-up-heading"><p className="eyebrow">REVIEWER FOLLOW-UP</p><h2 id="reviewer-follow-up-heading">Follow up on pending reviewer decisions</h2><p>Contact the reviewers below for a decision or an updated response time. Review the client’s deadline and update them if needed. No follow-up has been sent by SyncFlow.</p><ul>{reviewers.reviewers.filter(r=>r.status==='Pending'||r.needs_reconfirmation).map(r=><li key={r.id}><strong>{r.name} · {r.role}</strong> — {r.needs_reconfirmation?'Decision needs reconfirmation':'Decision pending'}{r.notes?` · ${r.notes}`:''}</li>)}</ul><details><summary>Record a received reviewer decision</summary>{reviewers.reviewers.map(r=><ReviewerOutcomeForm key={`${r.id}:${reviewers.version}`} name={r.name} busy={busy} onSave={async(status,notes)=>{await perform(async()=>{const data:Detail=await command(keyed({action:'reviewer',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version,operation:'decision',reviewer_id:r.id,status,notes}));showSaved(data);await refresh();setNotice('Reviewer decision saved. The case route has been updated.');});}}/>)}</details></section>:null}
       {mode === "coordinator" ? <>
 
-      {saved ? <AnalysisRecovery latest={analyses.at(-1)} busy={busy} hasCurrentResult={!!result} onCheck={async()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return false;let success=false;await perform(async()=>{const data:Detail=await command({action:'get',request_id:saved.id});showSaved(data);success=true;setNotice('Saved analysis status refreshed. No new agent call was made.');});return success;}} onRetry={()=>{retryCommands.current.delete(JSON.stringify({action:'analyze',request_id:saved.id,expected_revision:saved.revision}));void analyze();}} /> : null}
+
       {shared&&!saved?<EmailForwarding key="coordinator-inbox"/>:null}
       <div className="intake-grid live-intake-grid focused-intake-grid">
         <div className="coordinator-email-column">
         <section id="client-brief" className="result-panel analysis-input" aria-labelledby="analyze-heading">
           <p className="eyebrow">CLIENT CONVERSATION</p><h2 id="analyze-heading">{saved ? 'Email conversation' : 'Paste the request'}</h2>
-          <form id="request-analysis-form" onSubmit={analyze} aria-busy={busy}>
+          <form id="request-analysis-form" onSubmit={inquiryEntry&&!saved?saveInquiryCase:analyze} aria-busy={busy}>
             <div hidden={!!saved}><label htmlFor="client-email">Client email</label><textarea id="client-email" rows={8} maxLength={20000} value={email} disabled={busy || !!saved} required onChange={e => editEmail(e.target.value)} placeholder="Paste the client’s email here…" /></div>
             {!saved ? <button type="button" className="text-button" disabled={busy} onClick={() => {if(confirmDiscard(!!email.trim()))editEmail(example);}}>Try an example</button> : <p className="panel-note">Original email preserved. Add replies below.</p>}
-            <div className="intake-submit" hidden={!!saved}><button type="submit" form="request-analysis-form" className="primary-button" disabled={busy || !email.trim()}>{busy ? "Drafting response…" : "Draft response"}</button><small>Checks the brief and prepares a response. Nothing is sent.</small></div>
+            <div className="intake-submit" hidden={!!saved}>{inquiryEntry&&inquiryCaseId&&!email.trim()?<Link className="primary-button" href={`/cases?case=${encodeURIComponent(inquiryCaseId)}&status=${inquiryCaseStatus}`}>Open Cases</Link>:<button type="submit" form="request-analysis-form" className="primary-button" disabled={busy || !email.trim()}>{inquiryEntry ? busy ? "Saving case…" : "Save as a case" : busy ? "Drafting response…" : "Draft response"}</button>}<small>{inquiryEntry?inquiryCaseId&&!email.trim()?"Your case is saved. Open Cases to continue.":"Saves the original email to Cases.":"Checks the brief and prepares a response. Nothing is sent."}</small></div>
             <details className="settings-disclosure"><summary>Request settings</summary><label htmlFor="request-timezone">Coordinator timezone</label><input id="request-timezone" value={timezone} disabled={busy || !!saved} required onChange={e => {setTimezone(e.target.value); clearResult();}} /></details>
-            <div className="form-footer"><small>Saved automatically when you analyze. Uses your Claude API account.</small></div>
+            <div className="form-footer"><small>{inquiryEntry?"The saved case will appear in Cases.":"Saved automatically when you analyze. Uses your Claude API account."}</small></div>
           </form>
           
           {saved ? <SavedRequests {...navigationProps} response={responsePanel} variant="conversation" activeRunId={result ? reviewRun?.run_id : undefined} onRecheck={() => {if(!confirmDiscard(draftDirty))return;void perform(async () => {
@@ -310,7 +368,6 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
 
 
       </div>
-      <details className="coordinator-details" open={typeof window!=='undefined'&&window.location.hash==='#coordinator-signoff'}><summary>View internal workflow</summary>      {mode === "coordinator" && !loadingRequest ? <CoordinatorJourney saved={!!saved} analyzed={!!result} approved={!!workflow?.brief_approved} canApprove={!!workflow?.can_approve_brief} completed={!!workflow?.completed} needsReply={!!result&&!result.stages?.follow_up?.skipped} requestId={saved?.id} nextAction={workflow?.next_action} busy={busy}/> : null}{workflow ? briefApprovalPanel : null}</details>
 
 
       </> : !saved ? <p>Select a saved request from View all requests to prepare a handoff and record reviewer decisions.</p> : <p>Request {saved.id} · {saved.messages.length} source messages · {saved.recording_id || "Recording unresolved"}. Source emails and music catalog are on the Coordinator page.</p>}
@@ -319,14 +376,6 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
           const data:Detail=await command(keyed({action:'save_handoff',request_id:saved.id,expected_revision:saved.revision,expected_handoff_version:handoff.version,source_token:source,text}));
           setHandoff(data.handoff);success=true;setNotice('Handoff edits saved. Nothing was sent.');
         });return success;
-      }} /> : null}
-      {mode === "internal" && saved ? <ReviewerTracking key={`reviewers-${saved.id}`} requestId={saved.id} tracking={reviewers} busy={busy} onDirtyChange={setReviewerDirty} onSave={async input => {
-        let success=false;
-        await perform(async () => {
-          const data: Detail = await command(keyed({action:'reviewer',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version,...input}));
-          setHandoff(data.handoff); setWorkflow(data.workflow); setReviewers(data.reviewer_tracking); success=true; setNotice('Reviewer record saved. No message was sent.'); await refresh();
-        });
-        return success;
       }} /> : null}
       {mode==='internal'&&saved&&workflow?<section className="workflow-status review-completion" aria-label="Complete internal review"><h2>Complete internal review</h2>{!workflow.can_complete&&!workflow.completed?<><p>Finish these checks first:</p><ul>{workflow.reasons.map((reason,i)=><li key={i}>{reason}</li>)}</ul></>:null}        {mode === "internal" ? workflow.completed ? <p>Recorded by {workflow.completion?.completed_by} at {workflow.completion?.completed_at}. This is not rights clearance.</p> : <button type="button" className="primary-button" disabled={busy||!workflow.can_complete} onClick={()=>{void perform(async()=>{
           const data:Detail=await command(keyed({action:'complete_review',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version}));

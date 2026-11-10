@@ -79,3 +79,12 @@
 /* Keep workspace switching secondary to the daily priority dashboard. */
 .page :global(form.workspace-picker){max-width:1204px;margin:16px auto 0;padding:0 28px;display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.page :global(.workspace-picker label){font-size:11px;margin:0;color:#aeb6a2}.page :global(.workspace-picker select){width:210px!important;min-height:36px!important;height:36px!important;padding:6px 30px 6px 14px!important;margin:0;font-size:12px!important}.page :global(.workspace-picker button){min-height:36px!important;margin:0;padding:7px 15px!important;font-size:11px!important}.page :global(.workspace-title h1){font-size:27px}.page :global(.workspace-title){margin-bottom:28px}.page :global(.workspace-title .eyebrow){display:none}.page :global(.workspace-title>div>p:last-child){font-size:12px}
 @media(max-width:650px){.page :global(form.workspace-picker){padding:0 20px;justify-content:flex-start}.page :global(.workspace-picker select){width:160px!important}}
+
+/* Share the header gutter and keep the welcome prompt on a clear vertical rhythm. */
+.page :global(.client-dashboard){max-width:none;width:100%;box-sizing:border-box;margin:0;padding:40px clamp(24px,6vw,100px) 64px}
+.page :global(.workspace-title){align-items:flex-start;margin-bottom:32px}
+.page :global(.welcome-intro){display:flex;flex-direction:column;align-items:flex-start;gap:16px;min-width:0}
+.page :global(.welcome-intro h1){margin:0;line-height:1.2}
+.page :global(.welcome-intro p){margin:0}
+.page :global(.welcome-intro .daily-report-button){margin:4px 0 0!important}
+@media(max-width:700px){.page :global(.client-dashboard){padding:28px 24px 48px}.page :global(.workspace-title){flex-wrap:wrap;gap:20px}}

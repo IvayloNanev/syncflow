@@ -26,3 +26,6 @@
 .record>div{inset:36%;background:radial-gradient(circle at 35% 25%,#e0c78e10,transparent 60%),repeating-linear-gradient(12deg,#ffffff03 0px 1px,#00000003 1px 3px),#bfa36b;border:1px solid #d5b97e;box-shadow:0 0 0 8px #0a0c09,inset 0 0 20px #55432355;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#28281f;font-family:Arial,Helvetica,sans-serif}
 
 .record>div::after{left:50%;top:50%;width:7%;height:7%;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 35% 30%,#d6d8cf,#747b71 35%,#30362c 55%,#0a0d09 60%);border:1px solid #e1d6b0;box-shadow:0 2px 5px #0009,0 0 0 4px #6b5e3b40}
+
+.menu{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+@media(max-width:500px){.menu{gap:8px}.menu .entry{padding:10px 16px;font-size:13px}}

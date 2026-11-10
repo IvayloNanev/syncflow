@@ -1,3 +1,4 @@
+import {storedRoutingCase,canRunCoordinator} from './case-routing-policy.js';
 import {effectiveFields} from "../requests/effective-fields.js";
 import { dashboardRequest } from '../requests/dashboard.js';
 import { mkdirSync, chmodSync } from 'node:fs';
@@ -20,6 +21,8 @@ function localStore() {
   return store;
 }
 const allowed = {
+  request_internal_review:['action','request_id','expected_revision','analysis_run_id','reason','question','idempotency_key'],
+  manager_decision:['action','request_id','expected_revision','expected_scope_token','manager_name','notes','decision','idempotency_key'],
   approve_brief:['action','request_id','expected_revision','analysis_run_id','idempotency_key'],
   change_recording: ['action','request_id','expected_revision','recording_id','reason','idempotency_key'],
   save_handoff: ['action','request_id','expected_revision','expected_handoff_version','source_token','text','idempotency_key'],
@@ -95,8 +98,11 @@ export function createSavedRequestsHandler({ actor = localActor, trustedOrigin =
         }).sort((a, b) => b.updated_at.localeCompare(a.updated_at));
         return json(200, { requests });
       }
+      if(input.action==='analyze'&&!canRunCoordinator(storedRoutingCase(store,actor,input.request_id)))return json(409,{error:{code:'WRONG_AGENT',message:'This case belongs to Internal Review or is completed. Open its assigned agent from Cases.'}});
       if (input.action === 'get') return json(200, requestDetail(store, input.request_id, actor));
       const { action, ...fields } = input;
+      if(action==='request_internal_review'){const result=store.requestInternalReview({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
+      if(action==='manager_decision'){const c=storedRoutingCase(store,actor,fields.request_id);if(canRunCoordinator(c)||['Case completed','Internal review complete'].includes(c.workflow.status))return json(409,{error:{code:'WRONG_AGENT',message:'This case does not have an active manager escalation.'}});const result=store.recordManagerDecision({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='set_completed'){const result=store.setCompleted({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='set_deleted'){const result=store.setDeleted({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='approve_brief'){const result=store.approveBrief({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}

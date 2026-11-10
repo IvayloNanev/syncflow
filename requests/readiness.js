@@ -1,3 +1,4 @@
+import {resolvedEscalation} from './manager-decision.js';
 import {assessCatalogue} from '../catalog/availability.js';
 import {effectiveFields} from "./effective-fields.js";
 import {recordingMismatches} from '../catalog/identity-check.js';
@@ -25,16 +26,17 @@ export function requestReadiness({request, analysis, tracking, completion = null
   else if (issues.length) reasons.push(`${issues.length} checklist questions or ambiguities remain.`);
   if (missing.length) reasons.push(`${missing.length} required details are missing or need attention.`);
   const intakeReady = !catalogueBlocked && !!request.recording_id && !identityMismatch.length && currentAnalysis && issues.length === 0 && missing.length === 0;
-  if(!briefApproved)reasons.push('Coordinator must approve the current brief before internal review.');
-  if (!reviews.length) reasons.push('Assign at least one required internal reviewer.');
   if (reconfirm.length) reasons.push(`${reconfirm.length} reviewer decisions need reconfirmation.`);
   if (reviews.some(r => r.status === 'Pending')) reasons.push('Required reviewer decisions are pending.');
   if (reviews.some(r => r.status === 'Changes requested' && !r.needs_reconfirmation)) reasons.push('A reviewer requested changes.');
   if (reviews.some(r => r.status === 'Declined' && !r.needs_reconfirmation)) reasons.push('A reviewer declined the request.');
-  const canComplete = intakeReady && briefApproved && allApproved;
-  const completed = canComplete && completion?.request_revision === request.revision && completion?.review_version === tracking.version && completion?.brief_approval_version===briefApproval?.version;
+  const managerPending=!!request.internal_review_request&&!resolvedEscalation({...request,reviewers:tracking});
+  if(managerPending)reasons.push('A manager decision is needed for the recorded internal review request.');
+  const canComplete = intakeReady && !managerPending && (!reviews.length||allApproved);
+  const completed = canComplete && completion?.request_revision === request.revision && completion?.review_version === tracking.version;
   let status, next_action;
   if (completed) {status='Internal review complete';next_action='Continue the separate licensing process; no rights have been granted here.';}
+  else if (managerPending) {status='Internal review pending';next_action='Review the recorded escalation and obtain the manager’s decision.';}
   else if (!currentAnalysis) {status='Needs analysis';next_action='Recheck the current conversation and recorded requirements.';}
   else if (!request.recording_id&&catalogue.status==='not_found') {status='Not found in catalogue';next_action=catalogue.question;}
   else if (catalogue.catalogueWide) {status='Specify requested recordings';next_action=catalogue.question;}
@@ -42,10 +44,9 @@ export function requestReadiness({request, analysis, tracking, completion = null
   else if (identityMismatch.length) {status='Recording mismatch';next_action='Check the selected recording against confirmed artist, title and version. Correct the recording or obtain a source-backed client correction.';}
   else if (issues.length) {status='Needs clarification';next_action='Resolve checklist questions, then recheck the request.';}
   else if (missing.length) {status='Needs request details';next_action='Resolve missing or uncertain details, then analyze the updated conversation.';}
-  else if (!briefApproved) {status='Needs coordinator review';next_action='Review the complete request summary, then approve the brief for internal review.';}
   else if (reviews.some(r=>r.status==='Declined'&&!r.needs_reconfirmation)) {status='Declined';next_action='Review the decline with the responsible internal reviewer.';}
   else if (reviews.some(r=>r.status==='Changes requested'&&!r.needs_reconfirmation)) {status='Changes requested';next_action='Address the reviewer’s notes and record a new decision.';}
-  else if (!reviews.length) {status='Ready for internal review';next_action='Prepare the handoff and assign the required reviewers.';}
+  else if (!reviews.length) {status='Ready for coordination';next_action='Review the response and continue client coordination. Send to Internal Review if a manager decision is needed.';}
   else if (!allApproved) {status='Internal review pending';next_action='Obtain pending decisions or reconfirm decisions for this revision.';}
   else {status='Ready to complete internal review';next_action='Record internal review completion after checking the handoff.';}
   return {status,next_action,intake_ready:intakeReady,brief_approved:briefApproved,can_approve_brief:intakeReady&&!briefApproved,brief_approval:briefApproval?{...briefApproval,outdated:!briefApproved}:null,can_complete:canComplete && !completed,completed:!!completed,reasons,unconfirmed_fields:missing,missing_fields:missing,agent_extracted_count:fields.filter(f=>f.origin==="agent").length,

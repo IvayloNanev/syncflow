@@ -7,9 +7,10 @@ const analysis={run_id:'run',base_revision:4,result:{ok:true,stages:{review:{out
 const tracking={version:2,reviewers:[{status:'Approved',needs_reconfirmation:false}]};
 const briefApproval={version:1,request_revision:4,analysis_run_id:'run',approved_by:'A',approved_at:'2026-11-08T12:00:00Z'};
 const check=extra=>requestReadiness({request,analysis,tracking,briefApproval,...extra});
-test('readiness requires confirmed fields, current analysis, identity and current approvals',()=>{
+test('readiness requires confirmed fields, current analysis, identity and any recorded reviewer decisions',()=>{
   assert.equal(check({}).can_complete,true);
-  for(const input of [{analysis:null},{analysis:{...analysis,base_revision:3}},{request:{...request,recording_id:null}},{request:{...request,confirmed_fields:[]}},{tracking:{...tracking,reviewers:[]}},{tracking:{...tracking,reviewers:[{status:'Approved',needs_reconfirmation:true}]}},{tracking:{...tracking,reviewers:[{status:'Pending'}]}},{tracking:{...tracking,reviewers:[{status:'Declined'}]}},{tracking:{...tracking,reviewers:[{status:'Changes requested'}]}}]) assert.equal(check(input).can_complete,false);
+  assert.equal(check({tracking:{version:0,reviewers:[]},briefApproval:null}).can_complete,true);
+  for(const input of [{analysis:null},{analysis:{...analysis,base_revision:3}},{request:{...request,recording_id:null}},{request:{...request,confirmed_fields:[]}},{tracking:{...tracking,reviewers:[{status:'Approved',needs_reconfirmation:true}]}},{tracking:{...tracking,reviewers:[{status:'Pending'}]}},{tracking:{...tracking,reviewers:[{status:'Declined'}]}},{tracking:{...tracking,reviewers:[{status:'Changes requested'}]}}]) assert.equal(check(input).can_complete,false);
   assert.equal(check({analysis:{...analysis,result:{ok:true,stages:{review:{output:{issues:[{question:'Missing term'}]}}}}}}).can_complete,false);
 });
 test('completion is revision-bound, reviewer-version-bound and distinct from licence approval',()=>{

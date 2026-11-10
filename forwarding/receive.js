@@ -31,6 +31,11 @@ export async function receiveEmail(client,email,domain){
  const subject=typeof email.subject==='string'?email.subject.slice(0,500):'(no subject)';
  const attachments=Array.isArray(email.attachments)?email.attachments.length:0;
  const text=`${route.request_id?'Forwarded by':'From'}: ${sender}\nSubject: ${subject}\n${attachments?'Attachments were not imported.\n':''}\n${email.text}`;
+ if(!route.request_id){
+  const {error:stageError}=await client.rpc('syncflow_capture_inquiry',{p_token:token,p_email:email.id,p_sender:sender,p_subject:subject,p_body:text,p_attachments:attachments});
+  if(stageError)throw Error(stageError.message?.includes('FORWARDING_DENIED')?'FORWARDING_DENIED':'STORE_FAILED');
+  return {inquiryId:email.id};
+ }
  const id=route.request_id||creationId(route.workspace_id,route.actor_id,`email:${email.id}`);
  for(let attempt=0;attempt<3;attempt++){
   const {data:row,error:loadError}=await client.from('syncflow_requests').select('state,version').eq('workspace_id',route.workspace_id).eq('id',id).maybeSingle();
