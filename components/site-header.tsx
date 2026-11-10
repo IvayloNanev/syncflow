@@ -9,6 +9,6 @@ export default function SiteHeader({current,email,children}:Props) {
  return <header className={styles.header}>
   <Link className={styles.brand} href="/" aria-label="SyncFlow home">Sync<span>Flow</span></Link>
   {current && <PageNavigation current={current}/>}
-  <div className={styles.actions}>{current ? <AccountMenu email={email}/> : children}</div>
+  <div className={styles.actions}>{current ? <><Link href='/work' style={{fontSize:12,marginRight:12}}>Try case workspace</Link><AccountMenu email={email}/></> : children}</div>
  </header>;
 }
