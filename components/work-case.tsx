@@ -8,11 +8,11 @@ import CompleteCaseButton from './complete-case-button';
 import {transferToCoordinator} from './case-routing.js';
 import {hasUnsavedEditors} from './use-unsaved-guard';
 import styles from '../app/work/work.module.css';
-type Detail={fingerprint:string;revision:number;context:{project:string;client:string;recording:string;status:string;decision:string;deadline:Record<string,string>|null};assessment:{recommendation:{lane:string;reason:string;next_action:string}}|null};
+type Detail={routing:Listing;fingerprint:string;revision:number;context:{project:string;client:string;recording:string;status:string;decision:string;deadline:Record<string,string>|null};assessment:{recommendation:{lane:string;reason:string;next_action:string}}|null};
 type Listing={request_id:string;destination:string;lane:string};
 export default function WorkCase({requestId}:{requestId:string}){
  const [data,setData]=useState<Detail|null>(null),[listing,setListing]=useState<Listing|null>(null),[agent,setAgent]=useState<'coordinator'|'internal'|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState('');
- const read=useCallback(async()=>{const [a,b]=await Promise.all([fetch(`/api/review-email?request=${encodeURIComponent(requestId)}`,{cache:'no-store'}),fetch('/api/internal-triage',{cache:'no-store'})]);const [detail,list]=await Promise.all([a.json(),b.json()]);if(!a.ok||!b.ok)throw Error(detail.error||list.error||'Could not open this case.');return {detail:detail as Detail,item:list.cases.find((c:Listing)=>c.request_id===requestId) as Listing|undefined};},[requestId]);
+ const read=useCallback(async()=>{const response=await fetch(`/api/review-email?request=${encodeURIComponent(requestId)}`,{cache:'no-store'});const detail=await response.json();if(!response.ok)throw Error(detail.error||'Could not open this case.');return {detail:detail as Detail,item:detail.routing as Listing};},[requestId]);
  useEffect(()=>{let active=true;void read().then(({detail,item})=>{if(active){setData(detail);setListing(item||null);}}).catch(e=>{if(active)setError(e.message);});const refresh=()=>{void read().then(({detail,item})=>{if(active){setData(detail);setListing(item||null);}}).catch(()=>{if(active)setError('The case could not refresh. Reload before starting new work.');});};const timer=setInterval(refresh,15000);window.addEventListener('focus',refresh);return()=>{active=false;clearInterval(timer);window.removeEventListener('focus',refresh);};},[read]);
  async function prepare(target?:'coordinator'|'internal'){
   if(busy)return;if(hasUnsavedEditors()&&!window.confirm('Leave the current edits and switch work areas? Your saved case history is retained.'))return;

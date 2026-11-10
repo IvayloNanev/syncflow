@@ -2,12 +2,12 @@ import {openSharedStore,listSharedRequests} from '../requests/shared-store.js';
 import {effectiveFields} from '../requests/effective-fields.js';
 import {reviewRecording} from '../catalog/review.js';
 import {superviseCases} from '../agents/priority/supervisor.js';
-export async function loadBriefing(client,workspaceId,actorId){
+export async function loadBriefing(client,workspaceId,actorId,{requestId=/** @type {string|null} */ (null)}={}){
  const {data:saved,error}=await client.from('syncflow_briefings').select('report,snapshots,generated_at').eq('workspace_id',workspaceId).maybeSingle();
  if(error)throw new Error('BRIEFING_STORAGE_FAILED');
- const snapshot=async()=>{const {data,error}=await client.from('syncflow_requests').select('id,version').eq('workspace_id',workspaceId).order('id');if(error)throw new Error('STORE_FAILED');return JSON.stringify(data);};
+ const snapshot=async()=>{let query=client.from('syncflow_requests').select('id,version').eq('workspace_id',workspaceId);if(requestId)query=query.eq('id',requestId);const {data,error}=await query.order('id');if(error)throw new Error('STORE_FAILED');return JSON.stringify(data);};
  const before=await snapshot();
- const summaries=await listSharedRequests(client,workspaceId);
+ const summaries=(await listSharedRequests(client,workspaceId)).filter(summary=>!requestId||summary.id===requestId);
  const cases=[];
  // Bounded batches avoid opening an unbounded number of SQLite engines/connections.
  for(let from=0;from<summaries.length;from+=8){
