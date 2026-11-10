@@ -1,3 +1,4 @@
+import {activeAgentAssignment} from './agent-assignment.js';
 import {resolvedEscalation} from './manager-decision.js';
 import {assessCatalogue} from '../catalog/availability.js';
 import {effectiveFields} from "./effective-fields.js";
@@ -30,13 +31,14 @@ export function requestReadiness({request, analysis, tracking, completion = null
   if (reviews.some(r => r.status === 'Pending')) reasons.push('Required reviewer decisions are pending.');
   if (reviews.some(r => r.status === 'Changes requested' && !r.needs_reconfirmation)) reasons.push('A reviewer requested changes.');
   if (reviews.some(r => r.status === 'Declined' && !r.needs_reconfirmation)) reasons.push('A reviewer declined the request.');
-  const managerPending=!!request.internal_review_request&&!resolvedEscalation({...request,reviewers:tracking});
-  if(managerPending)reasons.push('A manager decision is needed for the recorded internal review request.');
+  const assignment=activeAgentAssignment({...request,reviewers:tracking});
+  const managerPending=assignment?.destination==='internal'||(assignment?.destination!=='coordinator'&&!!request.internal_review_request&&!resolvedEscalation({...request,reviewers:tracking}));
+  if(managerPending)reasons.push('A manager decision is needed for this internal review.');
   const canComplete = intakeReady && !managerPending && (!reviews.length||allApproved);
   const completed = canComplete && completion?.request_revision === request.revision && completion?.review_version === tracking.version;
   let status, next_action;
   if (completed) {status='Internal review complete';next_action='Continue the separate licensing process; no rights have been granted here.';}
-  else if (managerPending) {status='Internal review pending';next_action='Review the recorded escalation and obtain the manager’s decision.';}
+  else if (managerPending) {status='Internal review pending';next_action='Review the case and obtain the manager’s decision.';}
   else if (!currentAnalysis) {status='Needs analysis';next_action='Recheck the current conversation and recorded requirements.';}
   else if (!request.recording_id&&catalogue.status==='not_found') {status='Not found in catalogue';next_action=catalogue.question;}
   else if (catalogue.catalogueWide) {status='Specify requested recordings';next_action=catalogue.question;}

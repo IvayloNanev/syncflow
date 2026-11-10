@@ -60,3 +60,10 @@ test('fresh AI decisions control order and eligible follow-up; any changed case 
  const stale=superviseCases([a,b],saved,{now});assert.equal(stale.decision_source,'workflow');assert.equal(stale.items.find(i=>i.request_id==='b').handoff.destination,'coordinator');
  assert.equal(superviseCases([b],saved,{now:new Date('2026-11-10T17:00:00Z')}).decision_source,'workflow');
 });
+
+test('work queue preserves inquiry subjects before analysis, matching Cases',()=>{
+ const c=make('12345678-case');c.messages[0].text='Subject: Winter launch campaign\n\nPlease license this song.';
+ assert.equal(superviseCases([c],null,{now}).items[0].project,'Winter launch campaign');
+ c.summary.project='Confirmed project';
+ assert.equal(superviseCases([c],null,{now}).items[0].project,'Confirmed project');
+});

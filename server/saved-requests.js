@@ -21,6 +21,7 @@ function localStore() {
   return store;
 }
 const allowed = {
+  assign_agent:['action','request_id','expected_revision','expected_scope_token','expected_assignment_id','destination','idempotency_key'],
   request_internal_review:['action','request_id','expected_revision','analysis_run_id','reason','question','idempotency_key'],
   manager_decision:['action','request_id','expected_revision','expected_scope_token','manager_name','notes','decision','idempotency_key'],
   approve_brief:['action','request_id','expected_revision','analysis_run_id','idempotency_key'],
@@ -101,6 +102,7 @@ export function createSavedRequestsHandler({ actor = localActor, trustedOrigin =
       if(input.action==='analyze'&&!canRunCoordinator(storedRoutingCase(store,actor,input.request_id)))return json(409,{error:{code:'WRONG_AGENT',message:'This case belongs to Internal Review or is completed. Open its assigned agent from Cases.'}});
       if (input.action === 'get') return json(200, requestDetail(store, input.request_id, actor));
       const { action, ...fields } = input;
+      if(action==='assign_agent'){const result=store.assignAgent({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='request_internal_review'){const result=store.requestInternalReview({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='manager_decision'){const c=storedRoutingCase(store,actor,fields.request_id);if(canRunCoordinator(c)||['Case completed','Internal review complete'].includes(c.workflow.status))return json(409,{error:{code:'WRONG_AGENT',message:'This case does not have an active manager escalation.'}});const result=store.recordManagerDecision({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}
       if(action==='set_completed'){const result=store.setCompleted({...fields,actor_id:actor});return json(200,{...requestDetail(store,fields.request_id,actor),replayed:result.replayed});}

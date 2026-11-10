@@ -10,6 +10,8 @@ export default function NewInquiries(){
  const [address,setAddress]=useState(''),[inboxError,setInboxError]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const [loaded,setLoaded]=useState(false),[saving,setSaving]=useState(false),[saved,setSaved]=useState(false);
  const [attempt,setAttempt]=useState(0);
+ const serializedLength=body.length+(subject.trim()?subject.trim().length+11:0);
+ const bodyLimit=20000-(subject.trim()?subject.trim().length+11:0);
  const confirmationRef=useRef<HTMLDialogElement>(null);
  const contentRef=useRef<HTMLTextAreaElement>(null),running=useRef(false),createKey=useRef<{body:string;key:string}|null>(null);
  useUnsavedGuard((!!body.trim()||!!subject.trim())&&!selectedId);
@@ -35,6 +37,7 @@ export default function NewInquiries(){
  function pasteNew(){if(saving||!confirmDiscard(!selectedId&&(!!body.trim()||!!subject.trim())))return;setSaved(false);setSelectedId('');setSubject('');setBody('');setNotice('');clearEditorBackup('new');contentRef.current?.focus();}
  async function save(){
   if(running.current||!body.trim())return;
+  if(serializedLength>20000){setError('Shorten the subject or body before saving. Emails can contain up to 20,000 characters including the subject.');return;}
   running.current=true;setSaving(true);setError('');setNotice('');
   try{
    const email=subject.trim()?`Subject: ${subject.trim()}\n\n${body}`:body;
@@ -55,9 +58,10 @@ export default function NewInquiries(){
  {inboxError?<p role="status">{inboxError} <button type="button" className="text-button" onClick={()=>setAttempt(n=>n+1)}>Retry</button></p>:null}
  {emails.length?<div className={styles.received} role="group" aria-label="Received inquiries">{emails.map(email=><button key={email.email_id} type="button" className="secondary-button" aria-pressed={selectedId===email.email_id} disabled={saving} onClick={()=>choose(email)}><strong>{email.subject||'No subject'}</strong><span>{email.sender} · {new Date(email.received_at).toLocaleString()}</span></button>)}</div>:!loaded&&!inboxError?<p role="status">Checking incoming emails…</p>:null}
  {selectedId?<div className={styles.selection}><p>Received email · original content preserved</p><button type="button" className="secondary-button" disabled={saving} onClick={pasteNew}>Paste another email</button></div>:null}
- <label htmlFor="inquiry-subject">Subject</label><input className={styles.subject} id="inquiry-subject" type="text" maxLength={500} value={subject} readOnly={!!selectedId} disabled={saving} onChange={e=>{setSubject(e.target.value);setSaved(false);setNotice('');writeEditorBackup('new',{subject:e.target.value,email:body});}} placeholder="Email subject"/>
- <label htmlFor="inquiry-email">Body</label><textarea ref={contentRef} id="inquiry-email" rows={12} maxLength={20000} value={body} readOnly={!!selectedId} disabled={saving} onChange={e=>{setBody(e.target.value);setSaved(false);setNotice('');writeEditorBackup('new',{subject,email:e.target.value});}} placeholder="Paste the client’s email body here…"/>
+ <label htmlFor="inquiry-subject">Subject (optional)</label><input className={styles.subject} id="inquiry-subject" type="text" maxLength={500} value={subject} readOnly={!!selectedId} disabled={saving} onChange={e=>{setSubject(e.target.value);setSaved(false);setNotice('');writeEditorBackup('new',{subject:e.target.value,email:body});}} placeholder="Email subject"/>
+ <label htmlFor="inquiry-email">Body</label><textarea ref={contentRef} id="inquiry-email" rows={12} maxLength={bodyLimit} aria-describedby="inquiry-character-count" value={body} readOnly={!!selectedId} disabled={saving} onChange={e=>{setBody(e.target.value);setSaved(false);setNotice('');writeEditorBackup('new',{subject,email:e.target.value});}} placeholder="Paste the client’s email body here…"/>
+ <p id="inquiry-character-count" role={serializedLength>20000?"alert":undefined}>{20000-serializedLength} characters remaining, including the subject.</p>
  {error?<p role="alert">{error}</p>:null}{notice?<p role="status">{notice}</p>:null}
- {!saved?<div className={styles.actions}><button type="button" className="primary-button" disabled={saving||!body.trim()} onClick={()=>void save()}>{saving?'Saving case…':'Save as a case'}</button></div>:null}
+ {!saved?<div className={styles.actions}><button type="button" className="primary-button" disabled={saving||!body.trim()||serializedLength>20000} onClick={()=>void save()}>{saving?'Saving case…':'Save as a case'}</button></div>:null}
  </section><dialog ref={confirmationRef} className={styles.confirmation} aria-labelledby="case-saved-title"><div className={styles.confirmationMark} aria-hidden="true">✓</div><h2 id="case-saved-title">Inquiry is saved in Cases.</h2><button type="button" className="secondary-button" autoFocus onClick={()=>confirmationRef.current?.close()}>Dismiss</button></dialog></main>;
 }

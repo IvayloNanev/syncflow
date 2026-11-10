@@ -1,3 +1,4 @@
+import {caseTitle} from '../../requests/case-title.js';
 import {inquiryLabels} from '../../requests/inquiry-labels.js';
 import {createHash} from 'node:crypto';
 import {caseSnapshot} from '../priority/supervisor.js';
@@ -6,11 +7,12 @@ export const REVIEW_VERSION='internal-v5';
 export function reviewFingerprint(c,{now=new Date()}={}){return createHash('sha256').update(JSON.stringify({version:REVIEW_VERSION,snapshot:caseSnapshot(c).fingerprint,storage:c.storage_version,eligibility:eligibleLanes(c,{now})})).digest('hex');}
 export function contextForReview(c){
  const pending=(c.reviewers?.reviewers||[]).filter(r=>r.status==='Pending'||r.needs_reconfirmation);
- return {project:c.summary.project||c.subject||`Request ${c.id.slice(0,8)}`,client:c.summary.contact||'Not supplied',recording:c.summary.track||c.recording_id||'Not confirmed',status:c.workflow.status,deadline:c.summary.deadline||null,decision:pending.length?`Awaiting ${pending.map(r=>`${r.name} (${r.role})`).join(', ')}.`:c.workflow.next_action||'Review the saved request and outstanding checks.'};
+ return {project:caseTitle(c),client:c.summary.contact||'Not supplied',recording:c.summary.track||c.recording_id||'Not confirmed',status:c.workflow.status,deadline:c.summary.deadline||null,decision:pending.length?`Awaiting ${pending.map(r=>`${r.name} (${r.role})`).join(', ')}.`:c.workflow.next_action||'Review the saved request and outstanding checks.'};
 }
 export function managerDecisionQuestion(c,recommendation){
  const pending=(c.reviewers?.reviewers||[]).filter(r=>r.status==='Pending'||r.needs_reconfirmation).map(r=>r.name).filter(Boolean).join(', ')||'the assigned reviewer';
  switch(recommendation.escalation_trigger){
+ case 'Manual Internal Review requested':return 'What decision, conditions or additional checks are needed before this case can proceed with coordination?';
  case 'Manager decision requested':return c.internal_review_request.question;
  case 'Reviewer refusal':return 'Given the recorded reviewer refusal, should we decline the request, seek revised terms, or appoint an alternate reviewer, and what conditions should apply?';
  case 'Conflicting reviewer decisions':return 'How should we resolve the conflicting reviewer decisions, and which conditions or additional review must be satisfied before the request can proceed?';
@@ -36,5 +38,5 @@ export function reviewListVersion(cases,rows){
 }
 export function caseListing(c,assessment,{now=new Date()}={}){
  const lane=['Internal review complete','Case completed'].includes(c.workflow.status)?'finished':assessment?.recommendation.lane||(eligibleLanes(c,{now}).escalation.length?'manager':'coordinator');
- return {request_id:c.id,fingerprint:reviewFingerprint(c),lane,project:c.summary.project||inquiryLabels(c.messages?.[0]?.text||'').title||contextForReview(c).project,client:c.summary.contact||inquiryLabels(c.messages?.[0]?.text||'').sender||'Client not supplied',destination:lane==='coordinator'?'coordinator':'internal',status:c.workflow.status,track:c.summary.track||'',deadline:c.summary.deadline||null,classification_source:assessment?'assessment':'workflow'};
+ return {request_id:c.id,fingerprint:reviewFingerprint(c),lane,project:caseTitle(c),client:c.summary.contact||inquiryLabels(c.messages?.[0]?.text||'').sender||'Client not supplied',destination:lane==='coordinator'?'coordinator':'internal',status:c.workflow.status,track:c.summary.track||'',deadline:c.summary.deadline||null,classification_source:assessment?'assessment':'workflow'};
 }

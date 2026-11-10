@@ -1,3 +1,4 @@
+import {caseTitle} from '../../requests/case-title.js';
 import {escalationReasons} from './escalation.js';
 import {untrustedContentPolicy,exactKeys} from '../untrusted-content.js';
 import {caseHandoff} from '../priority/supervisor.js';
@@ -33,6 +34,6 @@ export async function triageReviews({cases,signal,now=new Date(),apiKey=process.
   seen.add(c.id);
   for(const quote of item.citations){const m=c.messages.find(m=>m.message_id===quote.message_id);if(!exactKeys(quote,['message_id','exact_quote'])||!m||typeof quote.exact_quote!=='string'||!quote.exact_quote.trim()||quote.exact_quote.length>500||!m.text.includes(quote.exact_quote))throw Error('AI_INVALID_EVIDENCE');}
   const target=item.lane==='coordinator'?caseHandoff(c,{now}):null;
-  return {...item,client:c.summary.contact||'Client not identified',project:c.summary.project||c.summary.track||c.subject||'Request awaiting analysis',status:c.workflow.status,destination:lanes[item.lane].destination,anchor:item.lane==='manager'?'manager-escalation':item.lane==='human'?'internal-reviewers':target.destination==='coordinator'?target.anchor:c.workflow.status==='Internal review pending'?'reviewer-follow-up':'analyze-heading'};
+  return {...item,client:c.summary.contact||'Client not identified',project:caseTitle(c),status:c.workflow.status,destination:lanes[item.lane].destination,anchor:item.lane==='manager'?'manager-escalation':item.lane==='human'?'internal-reviewers':target.destination==='coordinator'?target.anchor:c.workflow.status==='Internal review pending'?'reviewer-follow-up':'analyze-heading'};
  })};
 }
