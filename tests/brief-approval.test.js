@@ -17,12 +17,12 @@ test('one sign-off is audited, persisted, isolated and invalidated by analysis a
  const r=store.create({actor_id:'A',email,timezone:'UTC',recording_id:'TRACK-0001',idempotency_key:'create'}).request;
  const analyze=key=>analyzeSavedRequest(store,{actor_id:'A',request_id:r.id,expected_revision:0,idempotency_key:key},providers());
  const first=await analyze('first');const input={actor_id:'A',request_id:r.id,expected_revision:0,analysis_run_id:first.analysis.run_id,idempotency_key:'approve'};
- assert.equal(store.workflow('A',r.id).status,'Needs coordinator review');
+ assert.equal(store.workflow('A',r.id).status,'Ready for coordination');
  assert.throws(()=>store.approveBrief({...input,actor_id:'B'}),/NOT_FOUND/);
  assert.throws(()=>store.approveBrief({...input,approved_by:'someone'}),/INVALID_INPUT/);
  assert.throws(()=>store.approveBrief({...input,expected_revision:9}),/REVISION_CONFLICT/);
  store.approveBrief(input);store.approveBrief(input);assert.equal(store.briefApproval('A',r.id).history.length,1);
- assert.equal(store.workflow('A',r.id).status,'Ready for internal review');assert.equal(store.workflow('A',r.id).brief_approval.approved_by,'A');assert.equal(store.get('A',r.id).confirmed_fields.length,0);
+ assert.equal(store.workflow('A',r.id).status,'Ready for coordination');assert.equal(store.workflow('A',r.id).brief_approval.approved_by,'A');assert.equal(store.get('A',r.id).confirmed_fields.length,0);
  const snapshot=store.exportState();store.close();store=openRequestStore(':memory:',{initialState:snapshot});assert.equal(store.workflow('A',r.id).brief_approved,true);
  const legacy=structuredClone(snapshot);delete legacy.tables.brief_approvals;const old=openRequestStore(':memory:',{initialState:legacy});assert.equal(old.workflow('A',r.id).brief_approved,false);old.close();
  const running=store.beginAnalysis({actor_id:'A',request_id:r.id,expected_revision:0,idempotency_key:'interrupted'});assert.equal(store.workflow('A',r.id).brief_approved,false);assert.equal(store.workflow('A',r.id).can_approve_brief,false);

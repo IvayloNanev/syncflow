@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import CoordinatorBriefing from './coordinator-briefing';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {clientGroups,clientFile,priorityClientGroups,priorityActionState} from '../requests/client-history.js';
 import type {SavedRequest,RequestSummary,AnalysisSummary} from './saved-requests';
 type Summary=RequestSummary&{updated_at?:string;created_at?:string};
@@ -23,7 +23,16 @@ function clientCopy(text:string){
  .replace('Fictional client reply: the campaign details remain unchanged. Please continue the review.', 'The campaign details are unchanged. Could you confirm the next steps and when we can expect an update?')
  .replace('Fictional scope change: the campaign now also includes the United States. Please recheck this change.', 'We’ve expanded the campaign to include the United States alongside Canada. Could you review the revised territory and let us know if it affects the clearance or fee?');
 }
-export default function ClientHistoryDashboard({testWorkspace=false}:{testWorkspace?:boolean}){
+export default function ClientHistoryDashboard({testWorkspace=false,displayName='there'}:{testWorkspace?:boolean;displayName?:string}){
+ useLayoutEffect(()=>{
+  const previous=window.history.scrollRestoration;
+  window.history.scrollRestoration='manual';
+  const toTop=()=>window.scrollTo({top:0,left:0,behavior:'instant'});
+  toTop();
+  const frame=window.requestAnimationFrame(toTop);
+  window.addEventListener('pageshow',toTop);
+  return()=>{window.cancelAnimationFrame(frame);window.removeEventListener('pageshow',toTop);window.history.scrollRestoration=previous;};
+ },[]);
  const [aiStale,setAiStale]=useState(false),[refreshError,setRefreshError]=useState('');
  const [aiElapsed,setAiElapsed]=useState(0);
  const [aiReport,setAiReport]=useState<{generated_at:string;reviewed_count:number;items:{blocker:string;next_action:string;client:string;client_key:string;project:string;request_id:string;citations:{message_id:string;exact_quote:string}[];destination:string}[]}|null>(null),[aiBusy,setAiBusy]=useState(false),[aiError,setAiError]=useState('');
@@ -74,7 +83,7 @@ export default function ClientHistoryDashboard({testWorkspace=false}:{testWorksp
   setOpened(id);
   setHistory(null);setHistoryState('loading');setHistoryAttempt(n=>n+1);
  }
- return <main className="client-dashboard team-workspace"><div className="workspace-title"><div><p className="eyebrow">YOUR WORKSPACE</p><h1>Daily briefing</h1><p>Review priorities, then continue the work in Coordinator.</p></div><Link href="/coordinator" className="primary-button">＋ New request</Link></div>
+ return <main className="client-dashboard team-workspace"><div className="workspace-title"><div className="welcome-intro"><p className="eyebrow">YOUR WORKSPACE</p><h1>Welcome, {displayName}</h1><p>Generate your daily priorities report.</p><button className="primary-button daily-report-button" disabled={aiBusy} onClick={()=>void runAiReview()}>{aiBusy?'Refreshing your report…':'✦ Refresh with AI'}</button></div></div>
  {refreshError&&<p role="status" className="briefing-stale">{refreshError}</p>}
  {load==='loading'?<p role="status" aria-busy="true">Loading client history…</p>:load==='error'?<div role="alert" className="analysis-error"><p>Client history could not load. Your saved requests are unchanged.</p><button className="secondary-button" onClick={()=>{setOpened(null);setLoad('loading');setAttempt(n=>n+1);}}>Retry loading history</button></div>:<>
 
@@ -82,7 +91,7 @@ export default function ClientHistoryDashboard({testWorkspace=false}:{testWorksp
 
 
 
- {!active&&<CoordinatorBriefing busy={aiBusy} error={aiError} elapsed={aiElapsed} onAnalyze={runAiReview}/>}
+ {!active&&<CoordinatorBriefing busy={aiBusy} error={aiError} elapsed={aiElapsed}/>}
  {!active&&aiStale&&aiReport?<p className="sr-only" role="status">Client directory briefing may be outdated. Use the live work queue above.</p>:null}
  {!active&&<div className="history-search"><label htmlFor="client-history-search">Find a client or request</label><input id="client-history-search" type="search" placeholder="Client, project, song or request ID" value={search} onChange={e=>{setSearch(e.target.value);setSelected(null);setOpened(null);}}/></div>}
  {!active&&<div className="dashboard-main-views"><div className="client-view-tabs" role="group" aria-label="Client view"><button aria-pressed={clientView==='attention'} onClick={()=>{setClientView('attention');setSelected(null);setOpened(null);}}>Clients who need attention <span>{attentionClients.length}</span></button><button aria-pressed={clientView==='all'} onClick={()=>{setClientView('all');setSelected(null);setOpened(null);}}>Clients <span>{groups.length}</span></button></div></div>}

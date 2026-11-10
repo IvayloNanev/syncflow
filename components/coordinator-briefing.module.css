@@ -29,3 +29,13 @@
 .caseRows>li[data-selected=true]{border:2px solid #edcf8b;box-shadow:0 0 0 4px #ddc18420}.caseRows>li:focus-visible{outline:2px solid #edcf8b;outline-offset:4px}
 
 .destinationPrompt{border:1px solid #ddc184;border-radius:22px;padding:26px;margin:0 0 24px;background:#25271e}.destinationPrompt h2{font-size:22px;margin:0 0 18px}.destinationPrompt p{font-size:14px;line-height:1.7}.destinationPrompt>div{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:22px}.destinationPrompt a,.destinationPrompt button{margin:0!important}.caseRows>li>button{white-space:nowrap;margin:0!important;font-size:13px;padding:12px 20px}
+
+/* Keep both agent links and handoff buttons on the same card layout. */
+.dashboard .card .next{box-sizing:border-box;width:100%;padding:18px 20px}
+.dashboard .card .next p{text-align:left;overflow-wrap:anywhere}
+.dashboard .card .meta{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-bottom:20px}
+.dashboard .card .meta>div{min-width:0}
+.dashboard .card .evidence{padding-top:16px}
+.dashboard .card .evidence summary{align-items:center;gap:16px;min-height:24px;text-align:left}
+.dashboard .card .continue{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;box-sizing:border-box;width:auto!important;max-width:100%;min-height:46px;margin:20px 0 0!important;padding:12px 22px;font-size:13px!important;line-height:1.5;white-space:normal;text-align:center}
+@media(max-width:700px){.dashboard .card .meta{grid-template-columns:1fr;gap:16px}.dashboard .card .next{padding:16px}.dashboard .card .continue{width:100%!important}}

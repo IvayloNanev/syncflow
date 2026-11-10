@@ -25,6 +25,11 @@ export async function GET(req:Request){
  const session=await workspaceSession();if(!session?.workspaceId)return json(401,{error:'Sign in to your workspace.'});
  const requestId=new URL(req.url).searchParams.get('request_id');
  if(requestId&&!/^[a-f0-9-]{36}$/.test(requestId))return json(400,{error:'Invalid request.'});
+ if(!requestId){
+  const {data,error}=await storageClient().from('syncflow_inquiries').select('email_id,subject,sender,body,received_at,request_id').eq('workspace_id',session.workspaceId).is('request_id',null).order('received_at',{ascending:false}).limit(100);
+  if(error)return json(503,{error:'Unable to load incoming inquiries. Retrying…'});
+  return json(200,{emails:data||[]});
+ }
  let query=storageClient().from('syncflow_email_receipts').select('email_id,request_id,subject,sender,received_at').eq('workspace_id',session.workspaceId);
  if(requestId)query=query.eq('request_id',requestId);
  const {data,error}=await query.order('received_at',{ascending:false}).limit(20);

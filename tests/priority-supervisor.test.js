@@ -5,17 +5,17 @@ import {deadlineInstant,reviewPriorities} from '../agents/priority/review.js';
 const now=new Date('2026-11-09T17:00:00Z');
 const make=(id,status='Needs analysis')=>({id,summary:{id,contact:id,status,updated_at:'2026-11-08'},messages:[{message_id:'m',text:'Client request'}],confirmed_fields:[],recording_id:'recording',analysis:{run_id:'run',result:{stages:{review:{output:{issues:[]}}}}},workflow:{status,reasons:['Recorded blocker'],next_action:'Next saved action'},reviewers:{reviewers:[]}});
 test('handoffs cover analysis, catalogue, draft, signoff, waiting, internal completion and finished',()=>{
- const expected={'Needs analysis':'analysis','Recording unresolved':'catalogue','Needs clarification':'response','Needs coordinator review':'signoff','Internal review pending':'internal','Ready to complete internal review':'internal','Internal review complete':'finished'};
+ const expected={'Needs analysis':'analysis','Recording unresolved':'catalogue','Needs clarification':'response','Needs coordinator review':'response','Ready for coordination':'response','Internal review pending':'follow_up','Ready to complete internal review':'follow_up','Internal review complete':'finished'};
  for(const [status,stage] of Object.entries(expected)){const c=make('one',status);assert.equal(caseHandoff(c).stage,stage);}
  const c=make('one','Needs clarification');c.recording_id=null;assert.equal(caseHandoff(c).stage,'catalogue');
- assert.equal(caseHandoff(make('one','Internal review pending')).state,'waiting');
+ assert.equal(caseHandoff(make('one','Internal review pending')).state,'action');
  assert.equal(caseHandoff(make('one','Changes requested')).state,'action');
 });
 test('saved briefing survives serialization, tracks every change source, and drops stale AI advice',()=>{
  const c=make('one','Needs coordinator review');
  const initial=superviseCases([c],null,{now});
  const saved=JSON.parse(JSON.stringify({generated_at:now.toISOString(),snapshots:initial.snapshots,report:{items:[{request_id:'one',blocker:'AI blocker',next_action:'AI next',citations:[{exact_quote:'Client request'}]}]}}));
- const restored=superviseCases([c],saved,{now});assert.equal(restored.changed_count,0);assert.equal(restored.items[0].explanation_source,'ai');
+ const restored=superviseCases([c],saved,{now});assert.equal(restored.changed_count,0);assert.equal(restored.items[0].explanation_source,'saved_state');
  for(const key of ['messages','analysis','confirmed_fields','catalogue_assessment','reviewers','workflow']){
   const changed=structuredClone(c);
   if(key==='messages')changed.messages.push({message_id:'reply',text:'New reply'});
@@ -52,11 +52,11 @@ test('briefing persistence is workspace scoped and save errors never claim succe
 test('fresh AI decisions control order and eligible follow-up; any changed case invalidates the whole decision',()=>{
  const a=make('a','Needs coordinator review'),b=make('b','Internal review pending');
  const initial=superviseCases([a,b],null,{now});
- const saved={generated_at:now.toISOString(),snapshots:initial.snapshots,report:{decision_version:3,items:[{request_id:'b',action:'follow_up',reason:'Chase the pending reviewer first.',next_action:'Contact the reviewer for a decision.',blocker:'Pending reviewer.',citations:[]},{request_id:'a',action:'signoff',reason:'Review after the follow-up.',next_action:'Review and sign off the brief.',citations:[]}]}};
+ const saved={generated_at:now.toISOString(),snapshots:initial.snapshots,report:{decision_version:5,items:[{request_id:'b',action:'follow_up',reason:'Chase the pending reviewer first.',next_action:'Contact the reviewer for a decision.',blocker:'Pending reviewer.',citations:[]},{request_id:'a',action:'response',reason:'Review after the follow-up.',next_action:'Continue client coordination.',citations:[]}]}};
  const result=superviseCases([a,b],saved,{now});
  assert.equal(result.decision_source,'ai');assert.deepEqual(result.items.map(i=>i.request_id),['b','a']);
- assert.equal(result.items[0].handoff.destination,'internal');assert.equal(result.items[0].handoff.anchor,'reviewer-follow-up');assert.equal(result.items[0].next_action,'Contact the reviewer for a decision.');
+ assert.equal(result.items[0].handoff.destination,'coordinator');assert.equal(result.items[0].handoff.anchor,'reviewer-follow-up');assert.equal(result.items[0].next_action,'Contact the reviewer for a decision.');
  a.messages.push({message_id:'reply',text:'Scope changed'});
- const stale=superviseCases([a,b],saved,{now});assert.equal(stale.decision_source,'workflow');assert.equal(stale.items.find(i=>i.request_id==='b').handoff.destination,'internal');
+ const stale=superviseCases([a,b],saved,{now});assert.equal(stale.decision_source,'workflow');assert.equal(stale.items.find(i=>i.request_id==='b').handoff.destination,'coordinator');
  assert.equal(superviseCases([b],saved,{now:new Date('2026-11-10T17:00:00Z')}).decision_source,'workflow');
 });

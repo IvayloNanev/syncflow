@@ -21,13 +21,13 @@ test('acceptance lifecycle: confirm, recheck, handoff save, reviewer completion,
   const providers={intakeProvider:{id:'acceptance',mode:'mock',generate:async({context})=>({schema_version:'1.0',run_id:context.run_id,base_record_version:context.base_record_version,ambiguities:[],proposed_changes:fixture.intake.proposed_changes.filter(p=>!context.confirmed_fields.some(f=>f.field_key===p.field_key)).map(p=>({...p,evidence:p.evidence.map(e=>({...e,message_id:context.messages[0].message_id}))}))})},followUpProvider:createFollowUpMockProvider()};
   const run=await analyzeSavedRequest(store,{actor_id:'A',request_id:r.id,expected_revision:0,idempotency_key:'intake'},providers);
   assert.equal(run.analysis.status,'completed');
-  assert.equal(store.workflow('A',r.id).can_complete,false);
+  assert.equal(store.workflow('A',r.id).can_complete,true);
   for(const p of run.analysis.result.stages.intake.output.proposed_changes) store.decideProposal({actor_id:'A',request_id:r.id,expected_revision:store.get('A',r.id).revision,run_id:run.analysis.run_id,proposal_id:p.proposal_id,decision:'accept',idempotency_key:`accept-${p.proposal_id}`});
   const current=store.get('A',r.id);
   await analyzeSavedRequest(store,{actor_id:'A',request_id:r.id,expected_revision:current.revision,idempotency_key:'recheck'},providers);
-  assert.equal(store.workflow('A',r.id).status,'Needs coordinator review');
+  assert.equal(store.workflow('A',r.id).status,'Ready for coordination');
   store.approveBrief({actor_id:'A',request_id:r.id,expected_revision:current.revision,analysis_run_id:store.activeAnalysis('A',r.id).run_id,idempotency_key:'brief'});
-  assert.equal(store.workflow('A',r.id).status,'Ready for internal review');
+  assert.equal(store.workflow('A',r.id).status,'Ready for coordination');
   const text=buildHandoffSummary({request:current,analysisCurrent:true,catalog:reviewRecording('TRACK-0001')});
   store.saveHandoff({actor_id:'A',request_id:r.id,expected_revision:current.revision,expected_handoff_version:0,source_token:store.handoff('A',r.id).source_token,text:text+'\nCoordinator note: Verify publishing.',idempotency_key:'handoff'});
   store.recordReview({actor_id:'A',request_id:r.id,expected_revision:current.revision,expected_review_version:0,operation:'assign',name:'Director Demo',role:'Director',idempotency_key:'assign'});
