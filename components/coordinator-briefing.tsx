@@ -34,7 +34,7 @@ export default function CoordinatorBriefing({busy,error,elapsed}:{busy:boolean;e
    <div className={styles.filters} role="group" aria-label="Work queue">{[['all','All open'],['action','Your actions'],['blocked','Blockers'],['waiting','Waiting'],['finished','Finished'],['changed','Changed']].map(([value,label])=><button key={value} aria-pressed={filter===value} onClick={()=>setFilter(value)}>{label}<span>{data.items.filter(item=>matches(item,value)).length}</span></button>)}</div>
    <ol className={styles.queue}>{items.map((item,index)=>{const [label,tone]=urgency(item);const featured=item.request_id===open[0]?.request_id&&filter==='all';return <li key={item.request_id} className={`${styles.card} ${styles[tone]} ${featured?styles.featured:''}`}>
     <div className={styles.cardTop}><span className={styles.rank}>{featured?(data.decision_source==='ai'?'AI’S FIRST PRIORITY':'WORKFLOW FIRST PRIORITY'):`#${(open.findIndex(row=>row.request_id===item.request_id)+1)||index+1}`}</span><span className={styles.badge}><i/>{label}</span></div>
-    {featured?<p className={styles.eyebrow}>{data.decision_source==='ai'?'Do this first · chosen by your briefing agent':'Run Analyze priorities for the agent’s recommendation'}</p>:null}<h3>{item.project||'Untitled request'}</h3><p className={styles.client}>{item.client}</p>
+    {featured?<p className={styles.eyebrow}>{data.decision_source==='ai'?'Do this first · chosen by your briefing agent':'Use Refresh with AI for the agent’s recommendation'}</p>:null}<h3>{item.project||'Untitled request'}</h3><p className={styles.client}>{item.client}</p>
     <p className={styles.reason}>{item.reason}</p>
     <div className={styles.next}><span>{item.handoff.state==='waiting'?'WAITING FOR':'NEXT ACTION'}</span><p>{item.next_action}</p></div>
     <dl className={styles.meta}><div><dt>Responsible</dt><dd>{item.responsible}</dd></div><div><dt>Deadline</dt><dd>{item.deadline?[item.deadline.date||item.deadline.supplied_text,item.deadline.time,item.deadline.timezone].filter(Boolean).join(' · '):'Not supplied'}{item.deadline&&!item.deadline.timezone?' · timezone unconfirmed':''}</dd></div></dl>
@@ -42,7 +42,7 @@ export default function CoordinatorBriefing({busy,error,elapsed}:{busy:boolean;e
     {item.handoff.destination==='internal'?<Link className={`primary-button ${styles.continue}`} href={`/internal?case=${encodeURIComponent(item.request_id)}`}>Go to Internal Review</Link>:<CoordinatorHandoffButton className={`primary-button ${styles.continue}`} requestId={item.request_id}>Go to Coordinator</CoordinatorHandoffButton>}
    </li>;})}</ol>
    {!items.length?<div className={styles.empty}><strong>All clear in this view.</strong><p>Choose another filter to see the rest of your work.</p></div>:null}
-   <footer className={styles.footer}><span>{data.saved_at?`AI briefing saved ${new Date(data.saved_at).toLocaleString()}`:'Analyze priorities to add an AI briefing.'}{data.changed_count>0?` · ${data.changed_count} cases have fresh changes.`:''}</span><span>Actions and approvals stay with you. Internal review is not rights clearance.</span></footer>
+   <footer className={styles.footer}><span>{data.saved_at?`AI briefing saved ${new Date(data.saved_at).toLocaleString()}`:'Use Refresh with AI to add a briefing.'}{data.changed_count>0?` · ${data.changed_count} cases have fresh changes.`:''}</span><span>Actions and approvals stay with you. Internal review is not rights clearance.</span></footer>
   </>:null}
  </section>;
 }

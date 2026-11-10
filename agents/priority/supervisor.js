@@ -1,9 +1,10 @@
+import {caseTitle} from '../../requests/case-title.js';
 import {escalationReasons} from '../internal/escalation.js';
 import {createHash} from 'node:crypto';
 import {reviewPriorities} from './review.js';
 const hash=value=>createHash('sha256').update(JSON.stringify(value??null)).digest('hex');
 export function caseSnapshot(c){
- const facets={emails:hash(c.messages),analysis:hash(c.analysis),details:hash(c.confirmed_fields),catalogue:hash({recording:c.recording_id,assessment:c.catalogue_assessment}),reviewers:hash(c.reviewers),workflow:hash({workflow:c.workflow,manager_resolution:c.manager_resolution,internal_review_request:c.internal_review_request})};
+ const facets={emails:hash(c.messages),analysis:hash(c.analysis),details:hash(c.confirmed_fields),catalogue:hash({recording:c.recording_id,assessment:c.catalogue_assessment}),reviewers:hash(c.reviewers),workflow:hash({workflow:c.workflow,manager_resolution:c.manager_resolution,internal_review_request:c.internal_review_request,agent_assignment:c.agent_assignment})};
  return {fingerprint:hash(facets),facets};
 }
 export function caseHandoff(c,{now=new Date()}={}){
@@ -40,7 +41,7 @@ export function superviseCases(cases,saved=null,{now=new Date()}={}){
   for(const issue of issues)evidence.push({kind:'analysis',text:issue.question||issue.message||issue.reason||issue.description||issue.code||'Unresolved checklist issue'});
   for(const reviewer of c.reviewers?.reviewers||[])evidence.push({kind:'reviewer',text:`${reviewer.name} (${reviewer.role}): ${reviewer.status}${reviewer.needs_reconfirmation?' — reconfirmation required':''}${reviewer.notes?`: ${reviewer.notes}`:''}`});
   for(const citation of ai?.citations||[])evidence.push({kind:'email',text:citation.exact_quote});
-  return {request_id:c.id,client:c.summary.contact||'Client not identified',project:c.summary.project||c.summary.track||c.subject||'Untitled request',status:c.workflow.status,deadline:c.summary.deadline||null,responsible:handoff.destination==='internal'?'Manager':'Coordinator',handoff,reason:decision?.reason||(handoff.destination==='internal'?escalationReasons(c,{now}).join('; '):null)||ranked?.reason||'Internal review is complete; rights clearance remains separate.',blocker:ai?.blocker||c.workflow.reasons.join(' ')||'No internal-review blockers.',next_action:decision?.next_action||(handoff.destination==='internal'?'Assess the escalation and prepare a manager decision email.':handoff.stage==='follow_up'?'Follow up with the reviewer and record their decision in Coordinator.':c.workflow.next_action),changes,changed,explanation_source:ai?'ai':'saved_state',evidence,priority:ranked?.rank??99};
+  return {request_id:c.id,client:c.summary.contact||'Client not identified',project:caseTitle(c),status:c.workflow.status,deadline:c.summary.deadline||null,responsible:handoff.destination==='internal'?'Manager':'Coordinator',handoff,reason:decision?.reason||(handoff.destination==='internal'?escalationReasons(c,{now}).join('; '):null)||ranked?.reason||'Internal review is complete; rights clearance remains separate.',blocker:ai?.blocker||c.workflow.reasons.join(' ')||'No internal-review blockers.',next_action:decision?.next_action||(handoff.destination==='internal'?'Assess the escalation and prepare a manager decision email.':handoff.stage==='follow_up'?'Follow up with the reviewer and record their decision in Coordinator.':c.workflow.next_action),changes,changed,explanation_source:ai?'ai':'saved_state',evidence,priority:ranked?.rank??99};
  });
  const order=new Map((decisionCurrent?saved.report.items.map(item=>item.request_id):review.ranked_request_ids).map((id,index)=>[id,index]));
  items.sort((a,b)=>(order.get(a.request_id)??Infinity)-(order.get(b.request_id)??Infinity)||a.request_id.localeCompare(b.request_id));

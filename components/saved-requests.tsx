@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import {useEffect,useState,type ReactNode} from "react";
 import type { ConfirmedFact } from "./fact-review";
 
 export type SavedRequest = {deleted_at?:string|null;manager_resolution?:{manager_name:string;notes:string;decision:string}; agent_fields?: {field_key:string;state:string;origin:string;value:unknown;evidence:{message_id:string;exact_quote:string}[];run_id:string;base_revision:number}[]; confirmed_fields: ConfirmedFact[]; id: string; revision: number; recording_id: string | null; coordinator_timezone: string;
@@ -11,10 +11,13 @@ export default function SavedRequests({ requests, saved, analyses, busy, reply, 
   { requests: RequestSummary[]; saved: SavedRequest | null; analyses: AnalysisSummary[]; busy: boolean; reply: string;
     onReply: (value: string) => void; onAppend: () => void; onOpen: (id: string) => void; onRefresh: () => void; onNew: () => void;
     response?: ReactNode; activeRunId?: string; onRecheck?: () => void; variant?: "navigation" | "conversation" }) {
+  const [mobile,setMobile]=useState(false);
+  useEffect(()=>{const query=window.matchMedia('(max-width:700px)');const update=()=>setMobile(query.matches);update();query.addEventListener('change',update);return()=>query.removeEventListener('change',update);},[]);
+
   if (variant === "conversation") return saved ? <section className="conversation-panel" aria-labelledby="conversation-heading">
     <div className="section-heading"><div><p className="eyebrow">PRESERVED SOURCE MESSAGES</p><h3 id="conversation-heading">Conversation</h3></div><span className="count">{saved.messages.length} messages</span></div>
     <p className="conversation-step"><span aria-hidden="true">01</span> Client email</p>
-    <div className="message-timeline">{saved.messages.map((m, i) => <div key={m.message_id}><details open={i === 0 || i === saved.messages.length - 1}><summary><span>{m.source==='manager_decision'?'Recorded manager decision':i === 0 ? 'Original client email' : `Client reply ${i}`}</span><small>{new Date(m.received_at).toLocaleString()}</small></summary><p className="message-body">{m.text}</p></details>{analyses.filter(a => a.message_count === i + 1 && a.draft && a.run_id !== activeRunId).map(a => <details className="historical-response" key={a.run_id}><summary>Previous generated response · revision {a.base_revision} · draft, not sent</summary><strong>{a.draft?.subject}</strong><p className="message-body">{a.draft?.body}</p></details>)}</div>)}</div>
+    <div className="message-timeline">{saved.messages.map((m, i) => <div key={m.message_id}><details open={!mobile&&(i === 0 || i === saved.messages.length - 1)}><summary><span>{m.source==='manager_decision'?'Recorded manager decision':i === 0 ? 'Original client email' : `Client reply ${i}`}</span><small>{new Date(m.received_at).toLocaleString()}</small></summary><p className="message-body">{m.text}</p></details>{analyses.filter(a => a.message_count === i + 1 && a.draft && a.run_id !== activeRunId).map(a => <details className="historical-response" key={a.run_id}><summary>Previous generated response · revision {a.base_revision} · draft, not sent</summary><strong>{a.draft?.subject}</strong><p className="message-body">{a.draft?.body}</p></details>)}</div>)}</div>
     {response ? <div className="conversation-connector" aria-hidden="true"><span/><i>FROM EMAIL TO RESPONSE</i><span/></div> : null}
     {response}
     <div className="reply-composer"><p className="conversation-step"><span aria-hidden="true">03</span> Continue the conversation</p><label htmlFor="client-reply">Paste the client’s reply</label><textarea id="client-reply" rows={5} maxLength={20000} disabled={busy} value={reply} onChange={e => onReply(e.target.value)} placeholder="Paste the client’s answers here, then recheck the request…" />
