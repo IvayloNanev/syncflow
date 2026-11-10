@@ -1,3 +1,4 @@
+import {assessmentFailure} from '../../../server/assessment-errors.js';
 import {randomUUID} from 'node:crypto';
 import {workspaceSession,storageClient} from '../../../lib/supabase/server';
 import {requestOrigin} from '../../../server/request-origin.js';
@@ -28,7 +29,7 @@ export async function POST(req:Request){
  const {cases:latest}=await loadBriefing(client,workspace,session.user.id),fresh=latest.find(item=>item.id===c.id);
  if(!fresh||!currentAssessment(fresh,[{request_id:c.id,...result.assessment,result:result.assessment}]))return json(409,{error:'This case changed during assessment. Check the updated context before reassessing.'});
  return json(200,result);
- }catch(error){const code=error instanceof Error?error.message:'';return json(code==='REVIEW_CHANGED'?409:503,{error:code==='AI_NOT_CONFIGURED'?'AI review is not configured. Saved case files remain available.':code==='REVIEW_CHANGED'?'The case changed. Reload its context before reassessing.':'Assessment could not finish. Your context and case files are preserved; please retry.'});}
+ }catch(error){const code=error instanceof Error?error.message:'';console.error('Internal assessment failed',/^[A-Z][A-Z_]+$/.test(code)?code:'UNEXPECTED_ERROR');const failure=assessmentFailure(code);return json(failure.status,failure.body);}
  finally{if(reservation)await reservation.client.from('syncflow_analysis_leases').delete().eq('workspace_id',reservation.workspace).eq('token',reservation.token);}
 }
 export async function GET(){

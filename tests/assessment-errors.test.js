@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {assessmentFailure} from '../server/assessment-errors.js';
+test('assessment failures distinguish validated failure causes without leaking arbitrary provider errors',()=>{assert.match(assessmentFailure('AI_INVALID_EVIDENCE').body.error,/could not be verified/);assert.equal(assessmentFailure('REVIEW_CHANGED').status,409);assert.equal(assessmentFailure('AI_CONTEXT_TOO_LARGE').status,422);const unknown=assessmentFailure('private provider response with credentials');assert.equal(unknown.body.error_code,'ASSESSMENT_FAILED');assert.doesNotMatch(JSON.stringify(unknown),/credentials|private provider/);});
