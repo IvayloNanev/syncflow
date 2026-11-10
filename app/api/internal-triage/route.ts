@@ -35,11 +35,11 @@ export async function POST(req:Request){
 export async function GET(){
  try{
  const session=await workspaceSession();if(!session?.workspaceId)return json(403,{error:'Workspace access required.'});
- const client=storageClient(),{cases}=await loadBriefing(client,session.workspaceId,session.user.id),rows=await reviewRows(client,session.workspaceId);
+ const client=storageClient(),{cases,supervision}=await loadBriefing(client,session.workspaceId,session.user.id),rows=await reviewRows(client,session.workspaceId);
  const current=await workspaceSession();if(current?.workspaceId!==session.workspaceId||current?.user.id!==session.user.id)return json(403,{error:'Workspace access changed.'});
  const items=cases.map(c=>({...caseListing(c,currentAssessment(c,rows.assessments)),queued:rows.queue.some((row:{request_id:string;active:boolean})=>row.request_id===c.id&&row.active)&&!['Internal review complete','Case completed'].includes(c.workflow.status)}));
- return json(200,{cases:items,version:reviewListVersion(cases,rows),scope:`${session.user.id}:${session.workspaceId}`});
- }catch{return json(503,{error:'Saved cases could not load. Please refresh.'});}
+ return json(200,{cases:items,supervision,version:reviewListVersion(cases,rows),scope:`${session.user.id}:${session.workspaceId}`});
+ }catch(error){const code=error instanceof Error?error.message:'';console.error('Case list failed',/^[A-Z][A-Z_]+$/.test(code)?code:'WORKSPACE_READ_FAILED');return json(503,{error:code==='BRIEFING_CHANGED'?'A case changed while loading. Refresh to get the latest cases.':'The workspace could not be read. Your saved cases are preserved. Please retry.',error_code:code==='BRIEFING_CHANGED'?code:'WORKSPACE_READ_FAILED'});}
 }
 
 export async function PATCH(req:Request){
