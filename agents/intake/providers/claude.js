@@ -1,9 +1,10 @@
-import { readFileSync } from 'node:fs';
+// Static import keeps the versioned prompt available in durable step bundles.
+import bundledPrompt from '../prompts/intake-v1.3.json' with {type:'json'};
 import {intakeToolSchema,decodeIntakeToolOutput} from './tool-schema.js';
 
 export const INTAKE_PROMPT_VERSION = 'intake-v1.3';
 export const INTAKE_TRANSPORT_VERSION = 'strict-groups-v1';
-export const INTAKE_SYSTEM_PROMPT = readFileSync(new URL('../prompts/intake-v1.3.txt', import.meta.url), 'utf8');
+export const INTAKE_SYSTEM_PROMPT = bundledPrompt;
 export class ClaudeProviderError extends Error {
   constructor(code,diagnosticCode=null) { super(code); this.code = code; this.diagnostic_code=diagnosticCode; }
 }
@@ -32,7 +33,7 @@ export function createClaudeProvider({ apiKey = process.env.ANTHROPIC_API_KEY,
       } catch { throw new ClaudeProviderError('PROVIDER_FAILED'); }
       if (!response.ok) {
         // Do not read or return provider error bodies, which may echo sensitive input.
-        const code = response.status===401||response.status===403?'PROVIDER_AUTH_FAILED':
+        const code = response.headers?.get('x-syncflow-uncertain-attempt')?'PROVIDER_ATTEMPT_UNCERTAIN':response.status===401||response.status===403?'PROVIDER_AUTH_FAILED':
           response.status===429?(response.headers?.get('x-syncflow-usage-limit')?'PROVIDER_USAGE_LIMIT':'PROVIDER_RATE_LIMITED'):response.status>=500?'PROVIDER_FAILED':'PROVIDER_REQUEST_REJECTED';
         throw new ClaudeProviderError(code);
       }

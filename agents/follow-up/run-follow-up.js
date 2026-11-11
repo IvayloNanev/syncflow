@@ -2,6 +2,7 @@ import {assessCatalogue} from '../../catalog/availability.js';
 import { validateContract } from '../../contracts/validate.js';
 
 const messages = {
+  PROVIDER_ATTEMPT_UNCERTAIN: 'An earlier AI call may have finished. It was not repeated automatically. Review saved results before explicitly retrying.',
   PROVIDER_NOT_CONFIGURED: 'Set ANTHROPIC_API_KEY and ANTHROPIC_MODEL locally before a live call.',
   PROVIDER_AUTH_FAILED: 'Claude authentication failed. Check your local API key and account access.',
   PROVIDER_USAGE_LIMIT: 'Your AI usage limit has been reached. Try again after the limit resets or ask your workspace administrator.',
@@ -71,7 +72,7 @@ export async function runFollowUp(context, review, { provider, timeoutMs = 30000
     let output;
     try { output = await provider.generate({ context: snapshot, review: reviewSnapshot, signal: controller.signal }); }
     catch (error) {
-      const allowed = ['UNSUPPORTED_MOCK_INPUT', 'PROVIDER_NOT_CONFIGURED', 'PROVIDER_AUTH_FAILED', 'PROVIDER_USAGE_LIMIT', 'PROVIDER_RATE_LIMITED', 'PROVIDER_REQUEST_REJECTED', 'INVALID_OUTPUT'];
+      const allowed = ['UNSUPPORTED_MOCK_INPUT', 'PROVIDER_NOT_CONFIGURED', 'PROVIDER_AUTH_FAILED', 'PROVIDER_ATTEMPT_UNCERTAIN', 'PROVIDER_USAGE_LIMIT', 'PROVIDER_RATE_LIMITED', 'PROVIDER_REQUEST_REJECTED', 'INVALID_OUTPUT'];
       throw new RunFailure(allowed.includes(error?.code) ? error.code : 'PROVIDER_FAILED');
     }
     // No provider-owned objects survive into a caller's result.

@@ -1,4 +1,5 @@
 "use client";
+import {runAIRequest} from '../server/durable-client.js';
 import {isAbandonedAnalysis} from '../requests/analysis-recovery-policy.js';
 import InternalReviewRequest from './internal-review-request';
 import ReviewerOutcomeForm from './reviewer-outcome-form';
@@ -82,6 +83,8 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     if(previous&&/^[a-f0-9-]{36}$/i.test(previous)){void command({action:'get',request_id:previous}).then((data:Detail)=>{if(active&&!data.request.deleted_at){setInquiryCaseId(previous);setInquiryCaseStatus(data.workflow.completed?'completed':'pending');}}).catch(()=>{if(active)clearEditorBackup('last-inquiry-case');});}
     return()=>{active=false;};
   },[inquiryEntry]);
+  const commandControllers=useRef(new Set<AbortController>());
+  useEffect(()=>()=>{for(const controller of commandControllers.current)controller.abort();commandControllers.current.clear();},[initialRequestId]);
   const retryCommands = useRef(new Map<string, string>());
   const [recording, setRecording] = useState<Recording | null>(null);
   const [email, setEmail] = useState("");
@@ -107,13 +110,14 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   type Detail = { brief_approval_history:BriefApproval[];recording_changes: typeof recordingChanges; handoff:HandoffState; workflow: Workflow; reviewer_tracking: ReviewTracking; review_analysis: { run_id: string; result: Result } | null; decisions: FactDecision[]; request: SavedRequest; catalog_review: Result["catalog_review"]; active_analysis: { result: Result } | null; analyses: AnalysisSummary[]; analysis_status?: string };
   async function command(payload: Record<string, unknown>) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 70000);
+    commandControllers.current.add(controller);
+    const timer = setTimeout(() => controller.abort(new Error(payload.action==="analyze"?"AI may still be working. Reopen this case to check saved results.":"Request timed out. Refresh to check saved changes.")), payload.action==="analyze"?600000:70000);
     try {
-      const response = await fetch("/api/requests", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload), signal: controller.signal });
+      const response = await runAIRequest("/api/requests", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload), signal: controller.signal });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error?.message || "Request could not complete.");
+      if (!response.ok) throw new Error((typeof data.error==='string'?data.error:data.error?.message) || "Request could not complete.");
       return data;
-    } finally { clearTimeout(timer); }
+    } finally { clearTimeout(timer);commandControllers.current.delete(controller); }
   }
   function keyed(payload: Record<string, unknown>) {
     const signature = JSON.stringify(payload);

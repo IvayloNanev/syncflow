@@ -17,3 +17,8 @@ coverage/
 *.db-journal
 *.db-wal
 *.db-shm
+/.swc
+
+/app/.well-known/workflow/
+/.workflow-data/
+/.workflow-vitest/

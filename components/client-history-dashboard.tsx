@@ -1,4 +1,5 @@
 'use client';
+import {runAIRequest} from '../server/durable-client.js';
 import Link from 'next/link';
 import CoordinatorBriefing from './coordinator-briefing';
 import {useEffect,useLayoutEffect,useRef,useState} from 'react';
@@ -69,14 +70,14 @@ export default function ClientHistoryDashboard({testWorkspace=false,displayName=
   if(aiController.current)return;
   const controller=new AbortController();aiController.current=controller;
   const fingerprint=loadedFingerprint.current;
-  const timeout=setTimeout(()=>controller.abort(),55000);
+  const timeout=setTimeout(()=>controller.abort(),600000);
   setAiElapsed(0);setAiBusy(true);setAiError('');
   try{
-   const response=await fetch('/api/priority-review',{method:'POST',headers:{'content-type':'application/json'},body:'{}',signal:controller.signal});
+   const response=await runAIRequest('/api/priority-review',{method:'POST',headers:{'content-type':'application/json'},body:'{}',signal:controller.signal});
    const data=await response.json();if(!response.ok)throw new Error(data.error||'AI review could not finish.');
    setAiReport(data.report);if(data.report){setQueueView('all');}
    setAiStale(loadedFingerprint.current!==fingerprint);if(!data.report)setAiError('No open cases need attention.');
-  }catch(error){setAiStale(true);setAiError(controller.signal.aborted?'Analysis stopped. You can try again.':error instanceof Error?error.message:'AI review could not finish.');}
+  }catch(error){setAiStale(true);setAiError(controller.signal.aborted?'Connection interrupted. AI may still be working; refresh to check saved results.':error instanceof Error?error.message:'AI review could not finish.');}
   finally{clearTimeout(timeout);aiController.current=null;setAiBusy(false);}
  }
  function showHistory(id:string){

@@ -30,7 +30,7 @@ const command = input => {
 /** Trusted server/CLI boundary only: actor_id must come from authenticated caller context.
  * No HTTP/auth or arbitrary updates. Explicit coordinator decisions are revision-bound commands. Analysis artifacts stay separate from confirmed facts.
  */
-export function openRequestStore(path = ':memory:', { ownerId = null, initialState = null, createId = null } = {}) {
+export function openRequestStore(path = ':memory:', { ownerId = /** @type {string|null} */ (null), initialState = null, createId = null } = {}) {
   const db = new DatabaseSync(path, { timeout: 1000 });
   db.exec(`PRAGMA foreign_keys=ON;
     CREATE TABLE IF NOT EXISTS requests (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL, revision INTEGER NOT NULL, body TEXT NOT NULL) STRICT;
@@ -46,6 +46,8 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
   db.exec('CREATE TABLE IF NOT EXISTS brief_approvals (request_id TEXT NOT NULL REFERENCES requests(id), version INTEGER NOT NULL, body TEXT NOT NULL, PRIMARY KEY(request_id,version)) STRICT');
   db.exec('INSERT OR IGNORE INTO review_heads SELECT request_id,run_id FROM active_analyses');
   // Trusted persistence adapter only. Explicit table/column allowlist; never HTTP input.
+  if(!db.prepare('PRAGMA table_info(analysis_runs)').all().some(c=>c.name==='execution_mode'))db.exec('ALTER TABLE analysis_runs ADD COLUMN execution_mode TEXT');
+  if(!db.prepare('PRAGMA table_info(analysis_runs)').all().some(c=>c.name==='started_by'))db.exec('ALTER TABLE analysis_runs ADD COLUMN started_by TEXT');
   const tables = ['requests','events','commands','analysis_runs','active_analyses','review_heads','fact_decisions','reviewer_tracking','review_completions','handoff_versions','brief_approvals'];
   if (initialState) {
     if (initialState.schema_version !== 1) fail('INVALID_SNAPSHOT');
@@ -255,7 +257,7 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
       return validateContract('context', context);
     },
     beginAnalysis(input) {
-      if (!keys(input, ['actor_id','request_id','expected_revision','idempotency_key'])) fail('INVALID_INPUT');
+      if (!keys(input, ['actor_id','request_id','expected_revision','idempotency_key','execution_mode'])||(input.execution_mode!==undefined&&input.execution_mode!=='durable')) fail('INVALID_INPUT');
       command(input);
       if (!Number.isSafeInteger(input.expected_revision) || input.expected_revision < 0) fail('INVALID_INPUT');
       return transaction(() => {
@@ -267,8 +269,8 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
         }
         if (request.revision !== input.expected_revision) fail('REVISION_CONFLICT');
         const runId = randomUUID(); const context = this.context(input.actor_id,request.id,runId);
-        db.prepare('INSERT INTO analysis_runs (run_id,request_id,command_key,base_revision,context,status,created_at) VALUES (?,?,?,?,?,?,?)')
-          .run(runId,request.id,input.idempotency_key,request.revision,JSON.stringify(context),'running',new Date().toISOString());
+        db.prepare('INSERT INTO analysis_runs (run_id,request_id,command_key,base_revision,context,status,created_at,execution_mode,started_by) VALUES (?,?,?,?,?,?,?,?,?)')
+          .run(runId,request.id,input.idempotency_key,request.revision,JSON.stringify(context),'running',new Date().toISOString(),input.execution_mode??null,input.actor_id);
         return { replayed:false, analysis:this.analysis(input.actor_id,request.id,runId) };
       });
     },
@@ -276,7 +278,7 @@ export function openRequestStore(path = ':memory:', { ownerId = null, initialSta
       owned(actor,id);
       const row = db.prepare('SELECT * FROM analysis_runs WHERE request_id=? AND run_id=?').get(id,runId);
       if (!row) fail('NOT_FOUND');
-      return { run_id:row.run_id, request_id:id, base_revision:row.base_revision, context:JSON.parse(row.context), status:row.status,
+      return { run_id:row.run_id, request_id:id, execution_mode:row.execution_mode, started_by:row.started_by, base_revision:row.base_revision, context:JSON.parse(row.context), status:row.status,
         result:row.result===null?null:JSON.parse(row.result), created_at:row.created_at, finished_at:row.finished_at };
     },
     analyses(actor,id) {

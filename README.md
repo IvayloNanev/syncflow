@@ -37,6 +37,7 @@ Preserve existing environment files. Follow the [setup guide](docs/setup-guide.m
 
 ```sh
 pnpm test
+pnpm test:durable
 pnpm lint
 pnpm typecheck
 pnpm validate:fixtures
@@ -49,7 +50,7 @@ Tests and mock smoke checks do not call a paid model. A live evaluation requires
 ## Release evidence and limitations
 
 - [Readiness review and remaining work](docs/readiness-2026-11-11.md)
-- [AI usage limits](docs/ai-usage.md)
+- [AI usage limits](docs/ai-usage.md) and [durable background runs](docs/durable-ai.md)
 - [Evaluation methodology](evaluation/README.md) and [latest Intake verification](docs/intake-reliability-2026-11-11.md) and [earlier full workflow evaluation](docs/evaluation-2026-11-11.md)
 - [Clarification routing and quality checks](docs/clarification-quality-2026-11-11.md)
 - [Issue triage](docs/issue-triage-2026-11-11.md)

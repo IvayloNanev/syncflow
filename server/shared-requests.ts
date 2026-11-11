@@ -1,9 +1,11 @@
+import {reconcileCoordinator} from './durable-recovery';
+import {enqueueAI} from './durable-launch';
+import {storedRoutingCase,canRunCoordinator} from './case-routing-policy.js';
 import {createBudgetedFetch} from './ai-usage.js';
 import {createClaudeProvider} from '../agents/intake/providers/claude.js';
 import {createFollowUpClaudeProvider} from '../agents/follow-up/providers/claude.js';
 import {reviewPriorities} from '../agents/priority/review.js';
 import {requestOrigin} from './request-origin.js';
-import {randomUUID} from 'node:crypto';
 import {sharedConfigured,storageClient,workspaceSession} from '../lib/supabase/server';
 import {createSavedRequestsHandler,requestDetail} from './saved-requests.js';
 import {creationId,openSharedStore,listSharedRequests} from '../requests/shared-store.js';
@@ -13,7 +15,6 @@ export async function sharedRequests(req:Request){
  if(!sharedConfigured())return local(req);
  const origin=requestOrigin(req);
  if(!origin||req.headers.get('origin')!==origin)return json(403,{error:{code:'ORIGIN_REJECTED',message:'Use this app to submit changes.'}});
- let lease:{client:ReturnType<typeof storageClient>;workspace:string;token:string}|undefined;
  let store:Awaited<ReturnType<typeof openSharedStore>>|undefined;
  try{
   const session=await workspaceSession();if(!session)return json(401,{error:{code:'SIGN_IN_REQUIRED',message:'Sign in to continue.'}});
@@ -29,11 +30,15 @@ export async function sharedRequests(req:Request){
   const id=input?.action==='create'?creationId(session.workspaceId,session.user.id,input.idempotency_key):input?.request_id;
   if(typeof id!=='string'||! /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id))return json(400,{error:{message:'Invalid request.'}});
   store=await openSharedStore({client,workspaceId:session.workspaceId,actorId:session.user.id,id});
+  if(input.action==='get')await reconcileCoordinator(store,session.workspaceId,session.user.id,id);
   if(input.action==='analyze'){
-   const token=randomUUID();const {data,error}=await client.rpc('syncflow_acquire_analysis',{p_workspace:session.workspaceId,p_actor:session.user.id,p_token:token});
-   if(error)throw new Error('Unable to reserve analysis');
-   if(!data)return json(429,{error:{code:'BUSY',message:'Your team has an analysis running. Wait, then reopen the request.'}});
-   lease={client,workspace:session.workspaceId,token};
+   if(Object.keys(input).some(key=>!['action','request_id','expected_revision','idempotency_key'].includes(key)))return json(400,{error:{code:'INVALID_INPUT',message:'Invalid analysis command.'}});
+   if(!canRunCoordinator(storedRoutingCase(store,session.user.id,id)))return json(409,{error:{code:'WRONG_AGENT',message:'Open this case in its assigned agent.'}});
+   const attempted=store.beginAnalysis({actor_id:session.user.id,request_id:id,expected_revision:input.expected_revision,idempotency_key:input.idempotency_key,execution_mode:'durable'});
+   const committed=await store.flush();const analysis=committed?.analysis||attempted.analysis;
+   if(analysis.status!=='running'||analysis.execution_mode!=='durable')return json(200,{...requestDetail(store,id,session.user.id),analysis_status:analysis.status,replayed:attempted.replayed});
+   const queued=await enqueueAI({kind:'coordinator',workspaceId:session.workspaceId,actorId:typeof analysis.started_by==='string'?analysis.started_by:session.user.id,leaseToken:analysis.run_id,analysisRunId:analysis.run_id,requestId:id});
+   return json(202,{...queued,...requestDetail(store,id,session.user.id),replayed:attempted.replayed});
   }
   const handler=createSavedRequestsHandler({actor:session.user.id,trustedOrigin:origin,enabled:()=>true,openStore:()=>store!,providers:()=>{const fetchImpl=createBudgetedFetch({client,workspaceId:session.workspaceId,actorId:session.user.id,feature:'coordinator'});return {intakeProvider:createClaudeProvider({fetchImpl}),followUpProvider:createFollowUpClaudeProvider({fetchImpl})};}});
   const response=await handler(new Request(req.url,{method:'POST',headers:req.headers,body:raw}));
@@ -45,6 +50,6 @@ export async function sharedRequests(req:Request){
   return json(input.action==='create'&&replayed?200:response.status,{...result,...requestDetail(store,id,session.user.id),...(replayed!==undefined?{replayed}:{}),...(input.action==='analyze'&&committed?.status?{analysis_status:committed.status}:{})});
  }catch(error){
   const code=(error as {code?:string}).code;
-  return json(code==='NOT_FOUND'?404:code==='ACCESS_DENIED'?403:code?.endsWith('CONFLICT')?409:500,{error:{code:code||'REQUEST_FAILED',message:code?.endsWith('CONFLICT')?'This request changed. Reopen it before retrying.':'Unable to complete the request. Saved history is retained.'}});
- }finally{store?.dispose();if(lease)await lease.client.from('syncflow_analysis_leases').delete().eq('workspace_id',lease.workspace).eq('token',lease.token);}
+  return json(code==='NOT_FOUND'?404:code==='ACCESS_DENIED'?403:code?.endsWith('CONFLICT')?409:code?.startsWith('INVALID_')?400:500,{error:{code:code||'REQUEST_FAILED',message:code?.endsWith('CONFLICT')?'This request changed. Reopen it before retrying.':'Unable to complete the request. Saved history is retained.'}});
+ }finally{store?.dispose();}
 }
