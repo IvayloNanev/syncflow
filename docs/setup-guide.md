@@ -68,6 +68,8 @@ Both collaborators should run sections 1 and 4 on a fresh clone and record the r
 
 The hosted app is https://syncflow-one.vercel.app. The local fallback rejects production use. New deployments need `SYNCFLOW_APP_ORIGIN`, server credentials, Auth redirect settings and mail configuration, backups and release validation. Do not expose the local fallback through a tunnel.
 
+The repository `vercel.json` sets `pnpm build`, overriding the historical Prisma generation command in project settings. CI no longer runs Prisma generation.
+
 ## 7. Known gaps
 
 - Shared authentication, workspace membership, workspace selection and team invitations are implemented. There is no external client portal.
