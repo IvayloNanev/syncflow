@@ -2,3 +2,30 @@ allowBuilds:
   '@swc/core': true
   esbuild: true
   cbor-extract: false
+minimumReleaseAgeExclude:
+  - '@workflow/astro@5.0.9'
+  - '@workflow/builders@5.1.0'
+  - '@workflow/cli@5.1.0'
+  - '@workflow/core@5.5.0'
+  - '@workflow/errors@5.1.1'
+  - '@workflow/nest@5.1.7'
+  - '@workflow/next@5.1.0'
+  - '@workflow/nitro@5.0.9'
+  - '@workflow/nuxt@5.0.9'
+  - '@workflow/rollup@5.0.9'
+  - '@workflow/sveltekit@5.0.9'
+  - '@workflow/utils@5.1.0'
+  - '@workflow/vite@5.0.9'
+  - '@workflow/vitest@5.0.9'
+  - '@workflow/web@5.1.0'
+  - '@workflow/world-local@5.3.0'
+  - '@workflow/world-vercel@5.5.0'
+  - '@workflow/world@5.2.0'
+  - workflow@5.5.0
+  - minimatch@11.0.7
+
+# Remove when upstream callers require patched versions themselves.
+# Keep minimatch 3/5 consumers on their existing, unaffected API.
+overrides:
+  'minimatch@>=7 <11.0.1': 11.0.7
+  'zod@>=4 <4.6.6': 4.6.7
