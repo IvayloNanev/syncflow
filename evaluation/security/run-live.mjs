@@ -29,7 +29,7 @@ for(const attack of [{id:'control',text:''},...attacks]){
  ];
  for(let i=0;i<jobs.length;i+=2)await Promise.all(jobs.slice(i,i+2).map(async([agent,run])=>{let result;try{result=await run();}catch(e){result={status:'blocked',code:/^[A-Z_]+$/.test(e.message)?e.message:'PROVIDER_FAILURE'};}results.push({attack:attack.id,agent,...result});console.log(JSON.stringify(results.at(-1)));}));
 }
-const files=['agents/untrusted-content.js','agents/priority/ai-review.js','agents/internal/triage.js','agents/intake/prompts/intake-v1.txt','agents/follow-up/prompts/follow-up-v1.txt'];
+const files=['agents/intake/providers/tool-schema.js','agents/intake/providers/claude.js','agents/untrusted-content.js','agents/priority/ai-review.js','agents/internal/triage.js','agents/intake/prompts/intake-v1.3.txt','agents/follow-up/prompts/follow-up-v1.txt'];
 const report={generated_at:new Date().toISOString(),model:process.env.ANTHROPIC_MODEL,prompt_hashes:Object.fromEntries(files.map(p=>[p,createHash('sha256').update(readFileSync(new URL('../../'+p,import.meta.url))).digest('hex')])),scope:'Synthetic correspondence only; no workspace reads, sends or approvals. Sampled behavioral tests, not a security guarantee.',results};
 writeFileSync(process.env.SYNCFLOW_SECURITY_REPORT||'/tmp/syncflow-injection-live-report.json',JSON.stringify(report,null,2));
 console.log(JSON.stringify({total:results.length,pass:results.filter(r=>r.status==='pass').length,blocked:results.filter(r=>r.status==='blocked').length,unsafe:results.filter(r=>r.status==='unsafe').length}));

@@ -1,0 +1,32 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {runIntake} from '../../agents/intake/run-intake.js';
+import {createClaudeProvider,INTAKE_TRANSPORT_VERSION,INTAKE_PROMPT_VERSION,INTAKE_SYSTEM_PROMPT} from '../../agents/intake/providers/claude.js';
+import {intakeToolSchema} from '../../agents/intake/providers/tool-schema.js';
+import {equivalent} from '../score.js';
+import {validateContract} from '../../contracts/validate.js';
+const v2=process.argv[3]==='v2';
+const source=v2?'../intake-v2/cases':'./intake-reliability-v1';
+const bytes=readFileSync(new URL(source+'.json',import.meta.url));
+const hash=createHash('sha256').update(bytes).digest('hex');
+if(hash!==readFileSync(new URL(source+'.sha256',import.meta.url),'utf8').trim())throw Error('Development cases changed');
+const target=process.argv[2];if(!target)throw Error('Provide report output. Maximum twelve synthetic live calls, no retries.');
+const cases=JSON.parse(bytes);for(const c of cases)validateContract('context',c.context);
+process.loadEnvFile('.env');const provider=createClaudeProvider();
+const report={kind:v2?'intake-v2-synthetic-key-partner-review-pending':'synthetic-development-verification-not-independent-acceptance',model:process.env.ANTHROPIC_MODEL,transport:INTAKE_TRANSPORT_VERSION,prompt_version:INTAKE_PROMPT_VERSION,prompt_sha256:createHash('sha256').update(INTAKE_SYSTEM_PROMPT).digest('hex'),tool_schema_sha256:createHash('sha256').update(JSON.stringify(intakeToolSchema)).digest('hex'),sha256:hash,started_at:new Date().toISOString(),max_model_calls:cases.length,cases:[]};
+for(const c of cases){
+ let diagnostics=[];
+ const result=await runIntake(c.context,{provider:{...provider,generate:async args=>{const output=await provider.generate(args);try{validateContract('intake',output,args.context);}catch(error){diagnostics=error.errors;}return output;}}});
+ const actual=new Map((result.output?.proposed_changes||[]).map(p=>[p.field_key,p.proposed_value]));
+ const expected=Object.entries(c.expected);const mismatched=expected.filter(([field,value])=>!actual.has(field)||!equivalent(value,actual.get(field))).map(([field,value])=>({field,expected:value,actual:actual.get(field)??null}));
+ const extra=[...actual.keys()].filter(field=>!Object.hasOwn(c.expected,field));
+ const ambiguity_ok=!c.ambiguity||result.output?.ambiguities.some(a=>a.issue_type===c.ambiguity.type&&c.ambiguity.fields.every(field=>a.field_keys.includes(field)));
+ const forbidden_ok=!(c.forbidden||[]).some(field=>actual.has(field));
+ const score={ok:result.ok,expected:expected.length,proposed:actual.size,matched:expected.length-mismatched.length,mismatched,extra,ambiguity_ok,forbidden_ok};
+ report.cases.push({id:c.id,score,result,...(diagnostics.length?{synthetic_schema_diagnostics:diagnostics}:{})});
+ writeFileSync(target,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({id:c.id,...score}));
+ if(result.error?.code==='PROVIDER_REQUEST_REJECTED')break;
+}
+const sum=key=>report.cases.reduce((n,c)=>n+c.score[key],0);
+report.summary={cases:report.cases.length,planned_cases:cases.length,validated:report.cases.filter(c=>c.score.ok).length,matched:sum('matched'),expected:sum('expected'),proposed:sum('proposed'),precision:sum('matched')/sum('proposed'),recall:sum('matched')/sum('expected'),all_safety_checks_passed:report.cases.every(c=>c.score.ambiguity_ok&&c.score.forbidden_ok)};
+report.finished_at=new Date().toISOString();writeFileSync(target,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report.summary));

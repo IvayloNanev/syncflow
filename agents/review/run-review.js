@@ -3,6 +3,8 @@ import { explicitTerritoryConflict } from './territory-conflict.js';
 import checklist from '../../contracts/checklists/intake-v1.json' with { type: 'json' };
 import { validateContract } from '../../contracts/validate.js';
 
+export const REVIEW_POLICY_VERSION='review-v2';
+
 /** Deterministic review of candidate facts. Does not save, confirm, clear issues or approve rights. */
 export function runReview(context, intake, {catalogueCheck=false}={}) {
   try { validateContract('context', context); }
@@ -12,6 +14,8 @@ export function runReview(context, intake, {catalogueCheck=false}={}) {
   const fields = new Map(context.confirmed_fields.map(f => [f.field_key, structuredClone(f)]));
   for (const change of intake.proposed_changes)
     fields.set(change.field_key, { state: 'proposed', value: change.proposed_value, evidence: change.evidence });
+  const territoryEvidence=explicitTerritoryConflict(context.messages);
+  const sourceUncertainty=key=>(key==='territories'&&!!territoryEvidence)||intake.ambiguities.some(a=>a.field_keys.includes(key)&&a.evidence.length>0);
   const issues = structuredClone(context.unresolved_issues);
   const ids = new Set(issues.map(i => i.issue_id));
   const add = (id, type, keys, question, evidence = []) => {
@@ -23,13 +27,12 @@ export function runReview(context, intake, {catalogueCheck=false}={}) {
   const checks = checklist.fields.map(({ key }) => {
     const field = fields.get(key);
     const present = field?.state === 'not_applicable' || field?.value != null;
-    if (!present && !issues.some(i => i.type === 'missing' && i.field_keys.includes(key)))
+    if (!present && !sourceUncertainty(key) && !issues.some(i => i.type === 'missing' && i.field_keys.includes(key)))
       add(`missing-${key}`, 'missing', [key], key === 'budget' ? 'Please confirm the budget amount, currency and rights scope (master, publishing or both).' : `Please confirm ${key.replaceAll('_', ' ')}.`);
     return { rule_id: `required:${key}`, result: present ? 'pass' : 'fail' };
   });
   for (const [index, ambiguity] of intake.ambiguities.entries())
     add(`intake-ambiguity-${index}`, ambiguity.issue_type || 'ambiguous', ambiguity.field_keys, `Please clarify: ${ambiguity.reason}`, ambiguity.evidence);
-  const territoryEvidence=explicitTerritoryConflict(context.messages);
   if(territoryEvidence && !issues.some(i=>i.type==='conflict'&&i.field_keys.includes('territories')))
     add('source-conflict-territories','conflict',['territories'],'The request gives incompatible territory statements without a confirmed correction. Which territory applies?',territoryEvidence);
   const inspect = (key, unclear, question) => {
@@ -45,7 +48,12 @@ export function runReview(context, intake, {catalogueCheck=false}={}) {
       budget.scope === 'unspecified' && 'rights scope (master, publishing or both)'].filter(Boolean);
     if (needed.length) inspect('budget', () => true, `Please confirm the budget ${needed.join(' and ')}.`);
   }
-  inspect('campaign_term', v => !v.duration_text && !(v.start_date && v.end_date),
+  const sourceDuration=field=>{
+    const text=field?.value?.supplied_text?.trim();
+    return !!text&&/^(?:\d+(?:\.\d+)?|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(?:days?|weeks?|months?|years?)$/i.test(text)
+      && field.evidence?.some(e=>e.exact_quote.includes(text)&&context.messages.some(m=>m.message_id===e.message_id&&m.text.includes(e.exact_quote)));
+  };
+  inspect('campaign_term', v => !v.duration_text && !(v.start_date && v.end_date) && !sourceDuration(fields.get('campaign_term')),
     'Please confirm campaign duration or both start and end dates.');
   inspect('music_length', v => v.seconds === null, 'Please confirm the length of music in seconds.');
   const deadlineValue = fields.get('response_deadline')?.value;
@@ -69,14 +77,12 @@ export function runReview(context, intake, {catalogueCheck=false}={}) {
   const coordinator_issue_ids = context.unresolved_issues.filter(issue => issue.type === 'missing'
     && issue.field_keys.every(key => {
       const field = fields.get(key);
-      return (field?.state === 'not_applicable' || field?.value != null)
-        && !issues.some(other => other.issue_id !== issue.issue_id
-          && other.type !== 'missing' && other.field_keys.includes(key));
+      return field?.state === 'not_applicable' || field?.value != null || sourceUncertainty(key);
     })).map(issue => issue.issue_id);
   // First resolve catalogue coverage. Preserve all other blockers internally rather
   // than making the client complete a full licensing brief for unsupported music.
-  if(catalogue.status==='not_found'&&(catalogue.sourceIdentified||catalogueCheck)){
-    for(const issue of issues)if(!issue.issue_id.startsWith('catalogue-coverage-check')&&!coordinator_issue_ids.includes(issue.issue_id))coordinator_issue_ids.push(issue.issue_id);
+  if(catalogue.catalogueWide||(catalogue.status==='not_found'&&(catalogue.sourceIdentified||catalogueCheck))){
+    for(const issue of issues)if((!issue.issue_id.startsWith('catalogue-coverage-check')||!catalogue.catalogueWide&&!catalogue.client_question)&&!coordinator_issue_ids.includes(issue.issue_id))coordinator_issue_ids.push(issue.issue_id);
   }
-  return { ok: true, stage: 'review', mode: 'rules', catalogue_assessment:catalogue, freshness: 'not_checked', coordinator_issue_ids, output };
+  return { ok: true, stage: 'review', policy_version:REVIEW_POLICY_VERSION, mode: 'rules', catalogue_assessment:catalogue, freshness: 'not_checked', coordinator_issue_ids, output };
 }

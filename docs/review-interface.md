@@ -1,3 +1,5 @@
+> Historical/contract reference: per-field confirmation and local-browser descriptions below are superseded for the current web UI by [current user stories](user-stories.md) and [architecture](architecture.md). Dated evaluation criteria remain unchanged for reproducible scoring.
+
 # Deterministic Review step
 
 `runReview(context, intake)` consumes the same immutable context and a validated Intake payload. It checks candidate values without accepting or saving them. Existing confirmed fields remain available for partial replies; proposed values overlay them only in the temporary review view.

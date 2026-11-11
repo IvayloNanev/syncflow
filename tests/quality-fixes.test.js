@@ -30,10 +30,13 @@ test('answered stored issue stays open but is excluded from client draft',async(
  assert.deepEqual(r.coordinator_review_issue_ids,['old-project']);
  assert.ok(!r.stages.follow_up.output.addressed_issue_ids.includes('old-project'));assert.ok(!r.stages.follow_up.output.body.includes('What is the project?'));
 });
-test('partial budget candidate is not routed away from client clarification',()=>{
+test('partial budget routes the old generic gap internally and keeps the missing component with the client',()=>{
  const f=sample();f.context.unresolved_issues=[{issue_id:'old-budget',type:'missing',severity:'blocking',field_keys:['budget'],question:'Budget?',evidence:[]}];
  f.intake.proposed_changes.find(c=>c.field_key==='budget').proposed_value.currency=null;
- assert.ok(!runReview(f.context,f.intake).coordinator_issue_ids.includes('old-budget'));
+ const r=runReview(f.context,f.intake);
+ assert.ok(r.coordinator_issue_ids.includes('old-budget'));
+ const component=r.output.issues.find(i=>i.issue_id==='ambiguous-budget');assert.ok(component);assert.ok(!r.coordinator_issue_ids.includes(component.issue_id));assert.equal(component.question,'Please confirm the budget currency.');
+ assert.ok(r.output.issues.some(i=>i.issue_id==='old-budget'));
 });
 test('conflict/split classification requires source evidence',()=>{
  const f=sample();f.intake.ambiguities=[{issue_type:'split_request',field_keys:['artist','track_title'],reason:'More than one recording.',evidence:[]}];assert.equal(runReview(f.context,f.intake).error.code,'INVALID_INTAKE');

@@ -1,3 +1,4 @@
+import {createBudgetedFetch,AI_USAGE_MESSAGE} from '../../../server/ai-usage.js';
 import {randomUUID} from 'node:crypto';
 import {workspaceSession,storageClient} from '../../../lib/supabase/server';
 import {requestOrigin} from '../../../server/request-origin.js';
@@ -24,12 +25,12 @@ export async function POST(req:Request){
  if(['Internal review complete','Case completed'].includes(c.workflow.status))return json(409,{error:'This case is complete. Its saved records remain available in Cases.'});
  if(!eligibleLanes(c).allowed.includes('manager'))return json(409,{error:'This case belongs to Coordinator. Open it there instead.'});
  await admitReview(client,workspace,session.user.id,c.id);
- const result=await assessOnce({client,workspace,actor:session.user.id,c,generate:async()=>triageReviews({cases:[c],signal:AbortSignal.any([req.signal,AbortSignal.timeout(45000)])})});
+ const result=await assessOnce({client,workspace,actor:session.user.id,c,generate:async()=>triageReviews({cases:[c],fetchImpl:createBudgetedFetch({client,workspaceId:workspace,actorId:session.user.id,feature:'internal_review'}),signal:AbortSignal.any([req.signal,AbortSignal.timeout(45000)])})});
  const current=await workspaceSession();if(current?.workspaceId!==workspace||current?.user.id!==session.user.id)return json(403,{error:'Workspace access changed.'});
  const {cases:latest}=await loadBriefing(client,workspace,session.user.id,{includeCorrespondence:true}),fresh=latest.find(item=>item.id===c.id);
  if(!fresh||!currentAssessment(fresh,[{request_id:c.id,...result.assessment,result:result.assessment}]))return json(409,{error:'This case changed during assessment. Check the updated context before reassessing.'});
  return json(200,result);
- }catch(error){const code=error instanceof Error?error.message:'';return json(code==='REVIEW_CHANGED'?409:code==='AI_CONTEXT_TOO_LARGE'?422:503,{error:code==='AI_CONTEXT_TOO_LARGE'?'The full saved correspondence is too large for one assessment. No partial history was reviewed.':code==='AI_NOT_CONFIGURED'?'AI review is not configured. Saved case files remain available.':code==='REVIEW_CHANGED'?'The case changed. Reload its context before reassessing.':'Assessment could not finish. Your context and case files are preserved; please retry.'});}
+ }catch(error){const code=error instanceof Error?error.message:'';return json(code==='REVIEW_CHANGED'?409:code==='AI_USAGE_LIMIT'?429:code==='AI_CONTEXT_TOO_LARGE'?422:503,{error:code==='AI_USAGE_LIMIT'?AI_USAGE_MESSAGE:code==='AI_CONTEXT_TOO_LARGE'?'The full saved correspondence is too large for one assessment. No partial history was reviewed.':code==='AI_NOT_CONFIGURED'?'AI review is not configured. Saved case files remain available.':code==='REVIEW_CHANGED'?'The case changed. Reload its context before reassessing.':'Assessment could not finish. Your context and case files are preserved; please retry.'});}
  finally{if(reservation)await reservation.client.from('syncflow_analysis_leases').delete().eq('workspace_id',reservation.workspace).eq('token',reservation.token);}
 }
 export async function GET(){

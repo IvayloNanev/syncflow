@@ -2,7 +2,7 @@
 export function effectiveFields(request, analysis, decisions = []) {
   const fields=request.confirmed_fields.filter(f=>f.state==='confirmed').map(f=>({...f,origin:'human'}));
   if(!analysis?.result?.ok || analysis.base_revision!==request.revision)return fields;
-  const blocked=new Set((analysis.result.stages?.review?.output?.issues||[]).flatMap(i=>i.field_keys||[]));
+  const blocked=new Set((analysis.result.stages?.review?.output?.issues||[]).filter(i=>!i.issue_id?.startsWith('catalogue-coverage-check')).flatMap(i=>i.field_keys||[]));
   const rejected=new Set(decisions.filter(d=>d.run_id===analysis.run_id && d.decision==='reject').map(d=>d.proposal_id));
   for(const proposal of analysis.result.stages?.intake?.output?.proposed_changes||[]){
     if(blocked.has(proposal.field_key)||rejected.has(proposal.proposal_id)||!proposal.evidence?.length)continue;

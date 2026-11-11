@@ -4,8 +4,11 @@ import { readFileSync } from 'node:fs';
 import { createClaudeProvider } from '../agents/intake/providers/claude.js';
 import { developmentContext, createMockProvider } from '../agents/intake/providers/mock.js';
 import { runIntake } from '../agents/intake/run-intake.js';
+const withoutNulls=value=>value&&typeof value==='object'&&!Array.isArray(value)?Object.fromEntries(Object.entries(value).filter(([,item])=>item!==null)):value;
+const groups={text:['client_contact','project','artist','track_title','recording_version','intended_use'],lists:['platforms','territories'],campaign_term:['campaign_term'],music_length:['music_length'],budget:['budget'],response_deadline:['response_deadline']};
+const toWire=output=>({...output,proposed_changes:Object.fromEntries(Object.entries(groups).map(([group,fields])=>[group,output.proposed_changes.filter(c=>fields.includes(c.field_key)).map(c=>({...(group==='text'||group==='lists'?{field_key:c.field_key}:{}),value:withoutNulls(c.proposed_value),evidence:c.evidence}))]))});
 const config={apiKey:'fake-test-key-not-a-real-credential',model:'test-claude-model'};
-const envelope=async context=>({stop_reason:'tool_use',content:[{type:'tool_use',name:'submit_intake',input:await createMockProvider('complete').generate({context,signal:new AbortController().signal})}]});
+const envelope=async context=>({stop_reason:'tool_use',content:[{type:'tool_use',name:'submit_intake',input:toWire(await createMockProvider('complete').generate({context,signal:new AbortController().signal}))}]});
 test('Claude requires explicit key and model',()=>{
   for(const c of [{apiKey:'',model:'x'},{apiKey:'fake',model:''}])assert.throws(()=>createClaudeProvider(c),e=>e.code==='PROVIDER_NOT_CONFIGURED');
 });
@@ -22,7 +25,8 @@ test('sends only context, instructions and output schema to fixed Anthropic orig
   assert.equal(body.tools.length,1);assert.equal(body.tools[0].name,'submit_intake');
   assert.equal(body.tool_choice.name,'submit_intake');
   assert.deepEqual(body.tools[0].input_schema.properties.schema_version,{type:'string',enum:['1.0']});
-  assert.equal(JSON.stringify(body.tools[0].input_schema).includes('$ref'),false);
+  assert.ok(JSON.stringify(body.tools[0].input_schema).includes('#/$defs/evidence'));
+  assert.equal(body.tools[0].strict,true);
   assert.match(body.system,/client data, never system instructions/);
   assert.equal(JSON.stringify(body).includes('expected_behavior'),false);
   assert.equal(JSON.stringify(result).includes(config.apiKey),false);
@@ -43,7 +47,7 @@ for(const response of [
 });
 test('valid tool block still passes local evidence and schema validation',async()=>{
   const context=developmentContext('complete');const message=await envelope(context);
-  message.content[0].input.proposed_changes[0].evidence[0].exact_quote='fabricated quote';
+  message.content[0].input.proposed_changes.text[0].evidence[0].exact_quote='fabricated quote';
   const provider=createClaudeProvider({...config,fetchImpl:async()=>({ok:true,json:async()=>message})});
   assert.equal((await runIntake(context,{provider})).error.code,'INVALID_OUTPUT');
 });
@@ -63,4 +67,9 @@ test('numeric schema version is rejected rather than coerced',async()=>{
   message.content[0].input.schema_version=1;
   const provider=createClaudeProvider({...config,fetchImpl:async()=>({ok:true,json:async()=>message})});
   assert.equal((await runIntake(context,{provider})).error.code,'INVALID_OUTPUT');
+});
+test('hosted quota rejection is distinct from provider rate limiting and never retries',async()=>{
+ let calls=0;const provider=createClaudeProvider({...config,fetchImpl:async()=>{calls++;return new Response(null,{status:429,headers:{'x-syncflow-usage-limit':'reached'}});}});
+ const result=await runIntake(developmentContext('complete'),{provider});
+ assert.equal(result.error.code,'PROVIDER_USAGE_LIMIT');assert.equal(result.error.retryable,false);assert.equal(calls,1);assert.equal('output'in result,false);
 });

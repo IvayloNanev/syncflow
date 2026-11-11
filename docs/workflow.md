@@ -1,3 +1,5 @@
+> Historical/contract reference: per-field confirmation and local-browser descriptions below are superseded for the current web UI by [current user stories](user-stories.md) and [architecture](architecture.md). Dated evaluation criteria remain unchanged for reproducible scoring.
+
 # Connected agent workflow
 
 `runWorkflow(context, { intakeProvider, followUpProvider, timeoutMs, getCurrentVersion })` runs Intake → deterministic Review → Follow-up sequentially. Every stage uses the same copied context and revision. Candidate facts are reviewed without becoming confirmed facts. Failures stop subsequent work and retain validated stage results for inspection. No automatic retries, writes, approval or sending occur.

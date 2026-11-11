@@ -1,0 +1,1823 @@
+{
+  "benchmark_version": "review-v3",
+  "kind": "deterministic-current-policy-review-verification-not-live-model-accuracy",
+  "policy": "review-v2",
+  "key_status": "Synthetic author key; partner review pending",
+  "sha256": "751e062ff92c50dee88b530878fc0553f579b875f4a1799cb5fa060750b61c81",
+  "cases": [
+    {
+      "id": "Q01-complete",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q01-complete",
+          "base_record_version": 0,
+          "issues": [],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q02-date-only",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q02-date-only",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "ambiguous-response_deadline",
+              "type": "ambiguous",
+              "severity": "blocking",
+              "field_keys": [
+                "response_deadline"
+              ],
+              "question": "Please confirm the response deadline time and timezone.",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "2026-12-17"
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "fail"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "fail"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q03-known-external-identity",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "not_found",
+          "artist": "Outside Artist",
+          "title": "Outside Song",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "No match found in SyncFlow’s current catalogue for “Outside Artist · Outside Song”. Catalogue absence does not establish whether the music can be licensed.",
+          "question": "Verify the supplied artist, song and recording version against catalogue sources before progressing. Do not ask the client to repeat the supplied identity.",
+          "client_question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [
+          "catalogue-coverage-check"
+        ],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q03-known-external-identity",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "catalogue-coverage-check",
+              "type": "ambiguous",
+              "severity": "blocking",
+              "field_keys": [
+                "artist",
+                "track_title",
+                "recording_version"
+              ],
+              "question": "No match found in SyncFlow’s current catalogue for “Outside Artist · Outside Song”. Catalogue absence does not establish whether the music can be licensed. Verify the supplied artist, song and recording version against catalogue sources before progressing. Do not ask the client to repeat the supplied identity.",
+              "evidence": []
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q04-external-version-gap",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "not_found",
+          "artist": "Outside Artist",
+          "title": "Outside Song",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "No match found in SyncFlow’s current catalogue for “Outside Artist · Outside Song”. Catalogue absence does not establish whether the music can be licensed.",
+          "question": "Please confirm the recording version. A recording link would help us verify availability.",
+          "client_question": "Please confirm the recording version. A recording link would help us verify availability."
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [
+          "missing-recording_version"
+        ],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q04-external-version-gap",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "missing-recording_version",
+              "type": "missing",
+              "severity": "blocking",
+              "field_keys": [
+                "recording_version"
+              ],
+              "question": "Please confirm recording version.",
+              "evidence": []
+            },
+            {
+              "issue_id": "catalogue-coverage-check",
+              "type": "ambiguous",
+              "severity": "blocking",
+              "field_keys": [
+                "artist",
+                "track_title",
+                "recording_version"
+              ],
+              "question": "No match found in SyncFlow’s current catalogue for “Outside Artist · Outside Song”. Catalogue absence does not establish whether the music can be licensed. Please confirm the recording version. A recording link would help us verify availability.",
+              "evidence": []
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "fail"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q05-no-budget",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q05-no-budget",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "missing-budget",
+              "type": "missing",
+              "severity": "blocking",
+              "field_keys": [
+                "budget"
+              ],
+              "question": "Please confirm the budget amount, currency and rights scope (master, publishing or both).",
+              "evidence": []
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "fail"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q06-scope-only-with-history",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [
+          "prior-budget"
+        ],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q06-scope-only-with-history",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "prior-budget",
+              "type": "missing",
+              "severity": "blocking",
+              "field_keys": [
+                "budget"
+              ],
+              "question": "Please supply budget.",
+              "evidence": []
+            },
+            {
+              "issue_id": "ambiguous-budget",
+              "type": "ambiguous",
+              "severity": "blocking",
+              "field_keys": [
+                "budget"
+              ],
+              "question": "Please confirm the budget rights scope (master, publishing or both).",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "CAD 4600, rights scope undecided"
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "fail"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q07-source-duration",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q07-source-duration",
+          "base_record_version": 0,
+          "issues": [],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q08-uncertain-duration",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q08-uncertain-duration",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "ambiguous-campaign_term",
+              "type": "ambiguous",
+              "severity": "blocking",
+              "field_keys": [
+                "campaign_term"
+              ],
+              "question": "Please confirm campaign duration or both start and end dates.",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "six months or one year"
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "fail"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q09-no-platform",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q09-no-platform",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "missing-platforms",
+              "type": "missing",
+              "severity": "blocking",
+              "field_keys": [
+                "platforms"
+              ],
+              "question": "Please confirm platforms.",
+              "evidence": []
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "fail"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q10-generic-platform",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q10-generic-platform",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "ambiguous-platforms",
+              "type": "ambiguous",
+              "severity": "blocking",
+              "field_keys": [
+                "platforms"
+              ],
+              "question": "Which specific platforms or channels will the music appear on?",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "online"
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "fail"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q11-territory-conflict",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q11-territory-conflict",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "intake-ambiguity-0",
+              "type": "conflict",
+              "severity": "blocking",
+              "field_keys": [
+                "territories"
+              ],
+              "question": "Please clarify: Two exclusive scopes without correction",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territory: Iceland only. Territory: Estonia only."
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "fail"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "fail"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q12-source-conflict-with-history",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [
+          "prior-territory"
+        ],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q12-source-conflict-with-history",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "prior-territory",
+              "type": "missing",
+              "severity": "blocking",
+              "field_keys": [
+                "territories"
+              ],
+              "question": "Please supply territories.",
+              "evidence": []
+            },
+            {
+              "issue_id": "source-conflict-territories",
+              "type": "conflict",
+              "severity": "blocking",
+              "field_keys": [
+                "territories"
+              ],
+              "question": "The request gives incompatible territory statements without a confirmed correction. Which territory applies?",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territory: Iceland only"
+                },
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territory: Estonia only"
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "fail"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "fail"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q13-split-recordings",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "unresolved",
+          "artist": null,
+          "title": null,
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Confirm the artist, song and exact recording before checking catalogue coverage."
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q13-split-recordings",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "intake-ambiguity-0",
+              "type": "split_request",
+              "severity": "blocking",
+              "field_keys": [
+                "artist",
+                "track_title"
+              ],
+              "question": "Please clarify: Two different recordings require separate cases",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "We need both Marble Road by Rowan Elm and Silver Steps by Nina Ash."
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "fail"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "fail"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "fail"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q14-no-music-length",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q14-no-music-length",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "missing-music_length",
+              "type": "missing",
+              "severity": "blocking",
+              "field_keys": [
+                "music_length"
+              ],
+              "question": "Please confirm music length.",
+              "evidence": []
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "fail"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "unknown"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q15-unmeasured-music-length",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q15-unmeasured-music-length",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "ambiguous-music_length",
+              "type": "ambiguous",
+              "severity": "blocking",
+              "field_keys": [
+                "music_length"
+              ],
+              "question": "Please confirm the length of music in seconds.",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "a short excerpt"
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "pass"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "fail"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q16-partial-deadline-with-history",
+      "pass": true,
+      "extra": [],
+      "missing": [],
+      "duplicates": 0,
+      "review": {
+        "ok": true,
+        "stage": "review",
+        "policy_version": "review-v2",
+        "mode": "rules",
+        "catalogue_assessment": {
+          "status": "candidate",
+          "artist": "Maya Rivers",
+          "title": "Northern Lights",
+          "catalogueWide": false,
+          "sourceIdentified": false,
+          "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+          "question": null
+        },
+        "freshness": "not_checked",
+        "coordinator_issue_ids": [
+          "prior-deadline"
+        ],
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "Q16-partial-deadline-with-history",
+          "base_record_version": 0,
+          "issues": [
+            {
+              "issue_id": "prior-deadline",
+              "type": "missing",
+              "severity": "blocking",
+              "field_keys": [
+                "response_deadline"
+              ],
+              "question": "Please supply response_deadline.",
+              "evidence": []
+            },
+            {
+              "issue_id": "ambiguous-response_deadline",
+              "type": "ambiguous",
+              "severity": "blocking",
+              "field_keys": [
+                "response_deadline"
+              ],
+              "question": "Please confirm the response deadline timezone.",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "2026-12-17 at 16:00"
+                }
+              ]
+            }
+          ],
+          "checks": [
+            {
+              "rule_id": "required:client_contact",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:project",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:artist",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:track_title",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:recording_version",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:intended_use",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:platforms",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:territories",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:campaign_term",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:music_length",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:budget",
+              "result": "pass"
+            },
+            {
+              "rule_id": "required:response_deadline",
+              "result": "pass"
+            },
+            {
+              "rule_id": "deadline_unambiguous",
+              "result": "fail"
+            },
+            {
+              "rule_id": "single_recording",
+              "result": "unknown"
+            },
+            {
+              "rule_id": "evidence_valid",
+              "result": "pass"
+            },
+            {
+              "rule_id": "no_conflicting_scope",
+              "result": "fail"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "summary": {
+    "cases": 16,
+    "passed": 16,
+    "all_audiences": {
+      "matched": 18,
+      "actual": 18,
+      "expected": 18,
+      "precision": 1,
+      "recall": 1
+    },
+    "client_questions": {
+      "matched": 13,
+      "actual": 13,
+      "expected": 13,
+      "precision": 1,
+      "recall": 1,
+      "false_discovery": 0
+    }
+  }
+}

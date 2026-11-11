@@ -4,6 +4,7 @@ import { validateContract } from '../../contracts/validate.js';
 const messages = {
   PROVIDER_NOT_CONFIGURED: 'Set ANTHROPIC_API_KEY and ANTHROPIC_MODEL locally before a live call.',
   PROVIDER_AUTH_FAILED: 'Claude authentication failed. Check your local API key and account access.',
+  PROVIDER_USAGE_LIMIT: 'Your AI usage limit has been reached. Try again after the limit resets or ask your workspace administrator.',
   PROVIDER_RATE_LIMITED: 'Claude rate limit reached. Wait before explicitly retrying.',
   PROVIDER_REQUEST_REJECTED: 'Claude rejected the request. Check model access and provider configuration.',
   INVALID_CONTEXT: 'Request context is invalid. Correct it before analysis.',
@@ -62,8 +63,8 @@ export async function runIntake(context, { provider, timeoutMs = 30000, getCurre
     let output;
     try { output = await provider.generate({ context: snapshot, signal: controller.signal }); }
     catch (error) {
-      const allowed = ['UNSUPPORTED_MOCK_INPUT', 'PROVIDER_NOT_CONFIGURED', 'PROVIDER_AUTH_FAILED', 'PROVIDER_RATE_LIMITED', 'PROVIDER_REQUEST_REJECTED', 'INVALID_OUTPUT'];
-      const safeDiagnostics=['INVALID_RESPONSE_JSON','UNEXPECTED_STOP_REASON','INVALID_TOOL_ENVELOPE'];
+      const allowed = ['UNSUPPORTED_MOCK_INPUT', 'PROVIDER_NOT_CONFIGURED', 'PROVIDER_AUTH_FAILED', 'PROVIDER_USAGE_LIMIT', 'PROVIDER_RATE_LIMITED', 'PROVIDER_REQUEST_REJECTED', 'INVALID_OUTPUT'];
+      const safeDiagnostics=['INVALID_RESPONSE_JSON','UNEXPECTED_STOP_REASON','INVALID_TOOL_ENVELOPE','INVALID_TOOL_SCHEMA'];
       throw new RunFailure(allowed.includes(error?.code) ? error.code : 'PROVIDER_FAILED',safeDiagnostics.includes(error?.diagnostic_code)?[error.diagnostic_code]:[]);
     }
     // No provider-owned objects survive into a caller's result.

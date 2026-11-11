@@ -1,3 +1,5 @@
+> Historical/contract reference: per-field confirmation and local-browser descriptions below are superseded for the current web UI by [current user stories](user-stories.md) and [architecture](architecture.md). Dated evaluation criteria remain unchanged for reproducible scoring.
+
 # Saved browser request flow
 
 Current scope: single local operator, fictional data, Next development server bound to 127.0.0.1. The SQLite RequestStore is the sole request writer. Production routes are disabled. Prisma remains unused; its dev.db is never opened by this service.

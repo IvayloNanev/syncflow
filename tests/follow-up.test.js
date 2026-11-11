@@ -54,3 +54,7 @@ test('prompt requires deduplicated questions while preserving issue IDs',()=>{
   assert.match(prompt,/retaining all corresponding issue IDs/);
   assert.match(prompt,/flag it to the coordinator/);
 });
+test('follow-up quota rejection has a safe non-retryable message',async()=>{
+ const s=setup();let calls=0;const provider=createFollowUpClaudeProvider({apiKey:'fake',model:'test',fetchImpl:async()=>{calls++;return new Response(null,{status:429,headers:{'x-syncflow-usage-limit':'reached'}});}});
+ const result=await runFollowUp(s.context,s.review,{provider});assert.equal(result.error.code,'PROVIDER_USAGE_LIMIT');assert.equal(result.error.retryable,false);assert.equal(calls,1);
+});

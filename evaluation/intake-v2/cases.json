@@ -1,0 +1,678 @@
+[
+  {
+    "id": "V201",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V201",
+      "request_id": "V201",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Hello,\nContact: Ada Wells. Project: Beacon stories.\nWe want to license \"Still Water\" by Mira Cove, original recording. Intended use: television advertisement. Platforms: linear TV. Territories: Ireland.\nCampaign duration: four months. Music length: 24 seconds. Budget: EUR 3600 for both master and publishing rights.\nResponse deadline: 2026-12-14 at 16:00 Europe/Dublin. Thank you.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Ada Wells",
+      "project": "Beacon stories",
+      "artist": "Mira Cove",
+      "track_title": "Still Water",
+      "recording_version": "original recording",
+      "intended_use": "television advertisement",
+      "platforms": [
+        "linear TV"
+      ],
+      "territories": [
+        "Ireland"
+      ],
+      "campaign_term": {
+        "supplied_text": "four months",
+        "duration_text": "four months",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "24 seconds",
+        "seconds": 24
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "3600",
+        "currency": "EUR",
+        "scope": "both"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2026-12-14",
+        "time": "16:00",
+        "timezone": "Europe/Dublin"
+      }
+    }
+  },
+  {
+    "id": "V202",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V202",
+      "request_id": "V202",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Music licensing brief\nClient contact: Hugo Lane\nProject: Cobalt series\nArtist: Owen Birch\nTrack title: Open Door\nRecording version: instrumental\nIntended use: game trailer\nPlatforms: Steam, YouTube\nTerritories: Japan, South Korea\nCampaign duration: nine weeks\nMusic length: 38 seconds\nBudget: USD 6250.75 for master recording rights only\nResponse deadline: 2027-01-18 at 09:20 Asia/Tokyo",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Hugo Lane",
+      "project": "Cobalt series",
+      "artist": "Owen Birch",
+      "track_title": "Open Door",
+      "recording_version": "instrumental",
+      "intended_use": "game trailer",
+      "platforms": [
+        "Steam",
+        "YouTube"
+      ],
+      "territories": [
+        "Japan",
+        "South Korea"
+      ],
+      "campaign_term": {
+        "supplied_text": "nine weeks",
+        "duration_text": "nine weeks",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "38 seconds",
+        "seconds": 38
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "6250.75",
+        "currency": "USD",
+        "scope": "master"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2027-01-18",
+        "time": "09:20",
+        "timezone": "Asia/Tokyo"
+      }
+    }
+  },
+  {
+    "id": "V203",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V203",
+      "request_id": "V203",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Hello,\nContact: Leah Reed. Project: Stone exhibition.\nWe want to license \"Soft Motion\" by Fern Atlas, acoustic version. Intended use: museum installation. Platforms: museum screens. Territories: Austria.\nCampaign duration: one year. Music length: 90 seconds. Budget: EUR 7400 for publishing rights only.\nResponse deadline: 2026-12-22 at 11:45 Europe/Vienna. Thank you.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Leah Reed",
+      "project": "Stone exhibition",
+      "artist": "Fern Atlas",
+      "track_title": "Soft Motion",
+      "recording_version": "acoustic version",
+      "intended_use": "museum installation",
+      "platforms": [
+        "museum screens"
+      ],
+      "territories": [
+        "Austria"
+      ],
+      "campaign_term": {
+        "supplied_text": "one year",
+        "duration_text": "one year",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "90 seconds",
+        "seconds": 90
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "7400",
+        "currency": "EUR",
+        "scope": "publishing"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2026-12-22",
+        "time": "11:45",
+        "timezone": "Europe/Vienna"
+      }
+    }
+  },
+  {
+    "id": "V204",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V204",
+      "request_id": "V204",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Music licensing brief\nClient contact: Arun Blake\nProject: Orbit brand film\nArtist: Ivy West\nTrack title: Long Road\nRecording version: original recording\nIntended use: social advertisement\nPlatforms: Instagram, Snapchat\nTerritories: Australia, New Zealand\nCampaign duration: ten days\nMusic length: 6.5 seconds\nBudget: AUD 980 for both master and publishing rights\nResponse deadline: 2026-11-30 at 17:15 Australia/Sydney",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Arun Blake",
+      "project": "Orbit brand film",
+      "artist": "Ivy West",
+      "track_title": "Long Road",
+      "recording_version": "original recording",
+      "intended_use": "social advertisement",
+      "platforms": [
+        "Instagram",
+        "Snapchat"
+      ],
+      "territories": [
+        "Australia",
+        "New Zealand"
+      ],
+      "campaign_term": {
+        "supplied_text": "ten days",
+        "duration_text": "ten days",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "6.5 seconds",
+        "seconds": 6.5
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "980",
+        "currency": "AUD",
+        "scope": "both"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2026-11-30",
+        "time": "17:15",
+        "timezone": "Australia/Sydney"
+      }
+    }
+  },
+  {
+    "id": "V205",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V205",
+      "request_id": "V205",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Hello,\nContact: Elise Snow. Project: Saffron show.\nWe want to license \"Clear Signal\" by Ash Linden, radio edit. Intended use: radio advertisement. Platforms: FM radio. Territories: Mexico.\nCampaign duration: three weeks. Music length: 15 seconds. Budget: MXN 21000 for master recording rights only.\nResponse deadline: 2026-12-03 at 12:10 America/Mexico_City. Thank you.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Elise Snow",
+      "project": "Saffron show",
+      "artist": "Ash Linden",
+      "track_title": "Clear Signal",
+      "recording_version": "radio edit",
+      "intended_use": "radio advertisement",
+      "platforms": [
+        "FM radio"
+      ],
+      "territories": [
+        "Mexico"
+      ],
+      "campaign_term": {
+        "supplied_text": "three weeks",
+        "duration_text": "three weeks",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "15 seconds",
+        "seconds": 15
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "21000",
+        "currency": "MXN",
+        "scope": "master"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2026-12-03",
+        "time": "12:10",
+        "timezone": "America/Mexico_City"
+      }
+    }
+  },
+  {
+    "id": "V206",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V206",
+      "request_id": "V206",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Music licensing brief\nClient contact: Samir Hart\nProject: Tidal feature\nArtist: Vera Pines\nTrack title: Silver Kite\nRecording version: original recording\nIntended use: documentary film\nPlatforms: cinema, festival screenings\nTerritories: United Kingdom\nCampaign duration: eighteen months\nMusic length: 48 seconds\nBudget: GBP 8200 for both master and publishing rights\nResponse deadline: 2027-02-09 at 10:30 Europe/London",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Samir Hart",
+      "project": "Tidal feature",
+      "artist": "Vera Pines",
+      "track_title": "Silver Kite",
+      "recording_version": "original recording",
+      "intended_use": "documentary film",
+      "platforms": [
+        "cinema",
+        "festival screenings"
+      ],
+      "territories": [
+        "United Kingdom"
+      ],
+      "campaign_term": {
+        "supplied_text": "eighteen months",
+        "duration_text": "eighteen months",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "48 seconds",
+        "seconds": 48
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "8200",
+        "currency": "GBP",
+        "scope": "both"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2027-02-09",
+        "time": "10:30",
+        "timezone": "Europe/London"
+      }
+    }
+  },
+  {
+    "id": "V207",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V207",
+      "request_id": "V207",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Hello,\nContact: Noa Green. Project: Prism seminar.\nWe want to license \"Quiet City\" by Rhea Frost, instrumental. Intended use: training video. Platforms: internal intranet. Territories: Germany.\nCampaign duration: eight months. Music length: 75 seconds. Budget: EUR 4150 for publishing rights only.\nResponse deadline: 2026-12-16 at 13:05 Europe/Berlin. Thank you.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Noa Green",
+      "project": "Prism seminar",
+      "artist": "Rhea Frost",
+      "track_title": "Quiet City",
+      "recording_version": "instrumental",
+      "intended_use": "training video",
+      "platforms": [
+        "internal intranet"
+      ],
+      "territories": [
+        "Germany"
+      ],
+      "campaign_term": {
+        "supplied_text": "eight months",
+        "duration_text": "eight months",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "75 seconds",
+        "seconds": 75
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "4150",
+        "currency": "EUR",
+        "scope": "publishing"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2026-12-16",
+        "time": "13:05",
+        "timezone": "Europe/Berlin"
+      }
+    }
+  },
+  {
+    "id": "V208",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V208",
+      "request_id": "V208",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Music licensing brief\nClient contact: Milo Kerr\nProject: Brook podcast\nArtist: Sage Willow\nTrack title: Late Train\nRecording version: original recording\nIntended use: podcast advertisement\nPlatforms: Spotify, Apple Podcasts\nTerritories: Brazil\nCampaign duration: five weeks\nMusic length: 20 seconds\nBudget: BRL 5600 for both master and publishing rights\nResponse deadline: 2027-01-07 at 15:40 America/Sao_Paulo",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Milo Kerr",
+      "project": "Brook podcast",
+      "artist": "Sage Willow",
+      "track_title": "Late Train",
+      "recording_version": "original recording",
+      "intended_use": "podcast advertisement",
+      "platforms": [
+        "Spotify",
+        "Apple Podcasts"
+      ],
+      "territories": [
+        "Brazil"
+      ],
+      "campaign_term": {
+        "supplied_text": "five weeks",
+        "duration_text": "five weeks",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "20 seconds",
+        "seconds": 20
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "5600",
+        "currency": "BRL",
+        "scope": "both"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2027-01-07",
+        "time": "15:40",
+        "timezone": "America/Sao_Paulo"
+      }
+    }
+  },
+  {
+    "id": "V209",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V209",
+      "request_id": "V209",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Contact: Mira Day. Project: Aspen teaser. Artist: Lark Field. Track title: Velvet Hill. Recording version: original recording. Intended use: online advertisement. Platforms: Pinterest. Territories: Singapore. Campaign duration: three months. Music length: 11 seconds. Budget: SGD 1900, rights scope unspecified. Response deadline: 2026-12-12; time and timezone are not supplied.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Mira Day",
+      "project": "Aspen teaser",
+      "artist": "Lark Field",
+      "track_title": "Velvet Hill",
+      "recording_version": "original recording",
+      "intended_use": "online advertisement",
+      "platforms": [
+        "Pinterest"
+      ],
+      "territories": [
+        "Singapore"
+      ],
+      "campaign_term": {
+        "supplied_text": "three months",
+        "duration_text": "three months",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "11 seconds",
+        "seconds": 11
+      },
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "1900",
+        "currency": "SGD",
+        "scope": "unspecified"
+      },
+      "response_deadline": {
+        "supplied_text": "deadline",
+        "date": "2026-12-12",
+        "time": null,
+        "timezone": null
+      }
+    }
+  },
+  {
+    "id": "V210",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V210",
+      "request_id": "V210",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Contact: Evan Moon. Project: Clover piece. Artist: Iris Moss. Track title: New Ground. Recording version: original recording. Intended use: brand video. Territories: Belgium. Campaign duration: seven weeks. Music length: 19 seconds. Budget and response deadline are not decided. Distribution is online, exact platforms not decided.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "client_contact": "Evan Moon",
+      "project": "Clover piece",
+      "artist": "Iris Moss",
+      "track_title": "New Ground",
+      "recording_version": "original recording",
+      "intended_use": "brand video",
+      "territories": [
+        "Belgium"
+      ],
+      "campaign_term": {
+        "supplied_text": "seven weeks",
+        "duration_text": "seven weeks",
+        "start_date": null,
+        "end_date": null
+      },
+      "music_length": {
+        "supplied_text": "19 seconds",
+        "seconds": 19
+      }
+    },
+    "forbidden": [
+      "platforms",
+      "budget",
+      "response_deadline"
+    ]
+  },
+  {
+    "id": "V211",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V211",
+      "request_id": "V211",
+      "base_record_version": 2,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Territories: Greece. Budget: EUR 3000 for both rights.",
+          "supplied_message_date": "2026-11-11"
+        },
+        {
+          "message_id": "reply",
+          "kind": "reply",
+          "text": "Correction: territories are Italy, replacing Greece. Updated budget: EUR 4100 for both master and publishing rights.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [
+        {
+          "field_key": "territories",
+          "state": "confirmed",
+          "value": [
+            "Greece"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Greece"
+            }
+          ],
+          "confirmed_by": "synthetic-reviewer",
+          "confirmed_at": "2026-11-10T12:00:00Z",
+          "not_applicable_reason": null
+        }
+      ],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "territories": [
+        "Italy"
+      ],
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "4100",
+        "currency": "EUR",
+        "scope": "both"
+      }
+    }
+  },
+  {
+    "id": "V212",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "V212",
+      "request_id": "V212",
+      "base_record_version": 2,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "Europe/London",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "Territories: Vietnam. Budget: EUR 3000 for both rights.",
+          "supplied_message_date": "2026-11-11"
+        },
+        {
+          "message_id": "reply",
+          "kind": "reply",
+          "text": "Correction: territories are Thailand, replacing Vietnam. Updated budget: EUR 5300 for both master and publishing rights.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [
+        {
+          "field_key": "territories",
+          "state": "confirmed",
+          "value": [
+            "Vietnam"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Vietnam"
+            }
+          ],
+          "confirmed_by": "synthetic-reviewer",
+          "confirmed_at": "2026-11-10T12:00:00Z",
+          "not_applicable_reason": null
+        }
+      ],
+      "unresolved_issues": []
+    },
+    "expected": {
+      "territories": [
+        "Thailand"
+      ],
+      "budget": {
+        "supplied_text": "budget",
+        "amount": "5300",
+        "currency": "EUR",
+        "scope": "both"
+      }
+    }
+  }
+]
