@@ -25,3 +25,11 @@ This does not migrate the SQLite validation engine to native relational domain t
 ## Verification
 
 `pnpm test:durable` runs the compiled SDK runtime with synthetic HTTP fixtures, not live AI or client records. It covers all three agent paths, duplicate dispatch, a failed final save with one Intake/Follow-up call each, and access revocation. `pnpm test` covers signed polling credentials, cancellation without resubmission, paid-call replay fencing, old/new snapshot compatibility and prompt assets. Prompt JSON assets are byte-matched against their reviewed text sources so SDK bundles need no relative filesystem reads.
+
+### Hosted preview verification — November 11, 2026
+
+Verified commit `beb7af6` on branch-only Preview deployment `DTLDrFsoGf9yCVDUMEe2CeSnujPp`, using the existing owner's SyncFlow workspace. Production code and email-delivery settings were unchanged. The branch has scoped Supabase/Anthropic configuration and its exact OAuth callback is allow-listed.
+
+Created synthetic case `43bb8b9d-8a81-5110-a16d-f196ee92f2a5` through New Inquiries, then opened Coordinator and observed the working indicator. Navigated to Cases while generation was active. Durable run `6b2d8054-9267-4c0c-98ae-cffe466a938d` completed at `2026-11-11T18:06:45.189Z`; reopening displayed its saved budget clarification draft. The database still contained one completed analysis and exactly two allowed provider-attempt claims: Intake and Follow-up, one each. Reopening did not enqueue another analysis or claim another provider call. The draft remained unsent.
+
+Moved only this synthetic case to recoverable Deleted requests at `2026-11-11T18:10:16.085Z`; its analysis/history and two attempt claims remain. This hosted check verifies navigation-away recovery and saved-result reuse. Worker-crash/failed-save replay and the other agent paths are covered by compiled local integration tests, not hosted fault injection.
