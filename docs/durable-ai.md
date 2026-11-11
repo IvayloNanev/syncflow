@@ -1,6 +1,6 @@
 # Durable hosted AI runs
 
-Hosted Coordinator, Daily Brief, and Internal Review work runs through Workflow SDK 5.4.0. The authenticated API queues work and returns HTTP 202. The browser polls a signed, workspace-bound token; disconnecting the browser does not cancel the workflow. Existing AI progress indicators remain visible while polling. Local offline/CLI mode retains its synchronous path.
+Hosted Coordinator, Daily Brief, and Internal Review work runs through Workflow SDK 5.5.0. The authenticated API queues work and returns HTTP 202. The browser polls a signed, workspace-bound token; disconnecting the browser does not cancel the workflow. Existing AI progress indicators remain visible while polling. Local offline/CLI mode retains its synchronous path.
 
 Coordinator checkpoints the immutable request context, validated Intake output, Review/Follow-up result, and final case write as separate steps. Daily Brief and Internal Review checkpoint their snapshot, generation, and saved result. Database-only steps can retry. Completed steps are replayed from the workflow history, rather than calling the provider again when a later save fails.
 
