@@ -1,9 +1,10 @@
-import { readFileSync } from 'node:fs';
+// Static import keeps the versioned prompt available in durable step bundles.
+import bundledPrompt from '../prompts/follow-up-v1.json' with {type:'json'};
 import shared from '../../../contracts/shared.schema.json' with { type: 'json' };
 import outputSchema from '../../../contracts/follow_up.schema.json' with { type: 'json' };
 
 export const FOLLOW_UP_PROMPT_VERSION = 'follow-up-v1.1';
-const prompt = readFileSync(new URL('../prompts/follow-up-v1.txt', import.meta.url), 'utf8');
+const prompt = bundledPrompt;
 // Inline our local shared refs for a self-contained client-tool schema.
 function inline(value) {
   if (Array.isArray(value)) return value.map(inline);
@@ -47,7 +48,7 @@ export function createFollowUpClaudeProvider({ apiKey = process.env.ANTHROPIC_AP
       } catch { throw new ClaudeProviderError('PROVIDER_FAILED'); }
       if (!response.ok) {
         // Do not read or return provider error bodies, which may echo sensitive input.
-        const code = response.status===401||response.status===403?'PROVIDER_AUTH_FAILED':
+        const code = response.headers?.get('x-syncflow-uncertain-attempt')?'PROVIDER_ATTEMPT_UNCERTAIN':response.status===401||response.status===403?'PROVIDER_AUTH_FAILED':
           response.status===429?(response.headers?.get('x-syncflow-usage-limit')?'PROVIDER_USAGE_LIMIT':'PROVIDER_RATE_LIMITED'):response.status>=500?'PROVIDER_FAILED':'PROVIDER_REQUEST_REJECTED';
         throw new ClaudeProviderError(code);
       }

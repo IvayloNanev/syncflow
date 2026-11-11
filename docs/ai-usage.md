@@ -20,3 +20,5 @@ Apply `db/ai-usage.sql` before releasing the server changes. It was applied to t
 Administrators inspect `syncflow_ai_usage` for daily calls, input bytes, and the last feature. `syncflow_ai_limits` supports per-workspace overrides and an `enabled=false` kill switch. Do not expose the service key to the browser. Counters store no prompts, messages, or model output. Reservations are conservative: cancellation or provider failure after reservation does not refund usage. UTC-day counters remain available for audit; retention cleanup is not automatic.
 
 Verification used isolated temporary database records in a rolled-back transaction. It checked minute, daily-call, byte, and nonmember rejection paths. Automated tests also check denial before network access, fail-closed behavior, cancellation, and per-attempt charging. No client cases changed.
+
+Hosted background runs also claim each paid attempt before delivery; duplicate worker invocations cannot reserve or send it again. See [durable AI runs](durable-ai.md).

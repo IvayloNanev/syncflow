@@ -18,6 +18,6 @@ The local SQLite adapter exists for offline smoke checks, domain regression test
 
 ## Reliability limits
 
-Model operations remain synchronous, bounded by existing stage/request timeouts and workspace leases. A crashed process is not a durable job worker. Pending-run status/recovery checks prevent an unfinished run from being treated as successful; explicit retries are idempotent. There is no automatic background resume guarantee.
+Hosted model operations now use checkpointed background workflows. Completed steps and database writes can recover across request disconnects; uncertain paid calls require explicit retry. See [durable AI runs](durable-ai.md) for provider fencing, deployment prerequisites and verification.
 
-Migrating the domain engine to native Postgres tables and introducing a durable queue require parity tests for revision ordering, idempotency, stale results and audit atomicity before a data migration. Removing the SQLite validation engine without that replacement would weaken current guarantees. This boundary is deliberate and is recorded as remaining architecture work, rather than claiming a completed rewrite.
+The production domain still uses a temporary SQLite validation engine over Postgres aggregates. A native Postgres domain rewrite requires parity tests for revision ordering, idempotency, stale results and audit atomicity before a data migration. That remains separate architecture work.

@@ -6,6 +6,7 @@ const messages={
  PROVIDER_AUTH_FAILED:'The analysis provider rejected authentication. Check server credentials before retrying.',
  PROVIDER_RATE_LIMITED:'The analysis provider is rate limited. Wait before starting another attempt.',
  PROVIDER_REQUEST_REJECTED:'The analysis provider rejected this request. Check server configuration.',
+ PROVIDER_ATTEMPT_UNCERTAIN:'A previous AI attempt may have reached the provider. Check saved results before explicitly retrying.',
  PROVIDER_FAILED:'The analysis provider could not complete the request.',
  INVALID_CONTEXT:'Saved analysis context failed validation. Review the request before retrying.',
  INVALID_INTAKE:'The extracted details could not pass review validation.',
