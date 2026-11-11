@@ -1,3 +1,4 @@
+import {reviewPriorities} from '../agents/priority/review.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {draftPriorityReport} from '../agents/priority/ai-review.js';
@@ -39,4 +40,15 @@ test('agent may select Coordinator reviewer follow-up for pending review but can
  const pending={...cases[0],summary:{status:'Internal review pending'},workflow:{status:'Internal review pending'},recording_id:'recording',analysis:{result:{stages:{review:{output:{issues:[]}}}}}};
  const result=await draftPriorityReport({...args,cases:[pending],fetchImpl:provider({items:[{...valid,action:'follow_up'}]})});
  assert.equal(result.decision_version,5);assert.equal(result.items[0].destination,'coordinator');assert.equal(result.items[0].action,'follow_up');
+});
+
+
+test('server enforces deadline groups even when AI interleaves them, preserving AI order within groups',async()=>{
+ const now=new Date('2026-11-08T17:00:00Z');
+ const make=(id,date)=>({id,summary:{id,status:'Needs analysis',...(date?{deadline:{date,timezone:'America/New_York'}}:{})},messages:[{message_id:id,text:'Please review this case.'}]});
+ const all=[make('late-a','2026-11-06'),make('late-b','2026-11-07'),make('today-a','2026-11-08'),make('today-b','2026-11-08'),make('soon','2026-11-09'),make('far','2026-12-20'),make('undated')];
+ const proposed=['undated','far','today-b','late-b','soon','late-a','today-a'].map(id=>({...valid,request_id:id,citations:[{message_id:id,exact_quote:'review this case'}]}));
+ const review=reviewPriorities(all.map(c=>({...c.summary,id:c.id})),{now});
+ const report=await draftPriorityReport({...args,cases:all,review,fetchImpl:provider({items:proposed})});
+ assert.deepEqual(report.items.map(i=>i.request_id),['late-b','late-a','today-b','today-a','far','soon','undated']);
 });

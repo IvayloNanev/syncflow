@@ -32,13 +32,20 @@ export function reviewPriorities(requests,{now=new Date()}={}){
   if(instant!==null&&instant<now.getTime()){rank=0;reason=`The recorded response deadline has passed (${r.deadline.date} ${r.deadline.time} ${r.deadline.timezone}).`;}
   else if(days!==null&&days<0){rank=0;reason=`The recorded response deadline was ${r.deadline.date} (${r.deadline.timezone}) and has passed.`;}
   else if(days===0){rank=1;reason=`The response deadline is today in ${r.deadline.timezone}.`;}
-  else if(days!==null&&days<=3){rank=2;reason=`The response deadline is ${r.deadline.date}, within three days (${r.deadline.timezone}).`;}
+  else if(days!==null&&days>0){rank=2;reason=`The response deadline is ${r.deadline.date}${days<=3?', within three days':''} (${r.deadline.timezone}).`;}
   else if(r.status==='Needs analysis'){rank=3;reason='The current conversation needs analysis before the request can move forward.';}
   else if(['Changes requested','Declined'].includes(r.status)){rank=4;reason='A reviewer decision needs follow-up.';}
   else if(r.status==='Needs coordinator review'){rank=5;reason='The complete brief is waiting for coordinator sign-off.';}
   else if(['Internal review pending','Ready to complete internal review','Ready for internal review'].includes(r.status)){rank=6;reason='The internal review still needs a handoff, decision or completion.';}
   const internal=['Internal review pending','Ready to complete internal review','Ready for internal review','Changes requested','Declined'].includes(r.status);
-  return {request_id:r.id,revision:r.revision,client:r.contact||'Client not identified',project:r.project||r.track||'Untitled case',status:r.status||'Status unavailable',reason,next_action:r.next_action||'Open the case to review the outstanding actions.',responsible:r.responsible||'Coordinator',destination:internal?'internal':'coordinator',urgency:rank<3?'deadline':'action',rank,deadline_days:days,deadline_at:instant,updated_at:r.updated_at||null};
+  return {request_id:r.id,revision:r.revision,client:r.contact||'Client not identified',project:r.project||r.track||'Untitled case',status:r.status||'Status unavailable',reason,next_action:r.next_action||'Open the case to review the outstanding actions.',responsible:r.responsible||'Coordinator',destination:internal?'internal':'coordinator',urgency:rank<3?'deadline':'action',rank,deadline_group:rank<3?rank:3,deadline_days:days,deadline_at:instant,updated_at:r.updated_at||null};
  }).sort((a,b)=>a.rank-b.rank||(a.deadline_days??Infinity)-(b.deadline_days??Infinity)||(a.deadline_at??Infinity)-(b.deadline_at??Infinity)||(a.updated_at||'9999').localeCompare(b.updated_at||'9999')||a.request_id.localeCompare(b.request_id));
  return {items:ranked,policy:'priority-v1',ranked_request_ids:ranked.map(item=>item.request_id),generated_at:now.toISOString(),reviewed_count:requests.length,open_count:open.length,recommendation:ranked[0]||null};
+}
+
+// Keep the proposed order within each group; only the server assigns deadline groups.
+export function orderByDeadlineGroup(items,review){
+ const groups=new Map((review.items||[]).map(item=>[item.request_id,item.deadline_group]));
+ return items.map((item,index)=>({item,index,group:groups.get(item.request_id)??4}))
+  .sort((a,b)=>a.group-b.group||a.index-b.index).map(({item})=>item);
 }

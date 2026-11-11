@@ -34,3 +34,26 @@ test('bounded explanatory text over 300 characters remains valid; oversized outp
  const result=await triageReviews({cases:[c],now,apiKey:'test',model:'test',fetchImpl});assert.equal(result.items[0].reason,output.reason);
  output.reason='x'.repeat(2001);await assert.rejects(triageReviews({cases:[c],now,apiKey:'test',model:'test',fetchImpl}),/AI_INVALID_OUTPUT:TEXT_LENGTH/);
 });
+
+
+test('assessment sends complete historical correspondence and accepts verifiable history citations',async()=>{
+ const c=make('history','Declined');c.reviewers.reviewers=[{status:'Declined'}];
+ c.correspondence=[{id:'draft-old',kind:'Response draft · not sent',draft:true,date:'2026-11-01T10:00:00Z',subject:'Clarification',text:'Prior unsent client draft. '.repeat(1000)},{id:'manager-old',kind:'Manager email draft · not sent',draft:true,date:'2026-11-02T10:00:00Z',subject:'Earlier manager request',text:'Previous proposed conditions, not a decision.'},{id:'manager-decision-0',kind:'Recorded manager decision',draft:false,date:'2026-11-03T10:00:00Z',subject:null,text:'Alex: Decline unless usage is revised.'}];
+ const output={...item('history','manager','Reviewer refusal'),citations:[{message_id:'manager-decision-0',exact_quote:'Decline unless usage is revised.'}]};
+ const result=await triageReviews({...args,cases:[c],fetchImpl:async(url,options)=>{
+  const body=JSON.parse(options.body),context=JSON.parse(body.messages[0].content);
+  assert.deepEqual(context.cases[0].correspondence,c.correspondence);
+  assert.match(body.system,/Unsent drafts are proposals/);
+  assert.match(body.system,/Read the full chronological correspondence/);
+  return provider([output])();
+ }});
+ assert.equal(result.items[0].citations[0].message_id,'manager-decision-0');
+ for(const citation of [{message_id:'foreign-case-entry',exact_quote:'Decline unless usage is revised.'},{message_id:'manager-old',exact_quote:'Manager approved the request.'}]){
+  await assert.rejects(triageReviews({...args,cases:[c],fetchImpl:provider([{...output,citations:[citation]}])}),/AI_INVALID_EVIDENCE/);
+ }
+});
+
+test('oversized historical correspondence is never silently trimmed or submitted partially',async()=>{
+ const c=make('large');c.correspondence=[{id:'old-draft',kind:'Manager email draft · not sent',draft:true,text:'x'.repeat(200001)}];
+ await assert.rejects(triageReviews({...args,cases:[c],fetchImpl:()=>assert.fail('No partial provider call')}),/AI_CONTEXT_TOO_LARGE/);
+});

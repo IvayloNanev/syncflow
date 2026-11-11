@@ -1,2 +1,2 @@
 import styles from './ai-progress.module.css';
-export default function AIProgress({label='AI is preparing your response…'}:{label?:string}){return <div className={styles.wrap} role="status"><span>{label}</span><div className={styles.track} role="progressbar" aria-label={label}><span className={styles.sweep}/></div></div>;}
+export default function AIProgress({label='Preparing your response',elapsed}:{label?:string;elapsed?:number}){return <div className={styles.wrap} role="status" aria-live="polite"><strong>AI is working…</strong><span>{label}</span>{elapsed!==undefined?<small aria-hidden="true">{elapsed}s elapsed</small>:null}<div className={styles.track} aria-hidden="true"><span className={styles.sweep}/></div></div>;}

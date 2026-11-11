@@ -1,10 +1,12 @@
+import {caseCorrespondence} from '../requests/correspondence.js';
 import {openSharedStore,listSharedRequests} from '../requests/shared-store.js';
 import {effectiveFields} from '../requests/effective-fields.js';
 import {reviewRecording} from '../catalog/review.js';
 import {superviseCases} from '../agents/priority/supervisor.js';
-export async function loadBriefing(client,workspaceId,actorId){
+export async function loadBriefing(client,workspaceId,actorId,{includeCorrespondence=false}={}){
  const {data:saved,error}=await client.from('syncflow_briefings').select('report,snapshots,generated_at').eq('workspace_id',workspaceId).maybeSingle();
  if(error)throw new Error('BRIEFING_STORAGE_FAILED');
+ const assessments=includeCorrespondence?await loadAssessmentHistory(client,workspaceId):undefined;
  const snapshot=async()=>{const {data,error}=await client.from('syncflow_requests').select('id,version').eq('workspace_id',workspaceId).order('id');if(error)throw new Error('STORE_FAILED');return JSON.stringify(data);};
  const before=await snapshot();
  const summaries=await listSharedRequests(client,workspaceId);
@@ -13,7 +15,7 @@ export async function loadBriefing(client,workspaceId,actorId){
  for(let from=0;from<summaries.length;from+=8){
   const batch=await Promise.allSettled(summaries.slice(from,from+8).map(async summary=>{
    const store=await openSharedStore({client,workspaceId,actorId,id:summary.id});
-   try{return briefingCase(store,actorId,summary,JSON.parse(before).find(row=>row.id===summary.id)?.version);}finally{store.dispose();}
+   try{return briefingCase(store,actorId,summary,JSON.parse(before).find(row=>row.id===summary.id)?.version,assessments);}finally{store.dispose();}
   }));
   for(const result of batch){if(result.status==='rejected')throw result.reason;cases.push(result.value);}
  }
@@ -27,4 +29,15 @@ export async function saveBriefing(client,workspaceId,actorId,report,snapshots){
  return {report,snapshots,generated_at};
 }
 
-export function briefingCase(store,actorId,summary,storageVersion){const request=store.get(actorId,summary.id),analysis=store.activeAnalysis(actorId,summary.id);return {id:request.id,revision:request.revision,manager_resolution:request.manager_resolution,agent_assignment:request.agent_assignment,internal_review_request:request.internal_review_request,manager_decision_history:request.manager_decision_history,storage_version:storageVersion,summary,messages:request.messages,subject:request.messages[0]?.text.match(/^Subject: (.+)$/m)?.[1],recording_id:request.recording_id,confirmed_fields:request.confirmed_fields,agent_fields:effectiveFields(request,analysis,store.decisions(actorId,summary.id)).filter(f=>f.origin==='agent'),analysis,catalogue_assessment:analysis?.result?.catalogue_assessment||analysis?.result?.stages?.review?.output?.catalogue_assessment||reviewRecording(request.recording_id),workflow:store.workflow(actorId,request.id),reviewers:store.reviewers(actorId,request.id),handoff:store.handoff(actorId,request.id)};}
+export function briefingCase(store,actorId,summary,storageVersion,assessments){const request=store.get(actorId,summary.id),analysis=store.activeAnalysis(actorId,summary.id);return {id:request.id,revision:request.revision,manager_resolution:request.manager_resolution,agent_assignment:request.agent_assignment,internal_review_request:request.internal_review_request,manager_decision_history:request.manager_decision_history,storage_version:storageVersion,summary,messages:request.messages,...(assessments?{correspondence:caseCorrespondence(request.messages,store.analyses(actorId,summary.id),assessments.filter(row=>row.request_id===summary.id),request.manager_decision_history||[])}:{}),subject:request.messages[0]?.text.match(/^Subject: (.+)$/m)?.[1],recording_id:request.recording_id,confirmed_fields:request.confirmed_fields,agent_fields:effectiveFields(request,analysis,store.decisions(actorId,summary.id)).filter(f=>f.origin==='agent'),analysis,catalogue_assessment:analysis?.result?.catalogue_assessment||analysis?.result?.stages?.review?.output?.catalogue_assessment||reviewRecording(request.recording_id),workflow:store.workflow(actorId,request.id),reviewers:store.reviewers(actorId,request.id),handoff:store.handoff(actorId,request.id)};}
+
+// Read every saved draft, including workspaces with more than one API page of history.
+export async function loadAssessmentHistory(client,workspaceId){
+ const rows=[];
+ for(let from=0;;from+=100){
+  const {data,error}=await client.from('syncflow_internal_assessments').select('request_id,fingerprint,result').eq('workspace_id',workspaceId).order('request_id').order('fingerprint').range(from,from+99);
+  if(error)throw new Error('REVIEW_STORAGE_FAILED');
+  rows.push(...(data||[]));
+  if((data||[]).length<100)return rows;
+ }
+}

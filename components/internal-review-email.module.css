@@ -19,3 +19,13 @@
  .page .panel p,.page .context dd{font-size:16px;line-height:1.7}
  .page .message summary{min-height:44px;box-sizing:border-box}
 }
+
+/* Match evidence disclosures to the site's glass surfaces and pill controls. */
+.page .panel .evidence{margin:20px 0 0;min-width:0}
+.page .panel .evidence>summary{display:inline-flex;align-items:center;box-sizing:border-box;min-height:44px;max-width:100%;padding:10px 20px;border:1px solid #ddc18480;border-radius:999px;background:transparent;color:#f0d591;font-size:14px;font-weight:600;line-height:1.5;list-style:none}
+.page .panel .evidence>summary::-webkit-details-marker{display:none}
+.page .panel .evidence>summary:hover{background:#ffffff08;border-color:#f0d591}
+.page .panel .evidence>summary:focus-visible{outline:2px solid #f0d591;outline-offset:3px}
+.page .panel .evidence>p{margin:18px 0;line-height:1.75}
+.page .panel .evidence blockquote{box-sizing:border-box;margin:12px 0;padding:14px 24px;border:1px solid #ddc18450;border-radius:32px;background:#ffffff04;color:#e8e5dd;font-size:13px;line-height:1.7;overflow-wrap:anywhere;box-shadow:inset 0 1px 0 #ffffff0a}
+@media(max-width:600px){.page .panel .evidence blockquote{padding:14px 18px;font-size:15px}}

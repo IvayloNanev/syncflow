@@ -67,3 +67,20 @@ test('work queue preserves inquiry subjects before analysis, matching Cases',()=
  c.summary.project='Confirmed project';
  assert.equal(superviseCases([c],null,{now}).items[0].project,'Confirmed project');
 });
+
+
+test('saved AI order stays within current deadline groups, including time passing without case edits',()=>{
+ const early=make('early'),later=make('later'),future=make('future'),undated=make('undated');
+ early.summary.deadline={date:'2026-11-09',time:'11:00',timezone:'America/New_York'};
+ later.summary.deadline={date:'2026-11-09',time:'14:00',timezone:'America/New_York'};
+ future.summary.deadline={date:'2026-12-20',time:'14:00',timezone:'America/New_York'};
+ const all=[early,later,future,undated];
+ const before=new Date('2026-11-09T15:00:00Z');
+ const initial=superviseCases(all,null,{now:before});
+ const saved={generated_at:before.toISOString(),snapshots:initial.snapshots,report:{decision_version:5,items:['undated','future','later','early'].map(request_id=>({request_id,action:'analysis',reason:'AI advice',next_action:'Analyze the case',citations:[]}))}};
+ assert.deepEqual(superviseCases(all,saved,{now:before}).items.map(i=>i.request_id),['later','early','future','undated']);
+ const after=superviseCases(all,saved,{now});
+ assert.equal(after.decision_source,'ai');
+ assert.deepEqual(after.items.map(i=>i.request_id),['early','later','future','undated']);
+ assert.equal(after.changed_count,0);
+});

@@ -26,3 +26,19 @@ test('ties are stable and never mutate source records',()=>{
  const records=[item('b','Needs coordinator review'),item('a','Needs coordinator review')];
  assert.equal(reviewPriorities(records,{now}).recommendation.request_id,'a');assert.equal(records[0].id,'b');
 });
+
+
+test('all future deadlines precede undated work, including deadlines beyond three days',()=>{
+ const cases=[item('undated','Needs analysis'),item('far','Internal review pending',due('2026-12-20')),item('soon','Needs coordinator review',due('2026-11-10')),item('today','Needs analysis',due('2026-11-08')),item('overdue','Needs analysis',due('2026-11-07'))];
+ const result=reviewPriorities(cases,{now});
+ assert.deepEqual(result.ranked_request_ids,['overdue','today','soon','far','undated']);
+ assert.deepEqual(result.items.map(i=>i.deadline_group),[0,1,2,2,3]);
+});
+
+test('deadline groups distinguish passed times and local calendar dates without inventing urgency',()=>{
+ const deadline=(date,time,timezone)=>({date,time,timezone});
+ const cases=[item('passed-today','Needs analysis',deadline('2026-11-08','10:00','America/New_York')),item('later-today','Needs analysis',deadline('2026-11-08','16:00','America/New_York')),item('today-in-tokyo','Needs analysis',deadline('2026-11-09','09:00','Asia/Tokyo')),item('invalid-zone','Needs analysis',deadline('2026-11-01','10:00','invalid')),item('no-zone','Needs analysis',{date:'2026-11-01'}),item('invalid-date','Needs analysis',due('2026-02-31'))];
+ const groups=new Map(reviewPriorities(cases,{now}).items.map(i=>[i.request_id,i.deadline_group]));
+ assert.deepEqual([...groups.values()],[0,1,1,3,3,3]);
+ assert.equal(groups.get('today-in-tokyo'),1);
+});
