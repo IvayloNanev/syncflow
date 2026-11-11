@@ -23,7 +23,7 @@ beforeEach(()=>{
    if(name==='submit_intake')return tool(name,{schema_version:'1.0',run_id:payload.context.run_id,base_record_version:payload.context.base_record_version,proposed_changes:Object.fromEntries(Object.keys(intakeFieldGroups).map(k=>[k,[]])),ambiguities:[]});
    if(name==='submit_follow_up')return tool(name,await createFollowUpMockProvider().generate({...payload,signal:AbortSignal.timeout(10000)}));
    if(name==='submit_priority_report')return tool(name,{items:payload.cases.map((c:any)=>({request_id:c.id,reason:'Review the missing details.',action:c.eligible_actions[0].action,blocker:'The request needs clarification.',next_action:'Review and copy the saved response.',citations:[{message_id:c.messages[0].message_id,exact_quote:'Synthetic inquiry'}]}))});
-   if(name==='submit_review_triage')return tool(name,{items:payload.cases.map((c:any)=>({request_id:c.id,lane:'manager',reason:'The coordinator requested a management decision.',next_action:'Ask the manager how to proceed.',escalation_trigger:c.triage.escalation[0],citations:[{message_id:c.messages[0].message_id,exact_quote:'Synthetic inquiry'}]}))});
+   if(name==='submit_review_triage')return tool(name,{items:payload.cases.map((c:any)=>({request_id:c.id,lane:'manager',reason:'The coordinator requested a management decision.',next_action:'Ask the manager how to proceed.',escalation_trigger:c.triage.escalation[0],citations:[{message_id:c.internal_review_request.id,exact_quote:c.internal_review_request.reason}]}))});
    throw Error('Unexpected model tool '+name);
   }
   if(url.origin!==rest)throw Error('Unexpected external request '+url.origin);

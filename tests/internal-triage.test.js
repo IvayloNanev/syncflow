@@ -57,3 +57,19 @@ test('oversized historical correspondence is never silently trimmed or submitted
  const c=make('large');c.correspondence=[{id:'old-draft',kind:'Manager email draft · not sent',draft:true,text:'x'.repeat(200001)}];
  await assert.rejects(triageReviews({...args,cases:[c],fetchImpl:()=>assert.fail('No partial provider call')}),/AI_CONTEXT_TOO_LARGE/);
 });
+
+test('recorded Internal Review requests are citable and constrain provider source IDs',async()=>{
+ const c=make('manual');c.internal_review_request={id:'review-request-manual',reason:'The client changed the territory.',question:'Should we proceed worldwide?'};
+ const output={...item('manual','manager','Manager decision requested'),citations:[{message_id:c.internal_review_request.id,exact_quote:c.internal_review_request.reason}]};
+ const result=await triageReviews({...args,cases:[c],fetchImpl:async(url,options)=>{
+  const body=JSON.parse(options.body);
+  assert.deepEqual(body.tools[0].input_schema.properties.items.items.properties.citations.items.properties.message_id.enum,['m-manual','review-request-manual']);
+  assert.match(body.system,/internal_review_request is also citable/);
+  return provider([output])();
+ }});
+ assert.equal(result.items[0].citations[0].exact_quote,c.internal_review_request.reason);
+ // A recorded request never licenses invented quotations or another case's ID.
+ for(const citation of [{message_id:c.internal_review_request.id,exact_quote:'Management approved the license.'},{message_id:'another-review-request',exact_quote:c.internal_review_request.reason}]){
+  await assert.rejects(triageReviews({...args,cases:[c],fetchImpl:provider([{...output,citations:[citation]}])}),/AI_INVALID_EVIDENCE/);
+ }
+});
