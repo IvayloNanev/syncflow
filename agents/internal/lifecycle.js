@@ -3,7 +3,7 @@ import {inquiryLabels} from '../../requests/inquiry-labels.js';
 import {createHash} from 'node:crypto';
 import {caseSnapshot} from '../priority/supervisor.js';
 import {eligibleLanes} from './triage.js';
-export const REVIEW_VERSION='internal-v5';
+export const REVIEW_VERSION='internal-v6-full-correspondence';
 export function reviewFingerprint(c,{now=new Date()}={}){return createHash('sha256').update(JSON.stringify({version:REVIEW_VERSION,snapshot:caseSnapshot(c).fingerprint,storage:c.storage_version,eligibility:eligibleLanes(c,{now})})).digest('hex');}
 export function contextForReview(c){
  const pending=(c.reviewers?.reviewers||[]).filter(r=>r.status==='Pending'||r.needs_reconfirmation);

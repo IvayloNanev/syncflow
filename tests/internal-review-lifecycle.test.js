@@ -1,3 +1,6 @@
+import {createHash} from 'node:crypto';
+import {caseSnapshot} from '../agents/priority/supervisor.js';
+import {eligibleLanes} from '../agents/internal/triage.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {reviewFingerprint,currentAssessment,assessmentResult,managerDraft,caseListing} from '../agents/internal/lifecycle.js';
@@ -27,4 +30,11 @@ test('internal review prepares only manager drafts; routine follow-up never crea
  assert.match(assessmentResult(c,{...recommendation,escalation_trigger:'Reviewer refusal'}).draft.subject,/Manager decision requested/);
  assert.equal(assessmentResult(c,{...recommendation,lane:'human'}).draft,null);
  assert.equal(assessmentResult(c,{...recommendation,lane:'coordinator'}).draft,null);
+});
+
+
+test('assessments created before full correspondence support are not reused',()=>{
+ const c=make(),now=new Date();
+ const old=createHash('sha256').update(JSON.stringify({version:'internal-v5',snapshot:caseSnapshot(c).fingerprint,storage:c.storage_version,eligibility:eligibleLanes(c,{now})})).digest('hex');
+ assert.equal(currentAssessment(c,[{request_id:c.id,fingerprint:old,result:{fingerprint:old}}],now),null);
 });

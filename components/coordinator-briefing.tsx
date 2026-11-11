@@ -2,6 +2,7 @@
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
 import CoordinatorHandoffButton from './coordinator-handoff-button';
+import AIProgress from './ai-progress';
 import styles from './coordinator-briefing.module.css';
 type Item={priority:number;request_id:string;client:string;project:string;status:string;responsible:string;reason:string;blocker:string;next_action:string;changed:boolean;changes:string[];explanation_source:string;deadline:{date?:string;time?:string;timezone?:string;supplied_text?:string}|null;handoff:{state:string;stage:string;label:string;destination:string;anchor:string};evidence:{kind:string;text:string}[]};
 type Supervision={decision_source?:string;checked_at:string;saved_at:string|null;items:Item[];changed_count:number;finished_count:number};
@@ -21,10 +22,10 @@ export default function CoordinatorBriefing({busy,error,elapsed}:{busy:boolean;e
  const open=data?.items.filter(item=>item.handoff.state!=='finished')||[];
  const matches=(item:Item,value:string)=>value==='all'?item.handoff.state!=='finished':value==='overdue'?item.priority===0&&item.handoff.state!=='finished':value==='today'?item.priority===1&&item.handoff.state!=='finished':value==='changed'?item.changed:value==='waiting'?item.status==='Internal review pending':item.handoff.state===value;
  const items=data?.items.filter(item=>matches(item,filter))||[];
- const urgency=(item:Item)=>item.handoff.state==='finished'?['Complete','finished']:item.priority===0?['Overdue','urgent']:item.priority===1?['Due today','today']:item.priority===2?['Due soon','today']:item.handoff.state==='waiting'?['Waiting on review','waiting']:item.handoff.state==='blocked'?['Needs attention','blocked']:['Ready for action','action'];
+ const urgency=(item:Item)=>item.handoff.state==='finished'?['Complete','finished']:item.priority===0?['Overdue','urgent']:item.priority===1?['Due today','today']:item.priority===2?['Upcoming deadline','today']:item.handoff.state==='waiting'?['Waiting on review','waiting']:item.handoff.state==='blocked'?['Needs attention','blocked']:['Ready for action','action'];
  return <section className={styles.dashboard} aria-label="Daily priorities report">
 
-  {busy?<div className="briefing-loading" role="status"><div className="briefing-loading-heading"><strong>Reviewing case evidence and preparing the briefing</strong><span>{elapsed}s</span></div><div className="briefing-loading-bar" aria-hidden="true"><span/></div></div>:null}
+  {busy?<AIProgress label="Daily Brief · Reviewing case evidence and prioritizing your cases" elapsed={elapsed}/>:null}
   {error?<p role="alert">{error}</p>:null}
   {failure?<p role="alert">{failure} Previously displayed information may be out of date. <button className="text-button" onClick={()=>setRefresh(n=>n+1)}>Retry</button></p>:null}
   {!data&&!failure?<p role="status">Checking current work…</p>:null}
@@ -38,7 +39,7 @@ export default function CoordinatorBriefing({busy,error,elapsed}:{busy:boolean;e
     <p className={styles.reason}>{item.reason}</p>
     <div className={styles.next}><span>{item.handoff.state==='waiting'?'WAITING FOR':'NEXT ACTION'}</span><p>{item.next_action}</p></div>
     <dl className={styles.meta}><div><dt>Responsible</dt><dd>{item.responsible}</dd></div><div><dt>Deadline</dt><dd>{item.deadline?[item.deadline.date||item.deadline.supplied_text,item.deadline.time,item.deadline.timezone].filter(Boolean).join(' · '):'Not supplied'}{item.deadline&&!item.deadline.timezone?' · timezone unconfirmed':''}</dd></div></dl>
-    <details className={styles.evidence}><summary>Reason & evidence <span>＋</span></summary><p><strong>{item.status}:</strong> {item.blocker}</p>{item.changes.length?<p><strong>Changed:</strong> {item.changes.join(' · ')}</p>:null}<p>{item.explanation_source==='ai'?'Saved AI explanation, checked against unchanged evidence.':'Current workflow guidance from saved case records.'}</p>{item.evidence.map((e,i)=><blockquote key={i}><strong>{e.kind}: </strong>{e.text}</blockquote>)}</details>
+    <details className={styles.evidence}><summary>Reason &amp; evidence</summary><p><strong>{item.status}:</strong> {item.blocker}</p>{item.changes.length?<p><strong>Changed:</strong> {item.changes.join(' · ')}</p>:null}<p>{item.explanation_source==='ai'?'Saved AI explanation, checked against unchanged evidence.':'Current workflow guidance from saved case records.'}</p>{item.evidence.map((e,i)=><blockquote key={i}><strong>{e.kind}: </strong>{e.text}</blockquote>)}</details>
     {item.handoff.destination==='internal'?<Link className={`primary-button ${styles.continue}`} href={`/internal?case=${encodeURIComponent(item.request_id)}`}>Go to Internal Review</Link>:<CoordinatorHandoffButton className={`primary-button ${styles.continue}`} requestId={item.request_id}>Go to Coordinator</CoordinatorHandoffButton>}
    </li>;})}</ol>
    {!items.length?<div className={styles.empty}><strong>All clear in this view.</strong><p>Choose another filter to see the rest of your work.</p></div>:null}

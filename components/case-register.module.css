@@ -93,3 +93,10 @@
  .triagePage .agentActions small{font-size:13px}
  .triagePage .agentActions button{min-height:46px!important;font-size:14px!important;white-space:normal}
 }
+
+/* Two compact destinations keep routing from dominating each case row. */
+.triagePage .caseRows .agentActions{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:6px;width:220px;max-width:100%;align-items:center}
+.triagePage .caseRows .agentActions .currentAgent{grid-column:1/-1;font-size:11px;line-height:16px;font-weight:500;color:#bdbdbd!important}
+.triagePage .caseRows .agentActions>button{display:inline-flex;align-items:center;justify-content:center;width:100%!important;min-width:0!important;min-height:44px!important;margin:0!important;padding:8px!important;border-radius:999px!important;font-size:12px!important;line-height:18px!important;white-space:nowrap!important}
+.triagePage .caseRows .agentActions>p{grid-column:1/-1}
+@media(max-width:650px){.triagePage .caseRows .agentActions{width:100%;max-width:360px;justify-self:start}}

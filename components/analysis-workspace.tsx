@@ -87,6 +87,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   const [email, setEmail] = useState("");
   const [timezone, setTimezone] = useState("America/New_York");
   const [working, setBusy] = useState(false);
+  const [agentWorking,setAgentWorking] = useState(false);
   const busy=working||loadingRequest;
   const running = useRef(false);
   const [result, setResult] = useState<Result | null>(null);
@@ -131,7 +132,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     command({ action: "list" }).then(data => { if (mounted) {setRequests(data.requests);setListState("ready");} })
       .catch(() => { if (mounted) setListState("error"); });
     if(!initialRequestId && mode === "coordinator") Promise.resolve().then(()=>{if(mounted){const backup=readEditorBackup("new");if(typeof backup?.email==="string")setEmail(backup.email);}});
-    if(initialRequestId) command({action:"get",request_id:initialRequestId}).then(data=>{if(mounted){restoreInitial(data);setRequestLoadFailed(false);setLoadingRequest(false);setNotice("Saved request loaded.");}}).catch(()=>{if(mounted){setRequestLoadFailed(true);setLoadingRequest(false);}});
+    if(initialRequestId) command({action:"get",request_id:initialRequestId}).then(data=>{if(mounted){restoreInitial(data);setRequestLoadFailed(false);setLoadingRequest(false);setNotice("");}}).catch(()=>{if(mounted){setRequestLoadFailed(true);setLoadingRequest(false);}});
     return () => { mounted = false; };
   }, [initialRequestId,mode,loadAttempt]);
   function showSaved(data: Detail) {
@@ -147,12 +148,12 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
     }
     if(backup?.body && (backup.run !== data.review_analysis?.run_id || !data.active_analysis?.result?.ok))setRecoveredDraft({subject:backup.subject||"",body:backup.body});
   }
-  async function perform(task: () => Promise<void>) {
+  async function perform(task: () => Promise<void>,usesAgent=false) {
     if (running.current) return;
-    running.current = true; setBusy(true); setError(""); setNotice("");
+    running.current = true; setBusy(true); setAgentWorking(usesAgent); setError(""); setNotice("");
     try { await task(); }
     catch (failure) { setError(failure instanceof Error && failure.name !== "AbortError" ? failure.message : "Connection interrupted. Reopen or refresh before retrying; a command may have completed. Your unsent text is retained."); }
-    finally { running.current = false; setBusy(false); }
+    finally { running.current = false; setBusy(false); setAgentWorking(false); }
   }
   async function save() {
     const payload = { action: "create", email, timezone, recording_id: effectiveRecording?.id ?? null };
@@ -185,7 +186,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       else if (data.analysis_status === "running") setNotice("This run is still pending. Reopen the request to check it. Use Retry analysis with a new run only if you explicitly want another attempt.");
       else { retryCommands.current.delete(JSON.stringify(payload)); setNotice(`Analysis is ${data.analysis_status}. History is preserved. Review the saved request before explicitly retrying.`); }
       await refresh();
-    });
+    },true);
   }
   const automaticAnalysis=useRef(new Set<string>());
   const [pendingExpired,setPendingExpired]=useState(false);
@@ -201,7 +202,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
       else if(data.analysis_status==='running')setNotice('The agent is analyzing this case…');
       else {retryCommands.current.delete(JSON.stringify(payload));setError('The agent could not finish this analysis. Your case is saved. Use Retry agent to try again.');}
       await refresh();
-    });
+    },true);
   });
   const autoCaseKey=saved?`${saved.id}:${saved.revision}`:'';
   const latestAnalysisStatus=analyses.at(-1)?.status;
@@ -285,11 +286,15 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
   }
   const needsCatalogueRegeneration=!!result&&catalogueAssessment.status==='not_found'&&result.catalogue_policy!=='current-catalogue-v1';
   const responseReadyNotice = !needsCatalogueRegeneration && !!result && !busy && (notice.startsWith('Analysis saved for this revision.') || notice==='Your response draft is ready.' || notice==='Reply checked. Checklist and next response updated.');
+  const internalReviewAction = mode==='coordinator'&&saved&&result&&workflow?.status!=='Case completed'?<InternalReviewRequest key={saved.id} busy={busy} onSend={async(reason,question)=>{
+        if(!confirmDiscard(unsavedText))return false;
+        let success=false;await perform(async()=>{await command(keyed({action:'request_internal_review',request_id:saved.id,expected_revision:saved.revision,analysis_run_id:reviewRun!.run_id,reason,question}));success=true;router.push(`/internal?request=${encodeURIComponent(saved.id)}`);});return success;
+      }}/>:null;
   const responsePanel = result ? <section className="result-panel draft-panel live-response-panel" id="client-response" ref={responseRef} tabIndex={-1} aria-labelledby="next-action-heading"><p className="conversation-step response-step"><span aria-hidden="true">02</span> Your response</p><div className="response-heading"><h2 id="next-action-heading">{stale ? 'Analyze the updated request' : result?.stages?.follow_up?.skipped ? 'Your response draft' : result ? 'Review and copy the client email' : 'Analyze this request'}</h2><button type="button" className="secondary-button" disabled={busy} onClick={()=>void analyze()}>{busy?"Drafting…":"Regenerate draft"}</button></div>
           {needsCatalogueRegeneration?<p className="analysis-error" role="alert"><strong>This saved draft used the old catalogue logic.</strong> Click Regenerate draft before using it. The existing text is preserved below for reference.</p>:null}
           {catalogueAssessment.status==='not_found'?<p className="catalogue-draft-warning"><strong>Lead with the catalogue gap.</strong> No matching catalogue entry was found. Availability needs verification before this request can progress.</p>:null}
           {responseReadyNotice?<p className="draft-ready-notice" role="status"><span aria-hidden="true">✓</span> Your response draft is ready. Review and copy it below.</p>:null}
-          {result ? <><p className="panel-note">{draftDirty ? "Edited draft · unsaved. Leaving or replacing this editor requires confirmation. " : result.stages?.follow_up?.skipped ? (!saved?.recording_id ? "Recording clarification template · " : "Acknowledgement template · ") : "AI-generated draft · "}Review the wording before sending. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {backupEditors({subject:e.target.value});setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {backupEditors({body:e.target.value});setDraft(e.target.value);setCopyStatus('');}} /><div className="draft-copy-actions"><button type="button" className="primary-button" disabled={busy||needsCatalogueRegeneration} onClick={copyDraft}>Copy draft</button>{copyStatus?<p role="status">{copyStatus}</p>:null}</div><div className="request-save-actions"><p className="panel-note">Request and AI analysis saved automatically.{draftDirty?' Your edited email draft is kept in this browser only.':''}</p></div><div className="response-next-step"><h3>After you send this email</h3><p>Send the draft from your email app. When the client answers, paste their reply into this request and recheck it.</p>{mode==='coordinator'&&saved?<CompleteCaseButton completionLabel="Mark as completed" requestId={saved.id} revision={saved.revision} completed={workflow?.status==='Case completed'} disabled={busy} beforeComplete={async()=>{if(!confirmDiscard(unsavedText))throw Error('Case remains open. Save or copy your edits before completing.');}}/>:null}</div></> : <p>{stale ? 'Use Draft response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Resolve exceptions and complete the internal checks; this does not approve a licence.' : 'Use Draft response to generate the checklist and any necessary email.'}</p>}
+          {result ? <><p className="panel-note">{draftDirty ? "Edited draft · unsaved. Leaving or replacing this editor requires confirmation. " : result.stages?.follow_up?.skipped ? (!saved?.recording_id ? "Recording clarification template · " : "Acknowledgement template · ") : "AI-generated draft · "}Review the wording before sending. This draft has not been sent.</p><label htmlFor="draft-subject">Subject</label><input id="draft-subject" value={subject} disabled={busy} onChange={e => {backupEditors({subject:e.target.value});setSubject(e.target.value);setCopyStatus('');}} /><label htmlFor="draft-body">Email draft</label><textarea id="draft-body" rows={14} value={draft} disabled={busy} onChange={e => {backupEditors({body:e.target.value});setDraft(e.target.value);setCopyStatus('');}} /><div className="draft-copy-actions"><button type="button" className="primary-button" disabled={busy||needsCatalogueRegeneration} onClick={copyDraft}>Copy draft</button>{copyStatus?<p role="status">{copyStatus}</p>:null}</div><div className="request-save-actions"><p className="panel-note">Request and AI analysis saved automatically.{draftDirty?' Your edited email draft is kept in this browser only.':''}</p></div><div className="response-next-step"><h3>After you send this email</h3><p>Send the draft from your email app. When the client answers, paste their reply into this request and recheck it.</p><div className="response-case-actions">{mode==='coordinator'&&saved?<CompleteCaseButton completionLabel="Mark as completed" requestId={saved.id} revision={saved.revision} completed={workflow?.status==='Case completed'} disabled={busy} beforeComplete={async()=>{if(!confirmDiscard(unsavedText))throw Error('Case remains open. Save or copy your edits before completing.');}}/>:null}{internalReviewAction}</div></div></> : <p>{stale ? 'Use Draft response. Confirmed facts and history are preserved.' : result ? 'No clarification email is needed. Resolve exceptions and complete the internal checks; this does not approve a licence.' : 'Use Draft response to generate the checklist and any necessary email.'}</p>}
         </section> : saved ? <button type="button" className="primary-button" disabled={busy} onClick={()=>void analyze()}>{busy?"Drafting response…":"Draft response"}</button> : null;
   return <div className="app-shell case-workspace-shell">
     <a className="skip-link" href="#main-workspace">Skip to workspace</a>
@@ -305,7 +310,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
 
       {mode==='coordinator'&&catalogueAssessment.status==='not_found'?<section className="catalogue-stop" role="status" aria-label="Catalogue check needs attention"><p className="eyebrow">CATALOGUE CHECK · ACTION REQUIRED</p><h2>No matching music in SyncFlow’s catalogue</h2><p><strong>Requested: {[catalogueAssessment.artist,catalogueAssessment.title].filter(Boolean).join(' · ')}</strong></p><p>We cannot confirm this request against the current catalogue. Ask for specific songs and recording links, then verify availability before progressing.</p><small>This does not mean the music cannot be licensed elsewhere.</small></section>:null}
       {mode === "internal" && saved ? <section className="selected-request-context" aria-label="Selected request"><strong>{valueText(project || 'Project missing')}</strong><span>{valueText(contact || 'Client missing')}</span><span>{recording ? `${recording.title} · ${recording.artist} · ${recording.version}` : 'Recording unresolved'}</span><small>{saved.agent_fields?.length?"Includes agent-extracted details · ":""}Revision {saved.revision} · {workflow?.status || 'Status loading'}</small></section> : null}
-      <div aria-live="polite">{busy ? <AIProgress label="Working on the request…"/> : null}</div>
+      {agentWorking || (latestAnalysisStatus==='running'&&!pendingExpired&&!error) ? <AIProgress label="Coordinator · Reviewing correspondence and preparing your response"/> : null}
       {saved?.manager_resolution?<section className="result-panel"><h2>Manager decision</h2><p><strong>{saved.manager_resolution.manager_name}</strong></p><p style={{whiteSpace:'pre-wrap'}}>{saved.manager_resolution.notes}</p></section>:null}
       {error ? <div role="alert" className="analysis-error"><strong>Action needs attention</strong><p>{error}</p>{saved&&!result?<button className="secondary-button" disabled={busy} onClick={()=>{automaticAnalysis.current.add(autoCaseKey);retryCommands.current.clear();void analyze();}}>Retry agent</button>:null}{saved ? <button className="secondary-button" disabled={busy} onClick={()=>{if(!confirmDiscard(draftDirty || !!reply.trim()))return;void perform(async()=>{const data:Detail=await command({action:"get",request_id:saved.id});showSaved(data);setNotice("Saved request checked. Review its latest status before retrying.");});}}>Check saved request</button> : null}</div> : null}
       {recoveredDraft ? <details className="handoff-panel" open><summary>Recovered unsent email edits · outdated, review before reuse</summary><p>These are your tab-local editor notes, not a current generated response. They were not sent or confirmed.</p><strong>{recoveredDraft.subject}</strong><textarea aria-label="Recovered unsent email" value={recoveredDraft.body} readOnly rows={8}/></details> : null}
@@ -317,10 +322,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
         {workflow.history.length ? <details><summary>Completion history ({workflow.history.length})</summary>{workflow.history.map((event,i)=><p key={i}>Revision {event.request_revision} · {event.completed_by} · {event.completed_at}</p>)}</details> : null}
       </div></section> : null}
       {mode==='internal'&&saved?<details className="result-panel" id="manager-escalation" aria-labelledby="manager-escalation-heading"><summary>Manager escalation</summary><h2 id="manager-escalation-heading">Prepare a manager review</h2><p>Review the evidence and current blockers before contacting your manager. No manager has been assigned or notified by SyncFlow.</p><ul>{workflow?.reasons.map((reason,i)=><li key={i}>{reason}</li>)}{reviewers.reviewers.map(r=><li key={r.id}>{r.name} · {r.role}: {r.status}{r.notes?` — ${r.notes}`:''}</li>)}</ul><p>Share the request, the decision needed and the client deadline with your manager through your usual channel. Record their decision in the reviewer panel once received.</p><a className="secondary-button" href="#internal-reviewers">Reviewers · Record received manager decision</a></details>:null}
-      {mode==='coordinator'&&saved&&result&&workflow?.status!=='Case completed'?<InternalReviewRequest key={saved.id} busy={busy} onSend={async(reason,question)=>{
-        if(!confirmDiscard(unsavedText))return false;
-        let success=false;await perform(async()=>{await command(keyed({action:'request_internal_review',request_id:saved.id,expected_revision:saved.revision,analysis_run_id:reviewRun!.run_id,reason,question}));success=true;router.push(`/internal?request=${encodeURIComponent(saved.id)}`);});return success;
-      }}/>:null}
+
       {mode==='coordinator'&&saved&&reviewers.reviewers.length>0?<section id="reviewer-follow-up" className="result-panel" style={{marginBottom:40}} aria-labelledby="reviewer-follow-up-heading"><p className="eyebrow">REVIEWER FOLLOW-UP</p><h2 id="reviewer-follow-up-heading">Follow up on pending reviewer decisions</h2><p>Contact the reviewers below for a decision or an updated response time. Review the client’s deadline and update them if needed. No follow-up has been sent by SyncFlow.</p><ul>{reviewers.reviewers.filter(r=>r.status==='Pending'||r.needs_reconfirmation).map(r=><li key={r.id}><strong>{r.name} · {r.role}</strong> — {r.needs_reconfirmation?'Decision needs reconfirmation':'Decision pending'}{r.notes?` · ${r.notes}`:''}</li>)}</ul><details><summary>Record a received reviewer decision</summary>{reviewers.reviewers.map(r=><ReviewerOutcomeForm key={`${r.id}:${reviewers.version}`} name={r.name} busy={busy} onSave={async(status,notes)=>{await perform(async()=>{const data:Detail=await command(keyed({action:'reviewer',request_id:saved.id,expected_revision:saved.revision,expected_review_version:reviewers.version,operation:'decision',reviewer_id:r.id,status,notes}));showSaved(data);await refresh();setNotice('Reviewer decision saved. The case route has been updated.');});}}/>)}</details></section>:null}
       {mode === "coordinator" ? <>
 
@@ -346,7 +348,7 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
             const checked: Detail = await command(keyed(payload)); showSaved(checked); await refresh();
             if (checked.analysis_status === 'completed') retryCommands.current.delete(JSON.stringify(payload));
             setNotice(checked.analysis_status === 'completed' ? 'Reply checked. Checklist and next response updated.' : 'Reply saved. Analysis needs attention; retry drafting the response.');
-          });}} /> : null}
+          },true);}} /> : null}
         </section>
 
         </div>
