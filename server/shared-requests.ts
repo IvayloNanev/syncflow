@@ -1,3 +1,6 @@
+import {createBudgetedFetch} from './ai-usage.js';
+import {createClaudeProvider} from '../agents/intake/providers/claude.js';
+import {createFollowUpClaudeProvider} from '../agents/follow-up/providers/claude.js';
 import {reviewPriorities} from '../agents/priority/review.js';
 import {requestOrigin} from './request-origin.js';
 import {randomUUID} from 'node:crypto';
@@ -32,7 +35,7 @@ export async function sharedRequests(req:Request){
    if(!data)return json(429,{error:{code:'BUSY',message:'Your team has an analysis running. Wait, then reopen the request.'}});
    lease={client,workspace:session.workspaceId,token};
   }
-  const handler=createSavedRequestsHandler({actor:session.user.id,trustedOrigin:origin,enabled:()=>true,openStore:()=>store!});
+  const handler=createSavedRequestsHandler({actor:session.user.id,trustedOrigin:origin,enabled:()=>true,openStore:()=>store!,providers:()=>{const fetchImpl=createBudgetedFetch({client,workspaceId:session.workspaceId,actorId:session.user.id,feature:'coordinator'});return {intakeProvider:createClaudeProvider({fetchImpl}),followUpProvider:createFollowUpClaudeProvider({fetchImpl})};}});
   const response=await handler(new Request(req.url,{method:'POST',headers:req.headers,body:raw}));
   if(!response.ok)return response;
   const committed=await store.flush();

@@ -54,7 +54,7 @@ The script loads `.env` only for the Claude provider; existing shell variables t
 
 ## How it works
 
-`createClaudeProvider` implements the same provider port as the mock. It calls the fixed `https://api.anthropic.com/v1/messages` origin with an API-key Bearer header and version `2026-10-21`. The system prompt is versioned in `agents/intake/prompts/intake-v1.txt`. The shared JSON schema is inlined into a single `submit_intake` client tool definition, which is used only to collect structured output; no model-specified tool is ever executed.
+`createClaudeProvider` implements the same provider port as the mock. It calls the fixed `https://api.anthropic.com/v1/messages` origin with an API-key Bearer header and version `2026-10-21`. The system prompt is versioned in `agents/intake/prompts/intake-v1.3.txt`. The `submit_intake` tool uses strict output with compact typed groups. The server decodes groups into the unchanged business contract, attaches previous values from the trusted snapshot, and retains local schema, evidence, date and revision validation. No model-specified tool is executed. See [Intake reliability](intake-reliability-2026-11-11.md).
 
 The parser accepts exactly one matching tool block and rejects truncation, refusal and other stop reasons. Tool inputs still undergo our local schema, source-quote and record-version validation. Request formatting is verified by fake-transport tests. On November 4, 2026, one fictional incomplete-request call passed local validation after explicitly typing constant fields in the tool schema. Two earlier calls were rejected because schema_version was returned as numeric 1 rather than string "1.0". This is a smoke test, not an accuracy benchmark; the full evaluation and partner review remain outstanding.
 

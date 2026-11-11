@@ -48,7 +48,7 @@ export function createFollowUpClaudeProvider({ apiKey = process.env.ANTHROPIC_AP
       if (!response.ok) {
         // Do not read or return provider error bodies, which may echo sensitive input.
         const code = response.status===401||response.status===403?'PROVIDER_AUTH_FAILED':
-          response.status===429?'PROVIDER_RATE_LIMITED':response.status>=500?'PROVIDER_FAILED':'PROVIDER_REQUEST_REJECTED';
+          response.status===429?(response.headers?.get('x-syncflow-usage-limit')?'PROVIDER_USAGE_LIMIT':'PROVIDER_RATE_LIMITED'):response.status>=500?'PROVIDER_FAILED':'PROVIDER_REQUEST_REJECTED';
         throw new ClaudeProviderError(code);
       }
       let message;

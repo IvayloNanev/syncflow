@@ -4,6 +4,7 @@ import { validateContract } from '../../contracts/validate.js';
 const messages = {
   PROVIDER_NOT_CONFIGURED: 'Set ANTHROPIC_API_KEY and ANTHROPIC_MODEL locally before a live call.',
   PROVIDER_AUTH_FAILED: 'Claude authentication failed. Check your local API key and account access.',
+  PROVIDER_USAGE_LIMIT: 'Your AI usage limit has been reached. Try again after the limit resets or ask your workspace administrator.',
   PROVIDER_RATE_LIMITED: 'Claude rate limit reached. Wait before explicitly retrying.',
   PROVIDER_REQUEST_REJECTED: 'Claude rejected the request. Check model access and provider configuration.',
   INVALID_REVIEW: 'Review failed validation. Correct it before drafting.',
@@ -70,7 +71,7 @@ export async function runFollowUp(context, review, { provider, timeoutMs = 30000
     let output;
     try { output = await provider.generate({ context: snapshot, review: reviewSnapshot, signal: controller.signal }); }
     catch (error) {
-      const allowed = ['UNSUPPORTED_MOCK_INPUT', 'PROVIDER_NOT_CONFIGURED', 'PROVIDER_AUTH_FAILED', 'PROVIDER_RATE_LIMITED', 'PROVIDER_REQUEST_REJECTED', 'INVALID_OUTPUT'];
+      const allowed = ['UNSUPPORTED_MOCK_INPUT', 'PROVIDER_NOT_CONFIGURED', 'PROVIDER_AUTH_FAILED', 'PROVIDER_USAGE_LIMIT', 'PROVIDER_RATE_LIMITED', 'PROVIDER_REQUEST_REJECTED', 'INVALID_OUTPUT'];
       throw new RunFailure(allowed.includes(error?.code) ? error.code : 'PROVIDER_FAILED');
     }
     // No provider-owned objects survive into a caller's result.
@@ -85,13 +86,14 @@ export async function runFollowUp(context, review, { provider, timeoutMs = 30000
     if(reviewSnapshot.issues.some(issue=>issue.issue_id.startsWith('catalogue-coverage-check'))){
       const catalogue=catalogueAssessment||assessCatalogue({messages:snapshot.messages,fields:snapshot.confirmed_fields});
       if(catalogue.status==='not_found'){
-        const notice=`We could not find a match for “${catalogue.artist||catalogue.title}” in our current SyncFlow catalogue. We need to verify availability before progressing. Please share the specific songs, recording versions and recording links.`;
+        const notice=`We could not find a match for “${catalogue.artist||catalogue.title}” in our current SyncFlow catalogue. We need to verify availability before progressing.`;
         const paragraphs=output.body.split(/\n\s*\n/),greeting=/^(?:hello|hi|dear)\b[^.!?]*[,!]?$/.test(paragraphs[0].trim().toLowerCase());
-        const opening=(paragraphs[greeting?1:0]||'').split('\n')[0];
-        if(!/(?:not|no|couldn.t).*?(?:find|match|catalogue|catalog)/i.test(opening)){
-          paragraphs.splice(greeting?1:0,0,notice);output.body=paragraphs.join('\n\n');
-          validateContract('follow_up',output,snapshot,reviewSnapshot);
-        }
+        const position=greeting?1:0;
+        const existing=paragraphs.findIndex(p=>/(?:not|no|couldn.t).*?(?:find|match)/i.test(p)&&/catalog(?:ue)?/i.test(p));
+        if(existing<0)paragraphs.splice(position,0,notice);
+        else if(existing>position)paragraphs.splice(position,0,paragraphs.splice(existing,1)[0]);
+        output.body=paragraphs.join('\n\n');
+        validateContract('follow_up',output,snapshot,reviewSnapshot);
       }
     }
     if (getCurrentVersion) {

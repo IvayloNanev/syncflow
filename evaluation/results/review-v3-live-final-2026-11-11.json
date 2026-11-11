@@ -1,0 +1,1365 @@
+{
+  "kind": "bounded-synthetic-full-workflow-check-not-global-accuracy",
+  "model": "claude-haiku-5-5",
+  "source_sha256": "751e062ff92c50dee88b530878fc0553f579b875f4a1799cb5fa060750b61c81",
+  "intake_prompt_sha256": "563a10a8ba48997af207111877d9196afa267ad037c30c3fead3c478c155d621",
+  "max_model_calls": 8,
+  "cases": [
+    {
+      "id": "Q02-date-only",
+      "checks": {
+        "workflow_ok": true,
+        "activation_validation": true,
+        "client_questions_match": true,
+        "draft_skip_correct": true
+      },
+      "client_signatures": [
+        "ambiguous:response_deadline"
+      ],
+      "expected_client_signatures": [
+        "ambiguous:response_deadline"
+      ],
+      "body": "Hello June,\n\nThank you for your licensing request for \"Northern Lights\" by Maya Rivers for the Estuary film project.\n\nWe have your response deadline as December 17, 2026. Could you please confirm the time of day and the timezone that apply to this deadline?\n\nOnce we have that, we will be in a better position to move forward with your request.\n\nKind regards",
+      "result": {
+        "ok": true,
+        "catalogue_policy": "current-catalogue-v1",
+        "run_id": "Q02-date-only",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+            "mode": "live",
+            "run_id": "Q02-date-only",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q02-date-only",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "proposal-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "June Avery",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "client_contact: June Avery."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Estuary film",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "project: Estuary film."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Maya Rivers",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "artist: Maya Rivers."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Northern Lights",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "track_title: Northern Lights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "original recording",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "recording_version: original recording."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "online advertisement",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "intended_use: online advertisement."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "YouTube",
+                    "Instagram"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "platforms: YouTube and Instagram."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Canada"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "territories: Canada."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "six months",
+                    "duration_text": null,
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "campaign_term: six months."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "21 seconds",
+                    "seconds": 21
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "music_length: 21 seconds."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "CAD 4600 for both rights",
+                    "amount": "4600",
+                    "currency": "CAD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "budget: CAD 4600 for both rights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "2026-12-17",
+                    "date": "2026-12-17",
+                    "time": null,
+                    "timezone": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "response_deadline: 2026-12-17."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "policy_version": "review-v2",
+            "mode": "rules",
+            "catalogue_assessment": {
+              "status": "candidate",
+              "artist": "Maya Rivers",
+              "title": "Northern Lights",
+              "catalogueWide": false,
+              "sourceIdentified": false,
+              "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+              "question": null
+            },
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q02-date-only",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "ambiguous-response_deadline",
+                  "type": "ambiguous",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "response_deadline"
+                  ],
+                  "question": "Please confirm the response deadline time and timezone.",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "response_deadline: 2026-12-17."
+                    }
+                  ]
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "fail"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q02-date-only",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q02-date-only",
+              "base_record_version": 0,
+              "subject": "Follow-up on response deadline for Northern Lights licensing request",
+              "body": "Hello June,\n\nThank you for your licensing request for \"Northern Lights\" by Maya Rivers for the Estuary film project.\n\nWe have your response deadline as December 17, 2026. Could you please confirm the time of day and the timezone that apply to this deadline?\n\nOnce we have that, we will be in a better position to move forward with your request.\n\nKind regards",
+              "addressed_issue_ids": [
+                "ambiguous-response_deadline"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "Q03-known-external-identity",
+      "checks": {
+        "workflow_ok": true,
+        "activation_validation": true,
+        "client_questions_match": true,
+        "draft_skip_correct": true
+      },
+      "client_signatures": [],
+      "expected_client_signatures": [],
+      "body": null,
+      "result": {
+        "ok": true,
+        "catalogue_policy": "current-catalogue-v1",
+        "run_id": "Q03-known-external-identity",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "review_required",
+        "coordinator_review_issue_ids": [
+          "catalogue-coverage-check"
+        ],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+            "mode": "live",
+            "run_id": "Q03-known-external-identity",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q03-known-external-identity",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "proposal-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "June Avery",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "client_contact: June Avery."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Estuary film",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "project: Estuary film."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Outside Artist",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "artist: Outside Artist."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Outside Song",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "track_title: Outside Song."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "original recording",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "recording_version: original recording."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "online advertisement",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "intended_use: online advertisement."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "YouTube",
+                    "Instagram"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "platforms: YouTube and Instagram."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Canada"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "territories: Canada."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "six months",
+                    "duration_text": "six months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "campaign_term: six months."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "21 seconds",
+                    "seconds": 21
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "music_length: 21 seconds."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "CAD 4600 for both rights",
+                    "amount": "4600",
+                    "currency": "CAD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "budget: CAD 4600 for both rights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+                    "date": "2026-12-17",
+                    "time": "16:00",
+                    "timezone": "America/Toronto"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "response_deadline: 2026-12-17 at 16:00 America/Toronto."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "policy_version": "review-v2",
+            "mode": "rules",
+            "catalogue_assessment": {
+              "status": "not_found",
+              "artist": "Outside Artist",
+              "title": "Outside Song",
+              "catalogueWide": false,
+              "sourceIdentified": false,
+              "message": "No match found in SyncFlow’s current catalogue for “Outside Artist · Outside Song”. Catalogue absence does not establish whether the music can be licensed.",
+              "question": "Verify the supplied artist, song and recording version against catalogue sources before progressing. Do not ask the client to repeat the supplied identity.",
+              "client_question": null
+            },
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [
+              "catalogue-coverage-check"
+            ],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q03-known-external-identity",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "catalogue-coverage-check",
+                  "type": "ambiguous",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "artist",
+                    "track_title",
+                    "recording_version"
+                  ],
+                  "question": "No match found in SyncFlow’s current catalogue for “Outside Artist · Outside Song”. Catalogue absence does not establish whether the music can be licensed. Verify the supplied artist, song and recording version against catalogue sources before progressing. Do not ask the client to repeat the supplied identity.",
+                  "evidence": []
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "skipped": true,
+            "reason": "NO_UNRESOLVED_ISSUES",
+            "output": null
+          }
+        }
+      }
+    },
+    {
+      "id": "Q04-external-version-gap",
+      "checks": {
+        "workflow_ok": true,
+        "activation_validation": true,
+        "client_questions_match": true,
+        "draft_skip_correct": true
+      },
+      "client_signatures": [
+        "ambiguous:artist,recording_version,track_title"
+      ],
+      "expected_client_signatures": [
+        "ambiguous:artist,recording_version,track_title"
+      ],
+      "body": "Hello June,\n\nWe could not find a match for “Outside Artist” in our current SyncFlow catalogue. We need to verify availability before progressing.\n\nThank you for your request regarding the Estuary film project, for an online advertisement on YouTube and Instagram in Canada for six months, using a 21-second excerpt of \"Outside Song\" by Outside Artist.\n\nWe were unable to locate this track in our current catalogue, so we need a little more information before we can review it further. Could you please confirm which specific recording you intend to use (for example, the original release or another version), and share a link to that recording if you have one? This will help us verify availability.\n\nThank you for your help. We look forward to hearing from you.\n\nBest regards,\nSyncFlow Licensing Team",
+      "result": {
+        "ok": true,
+        "catalogue_policy": "current-catalogue-v1",
+        "run_id": "Q04-external-version-gap",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [
+          "missing-recording_version"
+        ],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+            "mode": "live",
+            "run_id": "Q04-external-version-gap",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q04-external-version-gap",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "proposal-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "June Avery",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "client_contact: June Avery."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Estuary film",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "project: Estuary film."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Outside Artist",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "artist: Outside Artist."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Outside Song",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "track_title: Outside Song."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "online advertisement",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "intended_use: online advertisement."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "YouTube",
+                    "Instagram"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "platforms: YouTube and Instagram."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Canada"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "territories: Canada."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "six months",
+                    "duration_text": "six months",
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "campaign_term: six months."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "21 seconds",
+                    "seconds": 21
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "music_length: 21 seconds."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "CAD 4600 for both rights",
+                    "amount": "4600",
+                    "currency": "CAD",
+                    "scope": "both"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "budget: CAD 4600 for both rights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+                    "date": "2026-12-17",
+                    "time": "16:00",
+                    "timezone": "America/Toronto"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "response_deadline: 2026-12-17 at 16:00 America/Toronto."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "policy_version": "review-v2",
+            "mode": "rules",
+            "catalogue_assessment": {
+              "status": "not_found",
+              "artist": "Outside Artist",
+              "title": "Outside Song",
+              "catalogueWide": false,
+              "sourceIdentified": false,
+              "message": "No match found in SyncFlow’s current catalogue for “Outside Artist · Outside Song”. Catalogue absence does not establish whether the music can be licensed.",
+              "question": "Please confirm the recording version. A recording link would help us verify availability.",
+              "client_question": "Please confirm the recording version. A recording link would help us verify availability."
+            },
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [
+              "missing-recording_version"
+            ],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q04-external-version-gap",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "missing-recording_version",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "recording_version"
+                  ],
+                  "question": "Please confirm recording version.",
+                  "evidence": []
+                },
+                {
+                  "issue_id": "catalogue-coverage-check",
+                  "type": "ambiguous",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "artist",
+                    "track_title",
+                    "recording_version"
+                  ],
+                  "question": "No match found in SyncFlow’s current catalogue for “Outside Artist · Outside Song”. Catalogue absence does not establish whether the music can be licensed. Please confirm the recording version. A recording link would help us verify availability.",
+                  "evidence": []
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "fail"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "unknown"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q04-external-version-gap",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q04-external-version-gap",
+              "base_record_version": 0,
+              "subject": "Clarification needed: recording version for Outside Song",
+              "body": "Hello June,\n\nWe could not find a match for “Outside Artist” in our current SyncFlow catalogue. We need to verify availability before progressing.\n\nThank you for your request regarding the Estuary film project, for an online advertisement on YouTube and Instagram in Canada for six months, using a 21-second excerpt of \"Outside Song\" by Outside Artist.\n\nWe were unable to locate this track in our current catalogue, so we need a little more information before we can review it further. Could you please confirm which specific recording you intend to use (for example, the original release or another version), and share a link to that recording if you have one? This will help us verify availability.\n\nThank you for your help. We look forward to hearing from you.\n\nBest regards,\nSyncFlow Licensing Team",
+              "addressed_issue_ids": [
+                "catalogue-coverage-check"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "Q06-scope-only-with-history",
+      "checks": {
+        "workflow_ok": true,
+        "activation_validation": true,
+        "client_questions_match": true,
+        "draft_skip_correct": true
+      },
+      "client_signatures": [
+        "ambiguous:budget"
+      ],
+      "expected_client_signatures": [
+        "ambiguous:budget"
+      ],
+      "body": "Hello June,\n\nThank you for your request regarding \"Northern Lights\" by Maya Rivers for the Estuary film. We have the project details, including the original recording, online advertisement use, YouTube and Instagram, Canada, a six-month campaign term, and a 21-second music length.\n\nTo move forward, could you please confirm which rights the budget of CAD 4600 should cover: master recording, publishing, or both?\n\nThank you,\nSyncFlow Licensing Coordination",
+      "result": {
+        "ok": true,
+        "catalogue_policy": "current-catalogue-v1",
+        "run_id": "Q06-scope-only-with-history",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "status": "draft_ready_for_review",
+        "coordinator_review_issue_ids": [
+          "prior-budget"
+        ],
+        "manual_review_required": true,
+        "saved": false,
+        "sent": false,
+        "stages": {
+          "intake": {
+            "ok": true,
+            "stage": "intake",
+            "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+            "mode": "live",
+            "run_id": "Q06-scope-only-with-history",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q06-scope-only-with-history",
+              "base_record_version": 0,
+              "proposed_changes": [
+                {
+                  "proposal_id": "proposal-client_contact",
+                  "field_key": "client_contact",
+                  "previous_value": null,
+                  "proposed_value": "June Avery",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "client_contact: June Avery."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-project",
+                  "field_key": "project",
+                  "previous_value": null,
+                  "proposed_value": "Estuary film",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "project: Estuary film."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-artist",
+                  "field_key": "artist",
+                  "previous_value": null,
+                  "proposed_value": "Maya Rivers",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "artist: Maya Rivers."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-track_title",
+                  "field_key": "track_title",
+                  "previous_value": null,
+                  "proposed_value": "Northern Lights",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "track_title: Northern Lights."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-recording_version",
+                  "field_key": "recording_version",
+                  "previous_value": null,
+                  "proposed_value": "original recording",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "recording_version: original recording."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-intended_use",
+                  "field_key": "intended_use",
+                  "previous_value": null,
+                  "proposed_value": "online advertisement",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "intended_use: online advertisement."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-platforms",
+                  "field_key": "platforms",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "YouTube",
+                    "Instagram"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "platforms: YouTube and Instagram."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-territories",
+                  "field_key": "territories",
+                  "previous_value": null,
+                  "proposed_value": [
+                    "Canada"
+                  ],
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "territories: Canada."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-campaign_term",
+                  "field_key": "campaign_term",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "six months",
+                    "duration_text": null,
+                    "start_date": null,
+                    "end_date": null
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "campaign_term: six months."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-music_length",
+                  "field_key": "music_length",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "21 seconds",
+                    "seconds": 21
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "music_length: 21 seconds."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-budget",
+                  "field_key": "budget",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "CAD 4600",
+                    "amount": "4600",
+                    "currency": "CAD",
+                    "scope": "unspecified"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "budget: CAD 4600, rights scope undecided."
+                    }
+                  ]
+                },
+                {
+                  "proposal_id": "proposal-response_deadline",
+                  "field_key": "response_deadline",
+                  "previous_value": null,
+                  "proposed_value": {
+                    "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+                    "date": "2026-12-17",
+                    "time": "16:00",
+                    "timezone": "America/Toronto"
+                  },
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "response_deadline: 2026-12-17 at 16:00 America/Toronto."
+                    }
+                  ]
+                }
+              ],
+              "ambiguities": []
+            }
+          },
+          "review": {
+            "ok": true,
+            "stage": "review",
+            "policy_version": "review-v2",
+            "mode": "rules",
+            "catalogue_assessment": {
+              "status": "candidate",
+              "artist": "Maya Rivers",
+              "title": "Northern Lights",
+              "catalogueWide": false,
+              "sourceIdentified": false,
+              "message": "Catalogue candidates found. Confirm the exact recording and verify rights separately.",
+              "question": null
+            },
+            "freshness": "not_checked",
+            "coordinator_issue_ids": [
+              "prior-budget"
+            ],
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q06-scope-only-with-history",
+              "base_record_version": 0,
+              "issues": [
+                {
+                  "issue_id": "prior-budget",
+                  "type": "missing",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "budget"
+                  ],
+                  "question": "Please supply budget.",
+                  "evidence": []
+                },
+                {
+                  "issue_id": "ambiguous-budget",
+                  "type": "ambiguous",
+                  "severity": "blocking",
+                  "field_keys": [
+                    "budget"
+                  ],
+                  "question": "Please confirm the budget rights scope (master, publishing or both).",
+                  "evidence": [
+                    {
+                      "message_id": "email",
+                      "exact_quote": "budget: CAD 4600, rights scope undecided."
+                    }
+                  ]
+                }
+              ],
+              "checks": [
+                {
+                  "rule_id": "required:client_contact",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:project",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:artist",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:track_title",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:recording_version",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:intended_use",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:platforms",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:territories",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:campaign_term",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:music_length",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:budget",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "required:response_deadline",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "deadline_unambiguous",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "single_recording",
+                  "result": "unknown"
+                },
+                {
+                  "rule_id": "evidence_valid",
+                  "result": "pass"
+                },
+                {
+                  "rule_id": "no_conflicting_scope",
+                  "result": "fail"
+                }
+              ]
+            }
+          },
+          "follow_up": {
+            "ok": true,
+            "stage": "follow_up",
+            "provider": "anthropic:claude-haiku-5-5",
+            "mode": "live",
+            "run_id": "Q06-scope-only-with-history",
+            "base_record_version": 0,
+            "freshness": "not_checked",
+            "output": {
+              "schema_version": "1.0",
+              "run_id": "Q06-scope-only-with-history",
+              "base_record_version": 0,
+              "subject": "Clarification needed on budget rights scope - Northern Lights",
+              "body": "Hello June,\n\nThank you for your request regarding \"Northern Lights\" by Maya Rivers for the Estuary film. We have the project details, including the original recording, online advertisement use, YouTube and Instagram, Canada, a six-month campaign term, and a 21-second music length.\n\nTo move forward, could you please confirm which rights the budget of CAD 4600 should cover: master recording, publishing, or both?\n\nThank you,\nSyncFlow Licensing Coordination",
+              "addressed_issue_ids": [
+                "ambiguous-budget"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "summary": {
+    "cases": 4,
+    "passed": 4
+  }
+}

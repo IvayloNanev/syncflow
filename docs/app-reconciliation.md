@@ -1,3 +1,5 @@
+> Historical/contract reference: per-field confirmation and local-browser descriptions below are superseded for the current web UI by [current user stories](user-stories.md) and [architecture](architecture.md). Dated evaluation criteria remain unchanged for reproducible scoring.
+
 # Reconcile developer application and main agent work
 
 > Updated decision: the local browser now uses RequestStore as its sole writer in `.syncflow-data/browser-requests.sqlite`. This is a development-only single-operator integration, not the Prisma migration proposed below. Prisma remains a separate unused scaffold. See README “Saved browser requests” and docs/saved-browser-requests.md for current behavior. The remainder is the historical reconciliation report.

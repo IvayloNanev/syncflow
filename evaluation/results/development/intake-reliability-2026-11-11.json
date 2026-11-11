@@ -1,0 +1,411 @@
+{
+  "kind": "synthetic-development-verification-not-independent-acceptance",
+  "model": "claude-haiku-5-5",
+  "transport": "strict-tool-v1",
+  "sha256": "d51c90d034bd5bb1baaab744700c11c85f5cedd60b2c722bcbb5efdbe39b5f4a",
+  "started_at": "2026-11-11T16:05:32.013Z",
+  "max_model_calls": 6,
+  "cases": [
+    {
+      "id": "R01-decimal-budget",
+      "score": {
+        "ok": false,
+        "expected": 12,
+        "proposed": 0,
+        "matched": 0,
+        "mismatched": [
+          {
+            "field": "client_contact",
+            "expected": "Nia Brooks",
+            "actual": null
+          },
+          {
+            "field": "project",
+            "expected": "Harbor portrait",
+            "actual": null
+          },
+          {
+            "field": "artist",
+            "expected": "Lumen Vale",
+            "actual": null
+          },
+          {
+            "field": "track_title",
+            "expected": "Paper Sky",
+            "actual": null
+          },
+          {
+            "field": "recording_version",
+            "expected": "instrumental",
+            "actual": null
+          },
+          {
+            "field": "intended_use",
+            "expected": "podcast trailer",
+            "actual": null
+          },
+          {
+            "field": "platforms",
+            "expected": [
+              "Spotify",
+              "Apple Podcasts"
+            ],
+            "actual": null
+          },
+          {
+            "field": "territories",
+            "expected": [
+              "Sweden",
+              "Norway"
+            ],
+            "actual": null
+          },
+          {
+            "field": "campaign_term",
+            "expected": {
+              "supplied_text": "six weeks",
+              "duration_text": "six weeks",
+              "start_date": null,
+              "end_date": null
+            },
+            "actual": null
+          },
+          {
+            "field": "music_length",
+            "expected": {
+              "supplied_text": "17.5 seconds",
+              "seconds": 17.5
+            },
+            "actual": null
+          },
+          {
+            "field": "budget",
+            "expected": {
+              "supplied_text": "budget",
+              "amount": "2750.50",
+              "currency": "EUR",
+              "scope": "publishing"
+            },
+            "actual": null
+          },
+          {
+            "field": "response_deadline",
+            "expected": {
+              "supplied_text": "deadline",
+              "date": "2026-12-08",
+              "time": "14:15",
+              "timezone": "Europe/Paris"
+            },
+            "actual": null
+          }
+        ],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": false,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5",
+        "mode": "live",
+        "run_id": "R01",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "error": {
+          "code": "PROVIDER_REQUEST_REJECTED",
+          "message": "Claude rejected the request. Check model access and provider configuration.",
+          "retryable": false,
+          "manual_review_required": true
+        }
+      }
+    },
+    {
+      "id": "R02-partial-components",
+      "score": {
+        "ok": false,
+        "expected": 12,
+        "proposed": 0,
+        "matched": 0,
+        "mismatched": [
+          {
+            "field": "client_contact",
+            "expected": "Tomas Bell",
+            "actual": null
+          },
+          {
+            "field": "project",
+            "expected": "Quartz launch",
+            "actual": null
+          },
+          {
+            "field": "artist",
+            "expected": "Cora Elm",
+            "actual": null
+          },
+          {
+            "field": "track_title",
+            "expected": "Small Hours",
+            "actual": null
+          },
+          {
+            "field": "recording_version",
+            "expected": "original recording",
+            "actual": null
+          },
+          {
+            "field": "intended_use",
+            "expected": "online advertisement",
+            "actual": null
+          },
+          {
+            "field": "platforms",
+            "expected": [
+              "TikTok"
+            ],
+            "actual": null
+          },
+          {
+            "field": "territories",
+            "expected": [
+              "Chile"
+            ],
+            "actual": null
+          },
+          {
+            "field": "campaign_term",
+            "expected": {
+              "supplied_text": "two months",
+              "duration_text": "two months",
+              "start_date": null,
+              "end_date": null
+            },
+            "actual": null
+          },
+          {
+            "field": "music_length",
+            "expected": {
+              "supplied_text": "12 seconds",
+              "seconds": 12
+            },
+            "actual": null
+          },
+          {
+            "field": "budget",
+            "expected": {
+              "supplied_text": "budget",
+              "amount": "1800",
+              "currency": null,
+              "scope": "unspecified"
+            },
+            "actual": null
+          },
+          {
+            "field": "response_deadline",
+            "expected": {
+              "supplied_text": "deadline",
+              "date": null,
+              "time": null,
+              "timezone": null
+            },
+            "actual": null
+          }
+        ],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": false,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5",
+        "mode": "live",
+        "run_id": "R02",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "error": {
+          "code": "PROVIDER_REQUEST_REJECTED",
+          "message": "Claude rejected the request. Check model access and provider configuration.",
+          "retryable": false,
+          "manual_review_required": true
+        }
+      }
+    },
+    {
+      "id": "R03-corrected-reply",
+      "score": {
+        "ok": false,
+        "expected": 1,
+        "proposed": 0,
+        "matched": 0,
+        "mismatched": [
+          {
+            "field": "territories",
+            "expected": [
+              "Kenya"
+            ],
+            "actual": null
+          }
+        ],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": false,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5",
+        "mode": "live",
+        "run_id": "R03",
+        "base_record_version": 4,
+        "freshness": "not_checked",
+        "error": {
+          "code": "PROVIDER_REQUEST_REJECTED",
+          "message": "Claude rejected the request. Check model access and provider configuration.",
+          "retryable": false,
+          "manual_review_required": true
+        }
+      }
+    },
+    {
+      "id": "R04-unresolved-conflict",
+      "score": {
+        "ok": false,
+        "expected": 2,
+        "proposed": 0,
+        "matched": 0,
+        "mismatched": [
+          {
+            "field": "client_contact",
+            "expected": "Iris Shaw",
+            "actual": null
+          },
+          {
+            "field": "project",
+            "expected": "Meridian",
+            "actual": null
+          }
+        ],
+        "extra": [],
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": false,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5",
+        "mode": "live",
+        "run_id": "R04",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "error": {
+          "code": "PROVIDER_REQUEST_REJECTED",
+          "message": "Claude rejected the request. Check model access and provider configuration.",
+          "retryable": false,
+          "manual_review_required": true
+        }
+      }
+    },
+    {
+      "id": "R05-signature-and-injection",
+      "score": {
+        "ok": false,
+        "expected": 5,
+        "proposed": 0,
+        "matched": 0,
+        "mismatched": [
+          {
+            "field": "client_contact",
+            "expected": "Sasha Quinn",
+            "actual": null
+          },
+          {
+            "field": "project",
+            "expected": "Kite Film",
+            "actual": null
+          },
+          {
+            "field": "artist",
+            "expected": "Rowan Lake",
+            "actual": null
+          },
+          {
+            "field": "track_title",
+            "expected": "Amber Echo",
+            "actual": null
+          },
+          {
+            "field": "recording_version",
+            "expected": "original recording",
+            "actual": null
+          }
+        ],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": false,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5",
+        "mode": "live",
+        "run_id": "R05",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "error": {
+          "code": "PROVIDER_REQUEST_REJECTED",
+          "message": "Claude rejected the request. Check model access and provider configuration.",
+          "retryable": false,
+          "manual_review_required": true
+        }
+      }
+    },
+    {
+      "id": "R06-separate-recordings",
+      "score": {
+        "ok": false,
+        "expected": 2,
+        "proposed": 0,
+        "matched": 0,
+        "mismatched": [
+          {
+            "field": "client_contact",
+            "expected": "Theo Moss",
+            "actual": null
+          },
+          {
+            "field": "project",
+            "expected": "Atlas documentary",
+            "actual": null
+          }
+        ],
+        "extra": [],
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": false,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5",
+        "mode": "live",
+        "run_id": "R06",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "error": {
+          "code": "PROVIDER_REQUEST_REJECTED",
+          "message": "Claude rejected the request. Check model access and provider configuration.",
+          "retryable": false,
+          "manual_review_required": true
+        }
+      }
+    }
+  ],
+  "summary": {
+    "cases": 6,
+    "validated": 0,
+    "matched": 0,
+    "expected": 34,
+    "proposed": 0,
+    "precision": null,
+    "recall": 0,
+    "all_safety_checks_passed": false
+  },
+  "finished_at": "2026-11-11T16:05:33.363Z"
+}

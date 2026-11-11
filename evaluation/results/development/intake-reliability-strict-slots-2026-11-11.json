@@ -1,0 +1,134 @@
+{
+  "kind": "synthetic-development-verification-not-independent-acceptance",
+  "model": "claude-haiku-5-5",
+  "transport": "strict-slots-v1",
+  "sha256": "d51c90d034bd5bb1baaab744700c11c85f5cedd60b2c722bcbb5efdbe39b5f4a",
+  "started_at": "2026-11-11T16:08:17.977Z",
+  "max_model_calls": 6,
+  "cases": [
+    {
+      "id": "R01-decimal-budget",
+      "score": {
+        "ok": false,
+        "expected": 12,
+        "proposed": 0,
+        "matched": 0,
+        "mismatched": [
+          {
+            "field": "client_contact",
+            "expected": "Nia Brooks",
+            "actual": null
+          },
+          {
+            "field": "project",
+            "expected": "Harbor portrait",
+            "actual": null
+          },
+          {
+            "field": "artist",
+            "expected": "Lumen Vale",
+            "actual": null
+          },
+          {
+            "field": "track_title",
+            "expected": "Paper Sky",
+            "actual": null
+          },
+          {
+            "field": "recording_version",
+            "expected": "instrumental",
+            "actual": null
+          },
+          {
+            "field": "intended_use",
+            "expected": "podcast trailer",
+            "actual": null
+          },
+          {
+            "field": "platforms",
+            "expected": [
+              "Spotify",
+              "Apple Podcasts"
+            ],
+            "actual": null
+          },
+          {
+            "field": "territories",
+            "expected": [
+              "Sweden",
+              "Norway"
+            ],
+            "actual": null
+          },
+          {
+            "field": "campaign_term",
+            "expected": {
+              "supplied_text": "six weeks",
+              "duration_text": "six weeks",
+              "start_date": null,
+              "end_date": null
+            },
+            "actual": null
+          },
+          {
+            "field": "music_length",
+            "expected": {
+              "supplied_text": "17.5 seconds",
+              "seconds": 17.5
+            },
+            "actual": null
+          },
+          {
+            "field": "budget",
+            "expected": {
+              "supplied_text": "budget",
+              "amount": "2750.50",
+              "currency": "EUR",
+              "scope": "publishing"
+            },
+            "actual": null
+          },
+          {
+            "field": "response_deadline",
+            "expected": {
+              "supplied_text": "deadline",
+              "date": "2026-12-08",
+              "time": "14:15",
+              "timezone": "Europe/Paris"
+            },
+            "actual": null
+          }
+        ],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": false,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-slots-v1",
+        "mode": "live",
+        "run_id": "R01",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "error": {
+          "code": "PROVIDER_REQUEST_REJECTED",
+          "message": "Claude rejected the request. Check model access and provider configuration.",
+          "retryable": false,
+          "manual_review_required": true
+        }
+      }
+    }
+  ],
+  "summary": {
+    "cases": 6,
+    "validated": 0,
+    "matched": 0,
+    "expected": 12,
+    "proposed": 0,
+    "precision": null,
+    "recall": 0,
+    "all_safety_checks_passed": true
+  },
+  "finished_at": "2026-11-11T16:08:18.378Z"
+}

@@ -1,3 +1,5 @@
+> Historical/contract reference: per-field confirmation and local-browser descriptions below are superseded for the current web UI by [current user stories](user-stories.md) and [architecture](architecture.md). Dated evaluation criteria remain unchanged for reproducible scoring.
+
 # Intake checklist and frozen evaluation cases
 
 Issue #3 supplies checklist `intake-v1` and 20 authored expected-answer cases. This is specification and corpus validation, not a live-agent evaluation. Mosiah must review the expected answers before the pair accepts this baseline.

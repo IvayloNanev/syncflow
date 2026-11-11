@@ -1,0 +1,33 @@
+// New synthetic key, authored before live evaluation. Not derived from v1 cases.
+import {writeFileSync} from 'node:fs';import {createHash} from 'node:crypto';
+const base=(id,text)=>({schema_version:'1.0',run_id:id,request_id:id,base_record_version:0,checklist_version:'intake-v1',coordinator_timezone:'Europe/London',messages:[{message_id:'email',kind:'initial',text,supplied_message_date:'2026-11-11'}],confirmed_fields:[],unresolved_issues:[]});
+const structured=(supplied_text,rest)=>({supplied_text,...rest});
+const term=duration_text=>structured(duration_text,{duration_text,start_date:null,end_date:null});
+const len=seconds=>structured(`${seconds} seconds`,{seconds});
+const budget=(amount,currency,scope)=>structured('budget',{amount,currency,scope});
+const deadline=(date,time,timezone)=>structured('deadline',{date,time,timezone});
+const rows=[
+ ['V201','Ada Wells','Beacon stories','Mira Cove','Still Water','original recording','television advertisement',['linear TV'],['Ireland'],'four months',24,'3600','EUR','both','2026-12-14','16:00','Europe/Dublin'],
+ ['V202','Hugo Lane','Cobalt series','Owen Birch','Open Door','instrumental','game trailer',['Steam','YouTube'],['Japan','South Korea'],'nine weeks',38,'6250.75','USD','master','2027-01-18','09:20','Asia/Tokyo'],
+ ['V203','Leah Reed','Stone exhibition','Fern Atlas','Soft Motion','acoustic version','museum installation',['museum screens'],['Austria'],'one year',90,'7400','EUR','publishing','2026-12-22','11:45','Europe/Vienna'],
+ ['V204','Arun Blake','Orbit brand film','Ivy West','Long Road','original recording','social advertisement',['Instagram','Snapchat'],['Australia','New Zealand'],'ten days',6.5,'980','AUD','both','2026-11-30','17:15','Australia/Sydney'],
+ ['V205','Elise Snow','Saffron show','Ash Linden','Clear Signal','radio edit','radio advertisement',['FM radio'],['Mexico'],'three weeks',15,'21000','MXN','master','2026-12-03','12:10','America/Mexico_City'],
+ ['V206','Samir Hart','Tidal feature','Vera Pines','Silver Kite','original recording','documentary film',['cinema','festival screenings'],['United Kingdom'],'eighteen months',48,'8200','GBP','both','2027-02-09','10:30','Europe/London'],
+ ['V207','Noa Green','Prism seminar','Rhea Frost','Quiet City','instrumental','training video',['internal intranet'],['Germany'],'eight months',75,'4150','EUR','publishing','2026-12-16','13:05','Europe/Berlin'],
+ ['V208','Milo Kerr','Brook podcast','Sage Willow','Late Train','original recording','podcast advertisement',['Spotify','Apple Podcasts'],['Brazil'],'five weeks',20,'5600','BRL','both','2027-01-07','15:40','America/Sao_Paulo'],
+];
+const cases=rows.map((r,index)=>{
+ const [id,contact,project,artist,title,version,use,platforms,territories,duration,seconds,amount,currency,scope,date,time,timezone]=r;
+ const scopeText={both:'both master and publishing rights',master:'master recording rights only',publishing:'publishing rights only'}[scope];
+ const text=index%2===0?`Hello,\nContact: ${contact}. Project: ${project}.\nWe want to license "${title}" by ${artist}, ${version}. Intended use: ${use}. Platforms: ${platforms.join(' and ')}. Territories: ${territories.join(' and ')}.\nCampaign duration: ${duration}. Music length: ${seconds} seconds. Budget: ${currency} ${amount} for ${scopeText}.\nResponse deadline: ${date} at ${time} ${timezone}. Thank you.`:`Music licensing brief\nClient contact: ${contact}\nProject: ${project}\nArtist: ${artist}\nTrack title: ${title}\nRecording version: ${version}\nIntended use: ${use}\nPlatforms: ${platforms.join(', ')}\nTerritories: ${territories.join(', ')}\nCampaign duration: ${duration}\nMusic length: ${seconds} seconds\nBudget: ${currency} ${amount} for ${scopeText}\nResponse deadline: ${date} at ${time} ${timezone}`;
+ return {id,context:base(id,text),expected:{client_contact:contact,project,artist,track_title:title,recording_version:version,intended_use:use,platforms,territories,campaign_term:term(duration),music_length:len(seconds),budget:budget(amount,currency,scope),response_deadline:deadline(date,time,timezone)}};
+});
+cases.push({id:'V209',context:base('V209','Contact: Mira Day. Project: Aspen teaser. Artist: Lark Field. Track title: Velvet Hill. Recording version: original recording. Intended use: online advertisement. Platforms: Pinterest. Territories: Singapore. Campaign duration: three months. Music length: 11 seconds. Budget: SGD 1900, rights scope unspecified. Response deadline: 2026-12-12; time and timezone are not supplied.'),expected:{client_contact:'Mira Day',project:'Aspen teaser',artist:'Lark Field',track_title:'Velvet Hill',recording_version:'original recording',intended_use:'online advertisement',platforms:['Pinterest'],territories:['Singapore'],campaign_term:term('three months'),music_length:len(11),budget:budget('1900','SGD','unspecified'),response_deadline:deadline('2026-12-12',null,null)}});
+cases.push({id:'V210',context:base('V210','Contact: Evan Moon. Project: Clover piece. Artist: Iris Moss. Track title: New Ground. Recording version: original recording. Intended use: brand video. Territories: Belgium. Campaign duration: seven weeks. Music length: 19 seconds. Budget and response deadline are not decided. Distribution is online, exact platforms not decided.'),expected:{client_contact:'Evan Moon',project:'Clover piece',artist:'Iris Moss',track_title:'New Ground',recording_version:'original recording',intended_use:'brand video',territories:['Belgium'],campaign_term:term('seven weeks'),music_length:len(19)},forbidden:['platforms','budget','response_deadline']});
+for(const [id,oldTerritory,newTerritory,amount] of [['V211','Greece','Italy','4100'],['V212','Vietnam','Thailand','5300']]){
+ const context=base(id,`Territories: ${oldTerritory}. Budget: EUR 3000 for both rights.`);context.base_record_version=2;
+ context.confirmed_fields=[{field_key:'territories',state:'confirmed',value:[oldTerritory],evidence:[{message_id:'email',exact_quote:oldTerritory}],confirmed_by:'synthetic-reviewer',confirmed_at:'2026-11-10T12:00:00Z',not_applicable_reason:null}];
+ context.messages.push({message_id:'reply',kind:'reply',text:`Correction: territories are ${newTerritory}, replacing ${oldTerritory}. Updated budget: EUR ${amount} for both master and publishing rights.`,supplied_message_date:'2026-11-11'});
+ cases.push({id,context,expected:{territories:[newTerritory],budget:budget(amount,'EUR','both')}});
+}
+const bytes=JSON.stringify(cases,null,2)+'\n';writeFileSync(new URL('./cases.json',import.meta.url),bytes);writeFileSync(new URL('./cases.sha256',import.meta.url),createHash('sha256').update(bytes).digest('hex')+'\n');

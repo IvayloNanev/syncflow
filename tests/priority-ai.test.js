@@ -52,3 +52,6 @@ test('server enforces deadline groups even when AI interleaves them, preserving 
  const report=await draftPriorityReport({...args,cases:all,review,fetchImpl:provider({items:proposed})});
  assert.deepEqual(report.items.map(i=>i.request_id),['late-b','late-a','today-b','today-a','far','soon','undated']);
 });
+test('workspace usage cap is surfaced without the automatic retry used for transient errors',async()=>{
+ let calls=0;await assert.rejects(draftPriorityReport({...args,fetchImpl:async()=>{calls++;return new Response(null,{status:429,headers:{'x-syncflow-usage-limit':'reached'}});}}),/AI_USAGE_LIMIT/);assert.equal(calls,1);
+});

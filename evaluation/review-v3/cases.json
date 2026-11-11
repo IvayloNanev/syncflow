@@ -1,0 +1,3249 @@
+[
+  {
+    "id": "Q01-complete",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q01-complete",
+      "request_id": "Q01-complete",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q01-complete",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": []
+  },
+  {
+    "id": "Q02-date-only",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q02-date-only",
+      "request_id": "Q02-date-only",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q02-date-only",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17",
+            "date": "2026-12-17",
+            "time": null,
+            "timezone": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "ambiguous",
+        "field_keys": [
+          "response_deadline"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q03-known-external-identity",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q03-known-external-identity",
+      "request_id": "Q03-known-external-identity",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Outside Artist.\ntrack_title: Outside Song.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q03-known-external-identity",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Outside Artist",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Outside Artist"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Outside Song",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Outside Song"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "ambiguous",
+        "field_keys": [
+          "artist",
+          "track_title",
+          "recording_version"
+        ],
+        "audience": "coordinator"
+      }
+    ]
+  },
+  {
+    "id": "Q04-external-version-gap",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q04-external-version-gap",
+      "request_id": "Q04-external-version-gap",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Outside Artist.\ntrack_title: Outside Song.\n\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q04-external-version-gap",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Outside Artist",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Outside Artist"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Outside Song",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Outside Song"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "missing",
+        "field_keys": [
+          "recording_version"
+        ],
+        "audience": "coordinator"
+      },
+      {
+        "type": "ambiguous",
+        "field_keys": [
+          "artist",
+          "track_title",
+          "recording_version"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q05-no-budget",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q05-no-budget",
+      "request_id": "Q05-no-budget",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\n\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q05-no-budget",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "missing",
+        "field_keys": [
+          "budget"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q06-scope-only-with-history",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q06-scope-only-with-history",
+      "request_id": "Q06-scope-only-with-history",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600, rights scope undecided.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": [
+        {
+          "issue_id": "prior-budget",
+          "type": "missing",
+          "severity": "blocking",
+          "field_keys": [
+            "budget"
+          ],
+          "question": "Please supply budget.",
+          "evidence": []
+        }
+      ]
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q06-scope-only-with-history",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600, rights scope undecided",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "unspecified"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600, rights scope undecided"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "missing",
+        "field_keys": [
+          "budget"
+        ],
+        "audience": "coordinator"
+      },
+      {
+        "type": "ambiguous",
+        "field_keys": [
+          "budget"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q07-source-duration",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q07-source-duration",
+      "request_id": "Q07-source-duration",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q07-source-duration",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": null,
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": []
+  },
+  {
+    "id": "Q08-uncertain-duration",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q08-uncertain-duration",
+      "request_id": "Q08-uncertain-duration",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months or one year.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q08-uncertain-duration",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months or one year",
+            "duration_text": null,
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months or one year"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "ambiguous",
+        "field_keys": [
+          "campaign_term"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q09-no-platform",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q09-no-platform",
+      "request_id": "Q09-no-platform",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\n\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q09-no-platform",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "missing",
+        "field_keys": [
+          "platforms"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q10-generic-platform",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q10-generic-platform",
+      "request_id": "Q10-generic-platform",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: online.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q10-generic-platform",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "online"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "ambiguous",
+        "field_keys": [
+          "platforms"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q11-territory-conflict",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q11-territory-conflict",
+      "request_id": "Q11-territory-conflict",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\n\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.\nTerritory: Iceland only. Territory: Estonia only.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q11-territory-conflict",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": [
+        {
+          "issue_type": "conflict",
+          "field_keys": [
+            "territories"
+          ],
+          "reason": "Two exclusive scopes without correction",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Territory: Iceland only. Territory: Estonia only."
+            }
+          ]
+        }
+      ]
+    },
+    "expected": [
+      {
+        "type": "conflict",
+        "field_keys": [
+          "territories"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q12-source-conflict-with-history",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q12-source-conflict-with-history",
+      "request_id": "Q12-source-conflict-with-history",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\n\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.\nTerritory: Iceland only. Territory: Estonia only.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": [
+        {
+          "issue_id": "prior-territory",
+          "type": "missing",
+          "severity": "blocking",
+          "field_keys": [
+            "territories"
+          ],
+          "question": "Please supply territories.",
+          "evidence": []
+        }
+      ]
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q12-source-conflict-with-history",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "missing",
+        "field_keys": [
+          "territories"
+        ],
+        "audience": "coordinator"
+      },
+      {
+        "type": "conflict",
+        "field_keys": [
+          "territories"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q13-split-recordings",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q13-split-recordings",
+      "request_id": "Q13-split-recordings",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\n\n\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.\nWe need both Marble Road by Rowan Elm and Silver Steps by Nina Ash.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q13-split-recordings",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": [
+        {
+          "issue_type": "split_request",
+          "field_keys": [
+            "artist",
+            "track_title"
+          ],
+          "reason": "Two different recordings require separate cases",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "We need both Marble Road by Rowan Elm and Silver Steps by Nina Ash."
+            }
+          ]
+        }
+      ]
+    },
+    "expected": [
+      {
+        "type": "split_request",
+        "field_keys": [
+          "artist",
+          "track_title"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q14-no-music-length",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q14-no-music-length",
+      "request_id": "Q14-no-music-length",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\n\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q14-no-music-length",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "missing",
+        "field_keys": [
+          "music_length"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q15-unmeasured-music-length",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q15-unmeasured-music-length",
+      "request_id": "Q15-unmeasured-music-length",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: a short excerpt.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00 America/Toronto.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": []
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q15-unmeasured-music-length",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "a short excerpt",
+            "seconds": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "a short excerpt"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00 America/Toronto",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": "America/Toronto"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00 America/Toronto"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "ambiguous",
+        "field_keys": [
+          "music_length"
+        ],
+        "audience": "client"
+      }
+    ]
+  },
+  {
+    "id": "Q16-partial-deadline-with-history",
+    "context": {
+      "schema_version": "1.0",
+      "run_id": "Q16-partial-deadline-with-history",
+      "request_id": "Q16-partial-deadline-with-history",
+      "base_record_version": 0,
+      "checklist_version": "intake-v1",
+      "coordinator_timezone": "America/Toronto",
+      "messages": [
+        {
+          "message_id": "email",
+          "kind": "initial",
+          "text": "client_contact: June Avery.\nproject: Estuary film.\nartist: Maya Rivers.\ntrack_title: Northern Lights.\nrecording_version: original recording.\nintended_use: online advertisement.\nplatforms: YouTube and Instagram.\nterritories: Canada.\ncampaign_term: six months.\nmusic_length: 21 seconds.\nbudget: CAD 4600 for both rights.\nresponse_deadline: 2026-12-17 at 16:00.",
+          "supplied_message_date": "2026-11-11"
+        }
+      ],
+      "confirmed_fields": [],
+      "unresolved_issues": [
+        {
+          "issue_id": "prior-deadline",
+          "type": "missing",
+          "severity": "blocking",
+          "field_keys": [
+            "response_deadline"
+          ],
+          "question": "Please supply response_deadline.",
+          "evidence": []
+        }
+      ]
+    },
+    "intake": {
+      "schema_version": "1.0",
+      "run_id": "Q16-partial-deadline-with-history",
+      "base_record_version": 0,
+      "proposed_changes": [
+        {
+          "proposal_id": "p-client_contact",
+          "field_key": "client_contact",
+          "previous_value": null,
+          "proposed_value": "June Avery",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "June Avery"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-project",
+          "field_key": "project",
+          "previous_value": null,
+          "proposed_value": "Estuary film",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Estuary film"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-artist",
+          "field_key": "artist",
+          "previous_value": null,
+          "proposed_value": "Maya Rivers",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Maya Rivers"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-track_title",
+          "field_key": "track_title",
+          "previous_value": null,
+          "proposed_value": "Northern Lights",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Northern Lights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-recording_version",
+          "field_key": "recording_version",
+          "previous_value": null,
+          "proposed_value": "original recording",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "original recording"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-intended_use",
+          "field_key": "intended_use",
+          "previous_value": null,
+          "proposed_value": "online advertisement",
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "online advertisement"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-platforms",
+          "field_key": "platforms",
+          "previous_value": null,
+          "proposed_value": [
+            "YouTube",
+            "Instagram"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "YouTube and Instagram"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-territories",
+          "field_key": "territories",
+          "previous_value": null,
+          "proposed_value": [
+            "Canada"
+          ],
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "Canada"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-campaign_term",
+          "field_key": "campaign_term",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "six months",
+            "duration_text": "six months",
+            "start_date": null,
+            "end_date": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "six months"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-music_length",
+          "field_key": "music_length",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "21 seconds",
+            "seconds": 21
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "21 seconds"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-budget",
+          "field_key": "budget",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "CAD 4600 for both rights",
+            "amount": "4600",
+            "currency": "CAD",
+            "scope": "both"
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "CAD 4600 for both rights"
+            }
+          ]
+        },
+        {
+          "proposal_id": "p-response_deadline",
+          "field_key": "response_deadline",
+          "previous_value": null,
+          "proposed_value": {
+            "supplied_text": "2026-12-17 at 16:00",
+            "date": "2026-12-17",
+            "time": "16:00",
+            "timezone": null
+          },
+          "evidence": [
+            {
+              "message_id": "email",
+              "exact_quote": "2026-12-17 at 16:00"
+            }
+          ]
+        }
+      ],
+      "ambiguities": []
+    },
+    "expected": [
+      {
+        "type": "missing",
+        "field_keys": [
+          "response_deadline"
+        ],
+        "audience": "coordinator"
+      },
+      {
+        "type": "ambiguous",
+        "field_keys": [
+          "response_deadline"
+        ],
+        "audience": "client"
+      }
+    ]
+  }
+]

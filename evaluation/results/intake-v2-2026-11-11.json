@@ -1,0 +1,2078 @@
+{
+  "kind": "intake-v2-synthetic-key-partner-review-pending",
+  "model": "claude-haiku-5-5",
+  "transport": "strict-groups-v1",
+  "prompt_version": "intake-v1.3",
+  "prompt_sha256": "563a10a8ba48997af207111877d9196afa267ad037c30c3fead3c478c155d621",
+  "tool_schema_sha256": "6637ce13145ead564173af69ea2ba88adf6bc44d6ba9d0582d20d6a9da1abab3",
+  "sha256": "d5527eda02fee85fc7a96b5c7c3b39ee3b828f329f9c65d96b4cf9f84bd5ab5f",
+  "started_at": "2026-11-11T16:14:33.182Z",
+  "max_model_calls": 12,
+  "cases": [
+    {
+      "id": "V201",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 12,
+        "matched": 12,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V201",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V201",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Ada Wells",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Contact: Ada Wells."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Beacon stories",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Beacon stories."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Mira Cove",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "by Mira Cove"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Still Water",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "\"Still Water\""
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "original recording",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "original recording"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "television advertisement",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: television advertisement."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "linear TV"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: linear TV."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Ireland"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Ireland."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "four months",
+                "duration_text": "four months",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: four months."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "24 seconds",
+                "seconds": 24
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 24 seconds."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "EUR 3600 for both master and publishing rights",
+                "amount": "3600",
+                "currency": "EUR",
+                "scope": "both"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: EUR 3600 for both master and publishing rights."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2026-12-14 at 16:00 Europe/Dublin",
+                "date": "2026-12-14",
+                "time": "16:00",
+                "timezone": "Europe/Dublin"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2026-12-14 at 16:00 Europe/Dublin."
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V202",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 12,
+        "matched": 12,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V202",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V202",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Hugo Lane",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Client contact: Hugo Lane"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Cobalt series",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Cobalt series"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Owen Birch",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Artist: Owen Birch"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Open Door",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Track title: Open Door"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "instrumental",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Recording version: instrumental"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "game trailer",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: game trailer"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "Steam",
+                "YouTube"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: Steam, YouTube"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Japan",
+                "South Korea"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Japan, South Korea"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "nine weeks",
+                "duration_text": "nine weeks",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: nine weeks"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "38 seconds",
+                "seconds": 38
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 38 seconds"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "USD 6250.75 for master recording rights only",
+                "amount": "6250.75",
+                "currency": "USD",
+                "scope": "master"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: USD 6250.75 for master recording rights only"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2027-01-18 at 09:20 Asia/Tokyo",
+                "date": "2027-01-18",
+                "time": "09:20",
+                "timezone": "Asia/Tokyo"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2027-01-18 at 09:20 Asia/Tokyo"
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V203",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 12,
+        "matched": 12,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V203",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V203",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Leah Reed",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Contact: Leah Reed."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Stone exhibition",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Stone exhibition."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Fern Atlas",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "\"Soft Motion\" by Fern Atlas"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Soft Motion",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "\"Soft Motion\" by Fern Atlas"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "acoustic version",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "acoustic version"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "museum installation",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: museum installation."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "museum screens"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: museum screens."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Austria"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Austria."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "one year",
+                "duration_text": "one year",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: one year."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "90 seconds",
+                "seconds": 90
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 90 seconds."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "EUR 7400 for publishing rights only",
+                "amount": "7400",
+                "currency": "EUR",
+                "scope": "publishing"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: EUR 7400 for publishing rights only."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2026-12-22 at 11:45 Europe/Vienna",
+                "date": "2026-12-22",
+                "time": "11:45",
+                "timezone": "Europe/Vienna"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2026-12-22 at 11:45 Europe/Vienna."
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V204",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 12,
+        "matched": 12,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V204",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V204",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Arun Blake",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Client contact: Arun Blake"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Orbit brand film",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Orbit brand film"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Ivy West",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Artist: Ivy West"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Long Road",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Track title: Long Road"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "original recording",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Recording version: original recording"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "social advertisement",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: social advertisement"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "Instagram",
+                "Snapchat"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: Instagram, Snapchat"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Australia",
+                "New Zealand"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Australia, New Zealand"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "ten days",
+                "duration_text": "ten days",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: ten days"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "6.5 seconds",
+                "seconds": 6.5
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 6.5 seconds"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "AUD 980 for both master and publishing rights",
+                "amount": "980",
+                "currency": "AUD",
+                "scope": "both"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: AUD 980 for both master and publishing rights"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2026-11-30 at 17:15 Australia/Sydney",
+                "date": "2026-11-30",
+                "time": "17:15",
+                "timezone": "Australia/Sydney"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2026-11-30 at 17:15 Australia/Sydney"
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V205",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 12,
+        "matched": 12,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V205",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V205",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Elise Snow",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Contact: Elise Snow"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Saffron show",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Saffron show"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Ash Linden",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "by Ash Linden"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Clear Signal",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "\"Clear Signal\""
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "radio edit",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "radio edit"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "radio advertisement",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: radio advertisement"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "FM radio"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: FM radio"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Mexico"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Mexico"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "three weeks",
+                "duration_text": "three weeks",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: three weeks"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "15 seconds",
+                "seconds": 15
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 15 seconds"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "MXN 21000 for master recording rights only",
+                "amount": "21000",
+                "currency": "MXN",
+                "scope": "master"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: MXN 21000 for master recording rights only"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2026-12-03 at 12:10 America/Mexico_City",
+                "date": "2026-12-03",
+                "time": "12:10",
+                "timezone": "America/Mexico_City"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2026-12-03 at 12:10 America/Mexico_City"
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V206",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 12,
+        "matched": 12,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V206",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V206",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Samir Hart",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Client contact: Samir Hart"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Tidal feature",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Tidal feature"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Vera Pines",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Artist: Vera Pines"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Silver Kite",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Track title: Silver Kite"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "original recording",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Recording version: original recording"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "documentary film",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: documentary film"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "cinema",
+                "festival screenings"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: cinema, festival screenings"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "United Kingdom"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: United Kingdom"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "eighteen months",
+                "duration_text": "eighteen months",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: eighteen months"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "48 seconds",
+                "seconds": 48
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 48 seconds"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "GBP 8200 for both master and publishing rights",
+                "amount": "8200",
+                "currency": "GBP",
+                "scope": "both"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: GBP 8200 for both master and publishing rights"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2027-02-09 at 10:30 Europe/London",
+                "date": "2027-02-09",
+                "time": "10:30",
+                "timezone": "Europe/London"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2027-02-09 at 10:30 Europe/London"
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V207",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 11,
+        "matched": 10,
+        "mismatched": [
+          {
+            "field": "recording_version",
+            "expected": "instrumental",
+            "actual": null
+          },
+          {
+            "field": "campaign_term",
+            "expected": {
+              "supplied_text": "eight months",
+              "duration_text": "eight months",
+              "start_date": null,
+              "end_date": null
+            },
+            "actual": {
+              "supplied_text": "eight months",
+              "duration_text": null,
+              "start_date": null,
+              "end_date": null
+            }
+          }
+        ],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V207",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V207",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Noa Green",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Contact: Noa Green."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Prism seminar",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Prism seminar."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Rhea Frost",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "\"Quiet City\" by Rhea Frost"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Quiet City",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "\"Quiet City\""
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "training video",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: training video."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "internal intranet"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: internal intranet."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Germany"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Germany."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "eight months",
+                "duration_text": null,
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: eight months."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "75 seconds",
+                "seconds": 75
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 75 seconds."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "EUR 4150 for publishing rights only",
+                "amount": "4150",
+                "currency": "EUR",
+                "scope": "publishing"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: EUR 4150 for publishing rights only."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2026-12-16 at 13:05 Europe/Berlin",
+                "date": "2026-12-16",
+                "time": "13:05",
+                "timezone": "Europe/Berlin"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2026-12-16 at 13:05 Europe/Berlin."
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V208",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 12,
+        "matched": 12,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V208",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V208",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Milo Kerr",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Client contact: Milo Kerr"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Brook podcast",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Brook podcast"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Sage Willow",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Artist: Sage Willow"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Late Train",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Track title: Late Train"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "original recording",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Recording version: original recording"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "podcast advertisement",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: podcast advertisement"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "Spotify",
+                "Apple Podcasts"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: Spotify, Apple Podcasts"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Brazil"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Brazil"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "five weeks",
+                "duration_text": "five weeks",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: five weeks"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "20 seconds",
+                "seconds": 20
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 20 seconds"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "BRL 5600 for both master and publishing rights",
+                "amount": "5600",
+                "currency": "BRL",
+                "scope": "both"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: BRL 5600 for both master and publishing rights"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2027-01-07 at 15:40 America/Sao_Paulo",
+                "date": "2027-01-07",
+                "time": "15:40",
+                "timezone": "America/Sao_Paulo"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2027-01-07 at 15:40 America/Sao_Paulo"
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V209",
+      "score": {
+        "ok": true,
+        "expected": 12,
+        "proposed": 12,
+        "matched": 12,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V209",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V209",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Mira Day",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Contact: Mira Day"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Aspen teaser",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Aspen teaser"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Lark Field",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Artist: Lark Field"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "Velvet Hill",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Track title: Velvet Hill"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "original recording",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Recording version: original recording"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "online advertisement",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: online advertisement"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-platforms",
+              "field_key": "platforms",
+              "previous_value": null,
+              "proposed_value": [
+                "Pinterest"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Platforms: Pinterest"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Singapore"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Singapore"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "three months",
+                "duration_text": "three months",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: three months"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "11 seconds",
+                "seconds": 11
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 11 seconds"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "SGD 1900",
+                "amount": "1900",
+                "currency": "SGD",
+                "scope": "unspecified"
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Budget: SGD 1900, rights scope unspecified"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-response_deadline",
+              "field_key": "response_deadline",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "2026-12-12",
+                "date": "2026-12-12",
+                "time": null,
+                "timezone": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Response deadline: 2026-12-12"
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V210",
+      "score": {
+        "ok": true,
+        "expected": 9,
+        "proposed": 9,
+        "matched": 9,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V210",
+        "base_record_version": 0,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V210",
+          "base_record_version": 0,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-client_contact",
+              "field_key": "client_contact",
+              "previous_value": null,
+              "proposed_value": "Evan Moon",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Contact: Evan Moon"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-project",
+              "field_key": "project",
+              "previous_value": null,
+              "proposed_value": "Clover piece",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Project: Clover piece"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-artist",
+              "field_key": "artist",
+              "previous_value": null,
+              "proposed_value": "Iris Moss",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Artist: Iris Moss"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-track_title",
+              "field_key": "track_title",
+              "previous_value": null,
+              "proposed_value": "New Ground",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Track title: New Ground"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-recording_version",
+              "field_key": "recording_version",
+              "previous_value": null,
+              "proposed_value": "original recording",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Recording version: original recording"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-intended_use",
+              "field_key": "intended_use",
+              "previous_value": null,
+              "proposed_value": "brand video",
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Intended use: brand video"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": null,
+              "proposed_value": [
+                "Belgium"
+              ],
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Territories: Belgium"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-campaign_term",
+              "field_key": "campaign_term",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "seven weeks",
+                "duration_text": "seven weeks",
+                "start_date": null,
+                "end_date": null
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Campaign duration: seven weeks"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-music_length",
+              "field_key": "music_length",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "19 seconds",
+                "seconds": 19
+              },
+              "evidence": [
+                {
+                  "message_id": "email",
+                  "exact_quote": "Music length: 19 seconds"
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V211",
+      "score": {
+        "ok": true,
+        "expected": 2,
+        "proposed": 2,
+        "matched": 2,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V211",
+        "base_record_version": 2,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V211",
+          "base_record_version": 2,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": [
+                "Greece"
+              ],
+              "proposed_value": [
+                "Italy"
+              ],
+              "evidence": [
+                {
+                  "message_id": "reply",
+                  "exact_quote": "Correction: territories are Italy, replacing Greece."
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "EUR 4100 for both master and publishing rights",
+                "amount": "4100",
+                "currency": "EUR",
+                "scope": "both"
+              },
+              "evidence": [
+                {
+                  "message_id": "reply",
+                  "exact_quote": "Updated budget: EUR 4100 for both master and publishing rights."
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    },
+    {
+      "id": "V212",
+      "score": {
+        "ok": true,
+        "expected": 2,
+        "proposed": 2,
+        "matched": 2,
+        "mismatched": [],
+        "extra": [],
+        "ambiguity_ok": true,
+        "forbidden_ok": true
+      },
+      "result": {
+        "ok": true,
+        "stage": "intake",
+        "provider": "anthropic:claude-haiku-5-5:intake-v1.3:strict-groups-v1",
+        "mode": "live",
+        "run_id": "V212",
+        "base_record_version": 2,
+        "freshness": "not_checked",
+        "output": {
+          "schema_version": "1.0",
+          "run_id": "V212",
+          "base_record_version": 2,
+          "proposed_changes": [
+            {
+              "proposal_id": "proposal-territories",
+              "field_key": "territories",
+              "previous_value": [
+                "Vietnam"
+              ],
+              "proposed_value": [
+                "Thailand"
+              ],
+              "evidence": [
+                {
+                  "message_id": "reply",
+                  "exact_quote": "territories are Thailand, replacing Vietnam"
+                }
+              ]
+            },
+            {
+              "proposal_id": "proposal-budget",
+              "field_key": "budget",
+              "previous_value": null,
+              "proposed_value": {
+                "supplied_text": "EUR 5300 for both master and publishing rights",
+                "amount": "5300",
+                "currency": "EUR",
+                "scope": "both"
+              },
+              "evidence": [
+                {
+                  "message_id": "reply",
+                  "exact_quote": "Updated budget: EUR 5300 for both master and publishing rights"
+                }
+              ]
+            }
+          ],
+          "ambiguities": []
+        }
+      }
+    }
+  ],
+  "summary": {
+    "cases": 12,
+    "planned_cases": 12,
+    "validated": 12,
+    "matched": 119,
+    "expected": 121,
+    "proposed": 120,
+    "precision": 0.9916666666666667,
+    "recall": 0.9834710743801653,
+    "all_safety_checks_passed": true
+  },
+  "finished_at": "2026-11-11T16:15:19.198Z"
+}
