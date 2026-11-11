@@ -2911,17 +2911,17 @@ html body button.client-history-card {
 .workspace-theme .daily-report-button{margin-top:20px!important;align-self:flex-start}
 
 .internal-review-request{margin:24px 0!important;padding:24px!important}.internal-review-request>summary{cursor:pointer;color:#ddc184;font-weight:600}.internal-review-request form{display:grid;gap:12px;max-width:900px;padding-top:20px}.internal-review-request form p{margin:0 0 8px;line-height:1.7}.internal-review-request label{font-weight:600;font-size:14px}.internal-review-request textarea{box-sizing:border-box;width:100%;min-height:100px;margin:0 0 8px;line-height:1.7}.internal-review-request button{justify-self:start;margin:8px 0 0!important}
-/* Pair the lifecycle actions; the escalation form opens beneath both controls. */
-.response-case-actions{display:grid;grid-template-columns:repeat(2,max-content);align-items:start;gap:12px;margin-top:24px}
+/* Keep the handoff fields above the two distinct lifecycle actions. */
+.response-case-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:12px;margin-top:24px}
 .response-case-actions>div{margin-top:0!important}
-.workspace-theme .response-case-actions>.internal-review-toggle,.workspace-theme .response-case-actions>div>button{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:48px;margin:0;padding:12px 24px;border-radius:999px;font-size:14px;line-height:1.4;white-space:normal}
+.workspace-theme .response-case-actions>.internal-review-submit,.workspace-theme .response-case-actions>div>button{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:48px;margin:0;padding:12px 24px;border-radius:999px;font-size:14px;line-height:1.4;white-space:normal}
 .response-case-actions>.internal-review-request{grid-column:1/-1;min-width:0;width:100%;box-sizing:border-box;margin:4px 0 0!important}
 .response-case-actions>.internal-review-request form{padding-top:0}
 .response-case-actions:has(>.internal-review-request)>div{grid-column:1;grid-row:2}
-.response-case-actions:has(>.internal-review-request)>.internal-review-toggle{grid-column:2;grid-row:2}
+.response-case-actions:has(>.internal-review-request)>.internal-review-submit{grid-column:2;grid-row:2}
 .response-case-actions:has(>.internal-review-request)>.internal-review-request{grid-column:1/-1;grid-row:1;margin:0 0 4px!important}
 
-@media(max-width:650px){.response-case-actions{grid-template-columns:minmax(0,1fr)}.response-case-actions:has(>.internal-review-request)>.internal-review-toggle{grid-column:1;grid-row:3}.workspace-theme .response-case-actions>.internal-review-toggle,.workspace-theme .response-case-actions>div>button{width:100%}}
+@media(max-width:650px){.response-case-actions{grid-template-columns:minmax(0,1fr)}.response-case-actions:has(>.internal-review-request)>.internal-review-submit{grid-column:1;grid-row:3}.workspace-theme .response-case-actions>.internal-review-submit,.workspace-theme .response-case-actions>div>button{width:100%}}
 
 /* Pulse action buttons and links; expandable fields stay still. */
 @keyframes sf-control-pulse {
