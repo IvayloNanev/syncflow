@@ -29,3 +29,11 @@
 .page .panel .evidence>p{margin:18px 0;line-height:1.75}
 .page .panel .evidence blockquote{box-sizing:border-box;margin:12px 0;padding:14px 24px;border:1px solid #ddc18450;border-radius:32px;background:#ffffff04;color:#e8e5dd;font-size:13px;line-height:1.7;overflow-wrap:anywhere;box-shadow:inset 0 1px 0 #ffffff0a}
 @media(max-width:600px){.page .panel .evidence blockquote{padding:14px 18px;font-size:15px}}
+
+/* Alerts must wrap within the page instead of widening its grid. */
+.page .alert{box-sizing:border-box;display:flex;flex-direction:column;align-items:flex-start;gap:16px;width:100%;min-width:0;max-width:100%;padding:20px 24px;white-space:normal;overflow-wrap:anywhere}
+.page .alert p{min-width:0;max-width:76ch;margin:0;font-size:14px;line-height:1.7;white-space:normal;overflow-wrap:anywhere}
+.page .alert button{box-sizing:border-box;max-width:100%;margin:0!important;white-space:normal}
+.page .header>div{min-width:0;max-width:100%}
+.page .title{overflow-wrap:anywhere}
+@media(max-width:600px){.page .alert{padding:18px;gap:14px}.page .alert button{width:100%}}
