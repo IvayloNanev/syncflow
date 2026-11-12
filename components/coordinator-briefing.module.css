@@ -37,5 +37,10 @@
 .dashboard .card .meta>div{min-width:0}
 .dashboard .card .evidence{padding-top:16px}
 .dashboard .card .evidence summary{align-items:center;gap:16px;min-height:24px;text-align:left}
+.evidence{box-sizing:border-box;min-width:0;max-width:100%;width:100%;white-space:normal;overflow-wrap:anywhere;text-align:left}
+.evidence[open]>summary{margin-bottom:16px}
+.evidence>p{margin:0 0 16px;max-width:85ch;white-space:normal;overflow-wrap:anywhere;line-height:1.7}
+.evidence>blockquote{box-sizing:border-box;min-width:0;max-width:100%;width:100%;margin:12px 0 0;white-space:normal;overflow-wrap:anywhere;text-align:left}
+.evidence>blockquote>strong{display:block;margin-bottom:6px;text-transform:capitalize}
 .dashboard .card .continue{display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;box-sizing:border-box;width:auto!important;max-width:100%;min-height:46px;margin:20px 0 0!important;padding:12px 22px;font-size:13px!important;line-height:1.5;white-space:normal;text-align:center}
 @media(max-width:700px){.dashboard .card .meta{grid-template-columns:1fr;gap:16px}.dashboard .card .next{padding:16px}.dashboard .card .continue{width:100%!important}}

@@ -367,10 +367,12 @@ export default function AnalysisWorkspace({ mode = "coordinator", initialRequest
         {recordingChanges.length ? <details><summary>Recording correction history ({recordingChanges.length})</summary>{recordingChanges.map(change=><p key={change.revision}>{change.previous_recording_id||'Unresolved'} to {change.recording_id||'Unresolved'} · {change.reason} · {change.actor_id} · {change.at}</p>)}</details> : null}</div>
           <div id="request-checklist"><RequestCoverage email={saved ? saved.messages.map(m => m.text).join("\n") : email} analyzed={!!result} stale={stale} proposals={result ? proposals.filter(p => !decisions.some(d => d.run_id === reviewRun?.run_id && d.proposal_id === p.proposal_id)) : []} confirmed={saved?.confirmed_fields || []} issues={clientQuestions} agentFields={saved?.agent_fields || []} /></div>
           {stale ? <p className="stale-banner">Analysis and draft are outdated. Use Draft response to check the updated conversation.</p> : null}
-          {result ? <><h3>{blockers.length} internal checks</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}</> : null}
+          {result ? <section className="request-internal-checks" aria-labelledby="internal-checks-heading"><h3 id="internal-checks-heading">{blockers.length} internal {blockers.length===1?'check':'checks'}</h3>{blockers.length ? <ul>{blockers.map(b => <li key={b.code}>{b.question}</li>)}</ul> : <p>No catalog checks reported.</p>}</section> : null}
 
-          {result && !result.stages?.follow_up?.skipped ? <a className="secondary-button response-jump" href="#client-response">Review response draft</a> : null}
-          <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
+          <div className="request-summary-footer">
+            {result && !result.stages?.follow_up?.skipped ? <a className="secondary-button response-jump" href="#client-response">Review response draft</a> : null}
+            <p className="panel-note">Catalog matches and confirmed request facts do not grant rights clearance.</p>
+          </div>
         </aside>
 
 

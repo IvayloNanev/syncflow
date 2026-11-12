@@ -2595,6 +2595,13 @@ html body button.client-history-card {
 .workspace-theme .focused-intake-grid .coverage-row{align-items:start;gap:12px;padding:18px 0}
 .workspace-theme .focused-intake-grid .coverage-row h3{margin:0;line-height:1.45}
 .workspace-theme .focused-intake-grid .coverage-row p{margin:8px 0 0;line-height:1.6}
+.workspace-theme .request-summary .request-internal-checks{display:grid;gap:14px;min-width:0;margin:24px 0 0;padding-top:20px;border-top:1px solid #ddc18430;text-align:left}
+.workspace-theme .request-internal-checks h3,.workspace-theme .request-internal-checks p{margin:0;line-height:1.5}
+.workspace-theme .request-internal-checks ul{display:grid;gap:12px;margin:0;padding:0 0 0 1.25em;list-style:disc}
+.workspace-theme .request-internal-checks li{margin:0;padding-left:4px;line-height:1.65;overflow-wrap:anywhere}
+.workspace-theme .request-summary .request-summary-footer{display:grid;justify-items:start;gap:16px;min-width:0;margin-top:24px;text-align:left}
+.workspace-theme .request-summary-footer .response-jump{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;width:auto;max-width:100%;min-height:44px;margin:0;padding:12px 24px;white-space:normal;line-height:1.5;text-align:center}
+.workspace-theme .request-summary-footer .panel-note{max-width:65ch;margin:0;line-height:1.65;overflow-wrap:anywhere}
 @media(max-width:800px){.workspace-theme .focused-intake-grid{grid-template-columns:minmax(0,1fr)}.workspace-theme .focused-intake-grid>.result-panel{padding:22px}}
 .workspace-theme .coordinator-email-column{display:flex;flex-direction:column;gap:24px;min-width:0}
 .workspace-theme .coordinator-email-column>.result-panel{box-sizing:border-box;margin:0;padding:28px;min-width:0}
