@@ -4,5 +4,5 @@ import {requireWorkspace} from '../../lib/supabase/access';
 export const dynamic='force-dynamic';
 export default async function Inquiries(){
  const session=await requireWorkspace('/inquiries');
- return <div className="workspace-theme" data-editor-scope={session?`${session.user.id}:${session.workspaceId}`:'local'}><SiteHeader current="inquiries" email={session?.user.email}/><NewInquiries key={session?.workspaceId}/></div>;
+ return <div className="workspace-theme" data-editor-scope={session?`${session.user.id}:${session.workspaceId}`:'local'}><SiteHeader current="inquiries" email={session?.user.email} demo={session?.demo}/><NewInquiries demo={!!session?.demo} key={session?.workspaceId}/></div>;
 }

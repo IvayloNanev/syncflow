@@ -1,4 +1,5 @@
-import {createHash} from 'node:crypto';
+import {reserveDemo} from './demo-policy.js';
+import {randomUUID,createHash} from 'node:crypto';
 // Charge each provider attempt before sending, including retries and failures.
 // PostgreSQL serializes reservations across server instances; unavailable budgets fail closed.
 export const AI_USAGE_MESSAGE='Your AI usage limit has been reached. Try again after the limit resets or ask your workspace administrator.';
@@ -16,6 +17,7 @@ export function createBudgetedFetch({client,workspaceId,actorId,feature,attemptP
   if(error||!data||typeof data.allowed!=='boolean')throw Error('AI_USAGE_UNAVAILABLE');
   if(data.duplicate)return new Response(null,{status:409,headers:{'x-syncflow-uncertain-attempt':'true'}});
   if(!data.allowed)return new Response(null,{status:429,headers:{'x-syncflow-usage-limit':'reached','retry-after':String(data.retry_after||60)}});
+  if(!await reserveDemo(client,workspaceId,actorId,'provider',attemptPrefix?attemptPrefix+':'+(attempt-1):randomUUID(),inputBytes))return new Response(null,{status:429,headers:{'x-syncflow-usage-limit':'reached','retry-after':'86400'}});
   init.signal?.throwIfAborted();
   return fetchImpl(url,init);
  };

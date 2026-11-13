@@ -4,6 +4,7 @@ import {requestOrigin} from '../../server/request-origin.js';
 export async function POST(req:Request){
  const origin=requestOrigin(req);if(!origin||req.headers.get('origin')!==origin)return new Response('Use the workspace selector.',{status:403});
  const session=await workspaceSession();if(!session)return new Response('Sign in first.',{status:401});
+ if(session.demo)return new Response('Exit the guest demo before selecting a team workspace.',{status:403});
  const input=await req.formData(),workspace=input.get('workspace');
  if(typeof workspace!=='string'||! /^[a-f0-9-]{36}$/i.test(workspace))return new Response('Invalid workspace.',{status:400});
  const {data,error}=await storageClient().from('syncflow_members').select('workspace_id').eq('user_id',session.user.id).eq('workspace_id',workspace).maybeSingle();

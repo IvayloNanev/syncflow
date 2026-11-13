@@ -1,4 +1,6 @@
 import 'server-only';
+import type {User} from '@supabase/supabase-js';
+import {DEMO_COOKIE,readDemoSession} from '../../server/demo-policy.js';
 import {selectWorkspace} from '../workspace-selection.js';
 import {createServerClient} from '@supabase/ssr';
 import {createClient} from '@supabase/supabase-js';
@@ -12,6 +14,14 @@ export async function sessionClient(){
 }
 export function storageClient(){if(!process.env.SUPABASE_SECRET_KEY)throw new Error('Shared storage is not configured');return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.SUPABASE_SECRET_KEY!,{auth:{persistSession:false,autoRefreshToken:false}});}
 export async function workspaceSession(){
+ const token=(await cookies()).get(DEMO_COOKIE)?.value;
+ // A demo cookie selects only its private server-owned workspace, even if the
+ // browser also has a real sign-in. Never fall through to real data on expiry.
+ if(token){
+  const guest=await readDemoSession(storageClient(),token);if(!guest)return null;
+  const user:User={id:guest.actor_id,aud:'authenticated',created_at:'',app_metadata:{},user_metadata:{name:'Demo visitor'},is_anonymous:true};
+  return {user,workspaceId:guest.workspace_id as string,role:'guest',membershipCount:1,demo:{expiresAt:guest.expires_at as string}};
+ }
  const client=await sessionClient();const {data:{user},error}=await client.auth.getUser();
  if(error||!user)return null;
  const {data:members,error:memberError}=await client.from('syncflow_members').select('workspace_id,role').eq('user_id',user.id);
@@ -24,5 +34,5 @@ export async function workspaceSession(){
   ordered=(workspaces||[]).flatMap(workspace=>ordered.filter(member=>member.workspace_id===workspace.id));
  }
  const selected=selectWorkspace(ordered,preferred);
- return {user,workspaceId:selected?.workspace_id??null,role:selected?.role??null,membershipCount:members?.length??0};
+ return {user,workspaceId:selected?.workspace_id??null,role:selected?.role??null,membershipCount:members?.length??0,demo:undefined};
 }

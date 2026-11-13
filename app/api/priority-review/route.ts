@@ -11,7 +11,7 @@ export async function POST(req:Request){
  try{const session=await workspaceSession();if(!session?.workspaceId)return json(403,{error:'Workspace access required.'});
  const attempt=req.headers.get('x-syncflow-attempt');const attemptKey=attempt&&/^[a-f0-9-]{36}$/i.test(attempt)?attempt:undefined,leaseToken=randomUUID();
  return json(202,await enqueueAI({kind:'daily_brief',workspaceId:session.workspaceId,actorId:session.user.id,leaseToken,attemptKey}));
- }catch{return json(503,{error:'AI review could not be queued. Check saved results before retrying.'});}
+ }catch(error){if(error instanceof Error&&error.message==='DEMO_USAGE_LIMIT')return json(429,{error:'This guest session has reached its AI run limit. Exit the demo and sign in to continue.'});return json(503,{error:'AI review could not be queued. Check saved results before retrying.'});}
 }
 
 export async function GET(){
