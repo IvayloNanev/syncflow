@@ -51,16 +51,53 @@ Drafts are never sent automatically. Copying an email does not mark it sent. Man
 
 ## Run locally
 
-Requires Node.js 24+ and pnpm 11.25.0.
+**Requires:** Node.js 24+, pnpm 11.25.0, plus Supabase and Anthropic accounts for the shared application and live AI. Resend is optional.
 
-```sh
-pnpm install --frozen-lockfile
-cp -n .env.example .env
-pnpm smoke
-pnpm dev
-```
+1. Clone the repository, install dependencies and create your env file:
 
-Preserve existing environment files. Follow the [setup guide](docs/setup-guide.md) for Supabase sign-in, membership, schema scripts, and server-only provider credentials. Local fallback is a development/test harness, not a second production backend.
+   ```sh
+   git clone https://github.com/IvayloNanev/syncflow.git
+   cd syncflow
+   pnpm install --frozen-lockfile
+   cp -n .env.example .env
+   ```
+
+   Preserve any existing environment files. Never commit real credentials.
+
+2. Fill in `.env`:
+
+   | Variable | Where to get it |
+   | --- | --- |
+   | `ANTHROPIC_API_KEY` | Claude Console → API keys; server-only |
+   | `ANTHROPIC_MODEL` | A model ID enabled for your Anthropic account |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project → Connect/API settings |
+   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase project publishable key |
+   | `SUPABASE_SECRET_KEY` | Supabase project secret key; server-only |
+   | `SYNCFLOW_APP_ORIGIN` | Your application origin; required for hosting |
+   | `RESEND_INBOUND_API_KEY` | Resend API keys; optional, server-only |
+   | `RESEND_INBOUND_WEBHOOK_SECRET` | Resend webhook signing secret; optional, server-only |
+   | `SYNCFLOW_INBOUND_DOMAIN` | Your Resend receiving domain; optional |
+
+3. For a new Supabase project, run the SQL scripts in `db/` in the exact order listed in [database setup](db/README.md). There is no automatic migration command. Do not reapply these scripts to reset an existing project.
+
+4. Configure Supabase Auth callback URLs, including `http://127.0.0.1:3000/auth/callback` for local development. Create and verify your account at `/login`, then have a trusted administrator assign it to a workspace. Signing up alone does not grant access. See the [setup guide](docs/setup-guide.md).
+
+5. Verify and start:
+
+   ```sh
+   pnpm smoke
+   pnpm dev
+   ```
+
+   Open http://127.0.0.1:3000. `pnpm smoke` checks the local mock workflow only. Live AI, Supabase auth and email intake need separate setup and verification. Local fallback is a development/test harness, not a second production backend.
+
+6. *(Optional)* For email intake, configure Resend's `email.received` webhook to use your publicly reachable endpoint:
+
+   ```text
+   https://<your-public-app-origin>/api/webhooks/resend
+   ```
+
+   Configure receiving routes as described in [email intake setup](docs/email-forwarding.md). Without Resend, paste inquiries manually.
 
 ## Verify
 
