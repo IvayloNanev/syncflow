@@ -1,3 +1,4 @@
+import {isDemoWorkspace} from './demo-policy.js';
 import {FatalError,RetryableError} from 'workflow';
 import {durableStorage} from './durable-storage.js';
 import {createBudgetedFetch} from './ai-usage.js';
@@ -20,6 +21,11 @@ import {reviewRows,admitReview,saveAssessment} from './internal-review-store.js'
 async function access(scope){
  validateAIScope(scope);
  const client=durableStorage();
+ if(isDemoWorkspace(scope.workspaceId)){
+  const {data:demo,error:demoError}=await client.from('syncflow_demo_sessions').select('expires_at,ready').eq('workspace_id',scope.workspaceId).eq('actor_id',scope.actorId).maybeSingle();
+  if(demoError)throw Error('DEMO_ACCESS_UNAVAILABLE');
+  if(!demo?.ready||Date.parse(demo.expires_at)<=Date.now())throw new FatalError('DEMO_SESSION_EXPIRED');
+ }
  const {data,error}=await client.from('syncflow_members').select('role').eq('workspace_id',scope.workspaceId).eq('user_id',scope.actorId).maybeSingle();
  if(error)throw Error('ACCESS_CHECK_UNAVAILABLE');if(!data)throw new FatalError('WORKSPACE_ACCESS_DENIED');
  return client;

@@ -1,3 +1,4 @@
+import {reserveDemo} from './demo-policy.js';
 import {reconcileCoordinator} from './durable-recovery';
 import {enqueueAI} from './durable-launch';
 import {storedRoutingCase,canRunCoordinator} from './case-routing-policy.js';
@@ -27,6 +28,7 @@ export async function sharedRequests(req:Request){
   raw+=decoder.decode();
   let input;try{input=JSON.parse(raw);}catch{return json(400,{error:{message:'Invalid JSON.'}});}
   if(input?.action==='list'&&Object.keys(input).every(key=>['action','include_deleted'].includes(key))){const requests=await listSharedRequests(client,session.workspaceId,input.include_deleted===true);return json(200,{requests,priority_review:reviewPriorities(requests.filter(r=>!r.deleted_at))});}
+  if(session.demo&&!['list','get'].includes(input?.action)&&!await reserveDemo(client,session.workspaceId,session.user.id,input?.action==='create'?'create':'command',typeof input?.idempotency_key==='string'?input.idempotency_key:'invalid'))return json(429,{error:{code:'DEMO_LIMIT',message:'This guest workspace has reached its change limit. Sign in to keep working.'}});
   const id=input?.action==='create'?creationId(session.workspaceId,session.user.id,input.idempotency_key):input?.request_id;
   if(typeof id!=='string'||! /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id))return json(400,{error:{message:'Invalid request.'}});
   store=await openSharedStore({client,workspaceId:session.workspaceId,actorId:session.user.id,id});
@@ -37,7 +39,15 @@ export async function sharedRequests(req:Request){
    const attempted=store.beginAnalysis({actor_id:session.user.id,request_id:id,expected_revision:input.expected_revision,idempotency_key:input.idempotency_key,execution_mode:'durable'});
    const committed=await store.flush();const analysis=committed?.analysis||attempted.analysis;
    if(analysis.status!=='running'||analysis.execution_mode!=='durable')return json(200,{...requestDetail(store,id,session.user.id),analysis_status:analysis.status,replayed:attempted.replayed});
-   const queued=await enqueueAI({kind:'coordinator',workspaceId:session.workspaceId,actorId:typeof analysis.started_by==='string'?analysis.started_by:session.user.id,leaseToken:analysis.run_id,analysisRunId:analysis.run_id,requestId:id});
+   let queued;
+   try{queued=await enqueueAI({kind:'coordinator',workspaceId:session.workspaceId,actorId:typeof analysis.started_by==='string'?analysis.started_by:session.user.id,leaseToken:analysis.run_id,analysisRunId:analysis.run_id,requestId:id});}
+   catch(error){
+    if(error instanceof Error&&error.message==='DEMO_USAGE_LIMIT'){
+     store.finishAnalysis({actor_id:session.user.id,request_id:id,run_id:analysis.run_id,result:{ok:false,failed_stage:'intake',error:{code:'PROVIDER_USAGE_LIMIT'}}});await store.flush();
+     return json(429,{...requestDetail(store,id,session.user.id),error:{code:'DEMO_USAGE_LIMIT',message:'This guest session has reached its AI run limit. Exit the demo and sign in to use your own workspace.'}});
+    }
+    throw error;
+   }
    return json(202,{...queued,...requestDetail(store,id,session.user.id),replayed:attempted.replayed});
   }
   const handler=createSavedRequestsHandler({actor:session.user.id,trustedOrigin:origin,enabled:()=>true,openStore:()=>store!,providers:()=>{const fetchImpl=createBudgetedFetch({client,workspaceId:session.workspaceId,actorId:session.user.id,feature:'coordinator'});return {intakeProvider:createClaudeProvider({fetchImpl}),followUpProvider:createFollowUpClaudeProvider({fetchImpl})};}});

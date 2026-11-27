@@ -5,6 +5,7 @@ const json=(status:number,body:unknown)=>Response.json(body,{status,headers:{'ca
 export async function POST(req:Request){
  const origin=requestOrigin(req);if(!origin||req.headers.get('origin')!==origin)return json(403,{error:'Open forwarding from Coordinator.'});
  const session=await workspaceSession();if(!session?.workspaceId)return json(401,{error:'Sign in to your workspace.'});
+ if(session.demo)return json(403,{error:'Guest demos support pasted inquiries. Email receiving requires sign-in.'});
  if(!session.user.email_confirmed_at)return json(403,{error:'Verify your account email first.'});
  const domain=process.env.SYNCFLOW_INBOUND_DOMAIN;
  if(!domain||!process.env.RESEND_INBOUND_API_KEY||!process.env.RESEND_INBOUND_WEBHOOK_SECRET)return json(503,{error:'Email forwarding setup is pending. You can still paste an email.'});

@@ -5,7 +5,7 @@ import {confirmDiscard,useUnsavedGuard} from './use-unsaved-guard';
 import {clearEditorBackup,readEditorBackup,writeEditorBackup} from './editor-backup';
 import styles from './new-inquiries.module.css';
 type Inquiry={email_id:string;subject:string;sender:string;body:string;received_at:string};
-export default function NewInquiries(){
+export default function NewInquiries({demo=false}:{demo?:boolean}){
  const [emails,setEmails]=useState<Inquiry[]>([]),[body,setBody]=useState(''),[subject,setSubject]=useState(''),[selectedId,setSelectedId]=useState('');
  const [address,setAddress]=useState(''),[inboxError,setInboxError]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState('');
  const [loaded,setLoaded]=useState(false),[saving,setSaving]=useState(false),[saved,setSaved]=useState(false);
@@ -25,9 +25,9 @@ export default function NewInquiries(){
  useEffect(()=>{
   let stopped=false;const controller=new AbortController();let timer:ReturnType<typeof setTimeout>;
   async function check(){try{const res=await fetch('/api/forwarding',{cache:'no-store',signal:controller.signal});const data=await res.json();if(!res.ok)throw Error(data.error||'Incoming emails could not load.');if(!stopped){setEmails(data.emails||[]);setLoaded(true);setInboxError('');}}catch(failure){if(!stopped)setInboxError(failure instanceof Error?failure.message:'Incoming emails could not load.');}finally{if(!stopped)timer=setTimeout(check,5000);}}
-  void fetch('/api/forwarding',{method:'POST',headers:{'content-type':'application/json'},body:'{}',signal:controller.signal}).then(async res=>{const data=await res.json();if(!res.ok)throw Error(data.error);if(!stopped)setAddress(data.address);}).catch(failure=>{if(!stopped)setInboxError(failure instanceof Error?failure.message:'Receiving address unavailable.');});
+  if(!demo)void fetch('/api/forwarding',{method:'POST',headers:{'content-type':'application/json'},body:'{}',signal:controller.signal}).then(async res=>{const data=await res.json();if(!res.ok)throw Error(data.error);if(!stopped)setAddress(data.address);}).catch(failure=>{if(!stopped)setInboxError(failure instanceof Error?failure.message:'Receiving address unavailable.');});
   void check();return()=>{stopped=true;controller.abort();clearTimeout(timer);};
- },[attempt]);
+ },[attempt,demo]);
  function choose(inquiry:Inquiry){
   if(saving||!confirmDiscard(!selectedId&&(!!body.trim()||!!subject.trim())))return;
   const envelope=`From: ${inquiry.sender}\nSubject: ${inquiry.subject}\n`;
@@ -54,7 +54,7 @@ export default function NewInquiries(){
   finally{running.current=false;setSaving(false);}
  }
  return <main className={styles.page}><header><h1>New Inquiries</h1><p>Review a received email or paste one below, then save it as a case.</p></header>
- <section className={styles.panel} aria-labelledby="inquiry-heading"><div className={styles.heading}><h2 id="inquiry-heading">Client email</h2>{address?<details className={styles.address}><summary>Receiving address</summary><input aria-label="Receiving address" readOnly value={address}/><button type="button" className="secondary-button" onClick={async()=>{try{await navigator.clipboard.writeText(address);setNotice('Address copied.');}catch{setNotice('Select and copy the receiving address.');}}}>Copy address</button></details>:null}</div>
+ <section className={styles.panel} aria-labelledby="inquiry-heading">{demo?<p className="panel-note">Live guest workspace: paste a fictional email below. External email delivery is available in signed-in workspaces.</p>:null}<div className={styles.heading}><h2 id="inquiry-heading">Client email</h2>{address?<details className={styles.address}><summary>Receiving address</summary><input aria-label="Receiving address" readOnly value={address}/><button type="button" className="secondary-button" onClick={async()=>{try{await navigator.clipboard.writeText(address);setNotice('Address copied.');}catch{setNotice('Select and copy the receiving address.');}}}>Copy address</button></details>:null}</div>
  {inboxError?<p role="status">{inboxError} <button type="button" className="text-button" onClick={()=>setAttempt(n=>n+1)}>Retry</button></p>:null}
  {emails.length?<div className={styles.received} role="group" aria-label="Received inquiries">{emails.map(email=><button key={email.email_id} type="button" className="secondary-button" aria-pressed={selectedId===email.email_id} disabled={saving} onClick={()=>choose(email)}><strong>{email.subject||'No subject'}</strong><span>{email.sender} · {new Date(email.received_at).toLocaleString()}</span></button>)}</div>:!loaded&&!inboxError?<p role="status">Checking incoming emails…</p>:null}
  {selectedId?<div className={styles.selection}><p>Received email · original content preserved</p><button type="button" className="secondary-button" disabled={saving} onClick={pasteNew}>Paste another email</button></div>:null}

@@ -22,7 +22,7 @@ export async function POST(req:Request){
  if(!eligibleLanes(c).allowed.includes('manager'))return json(409,{error:'This case belongs to Coordinator. Open it there instead.'});
  const attempt=req.headers.get('x-syncflow-attempt'),attemptKey=uuid(attempt)?attempt as string:undefined,leaseToken=randomUUID();
  return json(202,await enqueueAI({kind:'internal_review',workspaceId:workspace,actorId:session.user.id,requestId:c.id,fingerprint:reviewFingerprint(c),leaseToken,attemptKey}));
- }catch{return json(503,{error:'Assessment could not be queued. Check the saved case before retrying.'});}
+ }catch(error){if(error instanceof Error&&error.message==='DEMO_USAGE_LIMIT')return json(429,{error:'This guest session has reached its AI run limit. Exit the demo and sign in to continue.'});return json(503,{error:'Assessment could not be queued. Check the saved case before retrying.'});}
 
 }
 export async function GET(){
